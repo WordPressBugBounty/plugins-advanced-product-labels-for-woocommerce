@@ -1,0 +1,1 @@
+# plugins-advanced-product-labels-for-woocommerce
