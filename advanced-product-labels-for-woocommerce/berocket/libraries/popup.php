@@ -83,10 +83,11 @@ if( ! class_exists('BeRocket_popup_display') ) {
                 $page_elements = apply_filters('BeRocket_popup_open_page_elements', $page_elements, self::$elements);
                 echo $page_elements['html_content'];
                 echo '<script>
+                    var berocket_popup_run_script_timeouts = 0;
+                    function berocket_popup_run_script() {
+                        '.$page_elements['ajax_update'].'
+                    }
                     jQuery(document).ready(function() {
-                        function berocket_popup_run_script() {
-                            '.$page_elements['ajax_update'].'
-                        }
                         berocket_popup_run_script();
                         jQuery(document).ajaxComplete(function() {
                             berocket_popup_run_script();
@@ -99,12 +100,18 @@ if( ! class_exists('BeRocket_popup_display') ) {
         public function popup_open_type_click($page_elements, $popup_open, $element, $element_i, $element_id) {
             if( ! empty($popup_open['selector']) ) {
                 $page_elements['ajax_update'] .= '
-                if( ! jQuery("'.$popup_open['selector'].'").data("br_popup_event") ) {
-                    jQuery("'.$popup_open['selector'].'").data("br_popup_event", true);
-                    jQuery("'.$popup_open['selector'].'").on("click", function(event) {
-                        event.preventDefault();
-                        jQuery("#'.$element_id.'").br_popup().open_popup();
-                    });
+                if( jQuery("'.$popup_open['selector'].'").length == 0 && berocket_popup_run_script_timeouts < 4 ) {
+                    setTimeout(berocket_popup_run_script, 1000);
+                    berocket_popup_run_script_timeouts++;
+                } else {
+                    berocket_popup_run_script_timeouts = 0;
+                    if( ! jQuery("'.$popup_open['selector'].'").data("br_popup_event") ) {
+                        jQuery("'.$popup_open['selector'].'").data("br_popup_event", true);
+                        jQuery("'.$popup_open['selector'].'").on("click", function(event) {
+                            event.preventDefault();
+                            jQuery("#'.$element_id.'").br_popup().open_popup();
+                        });
+                    }
                 }';
             }
             return $page_elements;

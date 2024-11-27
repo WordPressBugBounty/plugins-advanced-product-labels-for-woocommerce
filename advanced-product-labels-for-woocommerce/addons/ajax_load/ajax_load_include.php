@@ -5,7 +5,7 @@ class BeRocket_products_label_ajax_load_class {
             if( empty($_REQUEST['action']) || $_REQUEST['action'] !== 'bapl_ajax_load' ) {
                 add_action( 'brapl_construct_end', array($this, 'replace_labels'), 10, 1);
             }
-            add_action( 'init', array($this, 'init') );
+            $this->init();
             add_filter('bapf_paid_the_title_labels', array($this, 'replace_title_label'), 10);
         }
         add_action('wp_ajax_bapl_ajax_load', array($this, 'ajax_load') );

@@ -353,26 +353,25 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         );
         $this->templates_rotate = apply_filters( "berocket_labels_templates_rotate", $this->templates_rotate );
 
-        add_action('products_label_framework_construct', array($this, 'init_conditions'));
         $this->post_name = 'br_labels';
         $this->post_settings = array(
-            'label' => __( 'Advanced Label', 'BeRocket_products_label_domain' ),
+            'label' => 'Advanced Label',
             'labels' => array(
-                'name'               => __( 'Advanced Labels', 'BeRocket_products_label_domain' ),
-                'singular_name'      => __( 'Advanced Label', 'BeRocket_products_label_domain' ),
-                'menu_name'          => _x( 'Advanced Labels', 'Admin menu name', 'BeRocket_products_label_domain' ),
-                'add_new'            => __( 'Add Label', 'BeRocket_products_label_domain' ),
-                'add_new_item'       => __( 'Add New Label', 'BeRocket_products_label_domain' ),
-                'edit'               => __( 'Edit', 'BeRocket_products_label_domain' ),
-                'edit_item'          => __( 'Edit Label', 'BeRocket_products_label_domain' ),
-                'new_item'           => __( 'New Label', 'BeRocket_products_label_domain' ),
-                'view'               => __( 'View Labels', 'BeRocket_products_label_domain' ),
-                'view_item'          => __( 'View Label', 'BeRocket_products_label_domain' ),
-                'search_items'       => __( 'Search Advanced Labels', 'BeRocket_products_label_domain' ),
-                'not_found'          => __( 'No Advanced Labels found', 'BeRocket_products_label_domain' ),
-                'not_found_in_trash' => __( 'No Advanced Labels found in trash', 'BeRocket_products_label_domain' ),
+                'name'               => 'Advanced Labels',
+                'singular_name'      => 'Advanced Label',
+                'menu_name'          => 'Advanced Labels',
+                'add_new'            => 'Add Label',
+                'add_new_item'       => 'Add New Label',
+                'edit'               => 'Edit',
+                'edit_item'          => 'Edit Label',
+                'new_item'           => 'New Label',
+                'view'               => 'View Labels',
+                'view_item'          => 'View Label',
+                'search_items'       => 'Search Advanced Labels',
+                'not_found'          => 'No Advanced Labels found',
+                'not_found_in_trash' => 'No Advanced Labels found in trash',
             ),
-            'description'     => __( 'This is where you can add advanced labels.', 'BeRocket_products_label_domain' ),
+            'description'     => 'This is where you can add advanced labels.',
             'public'          => true,
             'show_ui'         => true,
             'map_meta_cap'    => true,
@@ -387,11 +386,6 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
             'show_in_nav_menus'   => false,
             'show_in_nav_menus'   => false,
         );
-
-        $this->add_meta_box('conditions', __( 'Conditions', 'BeRocket_products_label_domain' ));
-        $this->add_meta_box('settings', __( 'Advanced Labels Settings', 'BeRocket_products_label_domain' ));
-        $this->add_meta_box('description', __( 'Description', 'BeRocket_products_label_domain' ), false, 'side');
-        $this->add_meta_box('preview', __( 'Preview', 'BeRocket_products_label_domain' ), false, 'side');
         
         add_filter('brfr_berocket_advanced_label_editor_custom_css_explanation', array(__CLASS__, 'section_custom_css_explanation'), 10, 4);
         add_filter('brfr_berocket_advanced_label_editor_content_type_description', array(__CLASS__, 'section_content_type_description'), 10, 4);
@@ -400,6 +394,44 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         add_filter( 'berocket_label_custom_get_options', array( $this, 'get_custom_options' ), 10, 2 );
 
         parent::__construct();
+    }
+
+    function init_translation() {
+        $this->conditions = new BeRocket_conditions_advanced_labels($this->post_name.'[data]', $this->hook_name, array(
+            'condition_product',
+            'condition_product_category',
+            'condition_product_sale',
+            'condition_product_bestsellers',
+            'condition_product_price',
+            'condition_product_stockstatus',
+            'condition_product_totalsales',
+            'condition_product_featured',
+            'condition_product_age',
+            'condition_product_type',
+            'condition_product_rating',
+        ));
+        $this->post_settings['label'] = __( 'Advanced Label', 'BeRocket_products_label_domain' );
+        $this->post_settings['labels'] = array(
+            'name'               => __( 'Advanced Labels', 'BeRocket_products_label_domain' ),
+            'singular_name'      => __( 'Advanced Label', 'BeRocket_products_label_domain' ),
+            'menu_name'          => _x( 'Advanced Labels', 'Admin menu name', 'BeRocket_products_label_domain' ),
+            'add_new'            => __( 'Add Label', 'BeRocket_products_label_domain' ),
+            'add_new_item'       => __( 'Add New Label', 'BeRocket_products_label_domain' ),
+            'edit'               => __( 'Edit', 'BeRocket_products_label_domain' ),
+            'edit_item'          => __( 'Edit Label', 'BeRocket_products_label_domain' ),
+            'new_item'           => __( 'New Label', 'BeRocket_products_label_domain' ),
+            'view'               => __( 'View Labels', 'BeRocket_products_label_domain' ),
+            'view_item'          => __( 'View Label', 'BeRocket_products_label_domain' ),
+            'search_items'       => __( 'Search Advanced Labels', 'BeRocket_products_label_domain' ),
+            'not_found'          => __( 'No Advanced Labels found', 'BeRocket_products_label_domain' ),
+            'not_found_in_trash' => __( 'No Advanced Labels found in trash', 'BeRocket_products_label_domain' ),
+        );
+        $this->post_settings['description'] = __( 'This is where you can add advanced labels.', 'BeRocket_products_label_domain' );
+
+        $this->add_meta_box('conditions', __( 'Conditions', 'BeRocket_products_label_domain' ));
+        $this->add_meta_box('settings', __( 'Advanced Labels Settings', 'BeRocket_products_label_domain' ));
+        $this->add_meta_box('description', __( 'Description', 'BeRocket_products_label_domain' ), false, 'side');
+        $this->add_meta_box('preview', __( 'Preview', 'BeRocket_products_label_domain' ), false, 'side');
     }
 
     public function admin_init() {
@@ -461,21 +493,6 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         return $br_label;
     }
 
-    public function init_conditions() {
-        $this->conditions = new BeRocket_conditions_advanced_labels($this->post_name.'[data]', $this->hook_name, array(
-            'condition_product',
-            'condition_product_category',
-            'condition_product_sale',
-            'condition_product_bestsellers',
-            'condition_product_price',
-            'condition_product_stockstatus',
-            'condition_product_totalsales',
-            'condition_product_featured',
-            'condition_product_age',
-            'condition_product_type',
-            'condition_product_rating',
-        ));
-    }
     public function conditions($post) {
         $options = $this->get_option( $post->ID );
         if( empty($options['data']) ) {

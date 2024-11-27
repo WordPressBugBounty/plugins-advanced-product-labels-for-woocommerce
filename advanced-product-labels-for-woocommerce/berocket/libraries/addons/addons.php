@@ -15,11 +15,15 @@ if( ! class_exists('BeRocket_framework_addons') ) {
             add_filter('brfr_'.$this->hook_name.'_addons', array($this, 'section'), 10, 4);
             add_filter('berocket_addons_info_'.$this->hook_name, array($this, 'sort_deprecated_addons'), 9001, 1);
             add_filter('berocket_addons_info_'.$this->hook_name, array($this, 'sort_paid_addons'), 9000, 1);
-            $this->load_addons();
+            add_action('init', array($this, 'init'), 1);
 
             new BeRocket_framework_libraries(array('tooltip'), $info, $values, $options);
 
             add_action( 'admin_init', array( $this, 'admin_init' ) );
+        }
+
+        function init() {
+            $this->load_addons();
         }
 
         function admin_init() {
@@ -129,6 +133,7 @@ if( ! class_exists('BeRocket_framework_addons') ) {
                     BeRocket_tooltip_display::add_tooltip(array('appendTo'  => 'document.body', 'arrow' => true, 'interactive' => true, 'placement' => 'top'), $addon_info['tooltip'], '#berocket_addon_label_'.$addon_i);
                 }
             }
+            $elements = apply_filters('brfr_addonslib_html_elements', $elements, $addons_info);
             foreach($elements as $element) {
                 if( count($element['html']) ) {
                     $html .= '<div>';

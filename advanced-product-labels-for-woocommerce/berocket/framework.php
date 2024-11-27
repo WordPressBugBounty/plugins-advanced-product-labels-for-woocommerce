@@ -35,11 +35,12 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
     include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
     load_plugin_textdomain('BeRocket_domain', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
     class BeRocket_Framework {
-        public static $framework_version = '3.0.1';
-        public $plugin_framework_version = '3.0.1';
+        public static $framework_version = '3.0.3.2';
+        public $plugin_framework_version = '3.0.3.2';
         public static $settings_name = '';
         public $addons;
         public $defaults = array();
+        public $default;
         public $values = array();
         public $feature_list = array();
         public $libraries;
@@ -100,6 +101,7 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
             register_uninstall_hook( $this->cc->info[ 'plugin_file' ], array( get_class( $this->cc ), 'deactivation' ) );
             add_filter( 'BeRocket_updater_add_plugin', array( $this->cc, 'updater_info' ) );
             add_filter( 'berocket_admin_notices_rate_stars_plugins', array( $this, 'rate_stars_plugins' ) );
+            add_action( 'init', array($this, 'init_translation'), 1 );
 
             if ( $this->cc->init_validation() ) {
                 add_action( 'init', array( $this->cc, 'init' ) );
@@ -147,6 +149,7 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
             do_action($this->info[ 'plugin_name' ].'_framework_construct', $this->cc);
             add_filter('brfr_get_plugin_version_capability_'.$this->cc->info['plugin_name'], array($this, 'get_plugin_version_capability'));
         }
+        public function init_translation() {}
         public function include_once_files() {
             foreach (glob($this->info['plugin_dir'] . "/includes/*.php") as $filename)
             {

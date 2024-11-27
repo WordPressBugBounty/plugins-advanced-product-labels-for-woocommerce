@@ -15,11 +15,6 @@ class ET_Builder_Module_brlabel extends ET_Builder_Module {
 		$this->folder_name = 'et_pb_berocket_modules';
 		$this->main_css_element = '%%order_class%%';
 
-        $this->whitelisted_fields = array(
-            'product',
-            'type',
-        );
-
         $this->fields_defaults = array(
             'product'               => array('current'),
             'type'                  => array( 'type', 'add_default_setting' ),

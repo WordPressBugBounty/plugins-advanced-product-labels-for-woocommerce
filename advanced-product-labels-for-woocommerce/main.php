@@ -70,7 +70,7 @@ class BeRocket_products_label extends BeRocket_Framework {
             'name'        => '',
             'plugin_name' => 'products_label',
             'full_name'   => 'WooCommerce Advanced Product Labels',
-            'norm_name'   => __( 'Product Labels', 'BeRocket_products_label_domain' ),
+            'norm_name'   => 'Product Labels',
             'price'       => '24',
             'domain'      => 'BeRocket_products_label_domain',
             'templates'   => products_label_TEMPLATE_PATH,
@@ -941,9 +941,59 @@ class BeRocket_products_label extends BeRocket_Framework {
         }
         return apply_filters( 'woocommerce_get_availability_text', $availability, $product );
     }
+    public static function cache_modifier_by_condition_page() {
+        if( function_exists('is_shop') && function_exists('is_product_category') && function_exists('is_product') ) {
+            if( is_shop() ) {
+                return 'shop';
+            } elseif( is_product_category() ) {
+                return 'category';
+            } elseif( is_product() ) {
+                return 'product';
+            } elseif( is_product_tag() ) {
+                return 'tags';
+            } elseif( is_product_taxonomy() ) {
+                return 'taxonomies';
+            }
+        }
+        return get_queried_object_id();
+    }
+    public function cache_modifier_by_conditions($basic_cache_name, $conditions) {
+        $types_exist = array();
+        $types_to_check = array(
+            'page_id',
+            'date_time'
+        );
+        if( is_array($conditions) ) {
+            foreach( $conditions as $condition_or ) {
+                if( is_array($condition_or) ) {
+                    foreach( $condition_or as $condition_and ) {
+                        if( in_array($condition_and['type'], $types_to_check) ) {
+                            $types_exist[$condition_and['type']] = $condition_and['type'];
+                        }
+                    }
+                }
+            }
+        }
+        foreach( $types_exist as $type_exist ) {
+            switch($type_exist) {
+                case 'page_id':
+                    $basic_cache_name .= '_' . $this->cache_modifier_by_condition_page();
+                    break;
+                case 'date_time':
+                    return false;
+                    break;
+            }
+        }
+        return $basic_cache_name;
+    }
     public function check_label_on_post($label_id, $label_data, $product) {
         $product_id = br_wc_get_product_id($product);
-        $show_label = wp_cache_get( 'WC_Product_'.$product_id, 'brapl_'.$label_id );
+        $cache_name = $this->cache_modifier_by_conditions('brapl_'.$label_id, $label_data);
+        if( $cache_name === false ) {
+            $show_label = false;
+        } else {
+            $show_label = wp_cache_get( 'WC_Product_'.$product_id, $cache_name );
+        }
         if( $show_label === false ) {
             $show_label = BeRocket_conditions_advanced_labels::check($label_data, 'berocket_advanced_label_editor', apply_filters( 'berocket_apl_condition_check_data', array(
                 'product' => $product,
@@ -951,7 +1001,9 @@ class BeRocket_products_label extends BeRocket_Framework {
                 'product_post' => br_wc_get_product_post($product),
                 'post_id' => $product_id
             )));
-            wp_cache_set( 'WC_Product_'.$product_id, ($show_label ? 1 : -1), 'brapl_'.$label_id, 60*60*24 );
+            if( $cache_name !== false ) {
+                wp_cache_set( 'WC_Product_'.$product_id, ($show_label ? 1 : -1), $cache_name, 60*60*24 );
+            }
         } else {
             $show_label = ( $show_label == 1 ? true : false );
         }

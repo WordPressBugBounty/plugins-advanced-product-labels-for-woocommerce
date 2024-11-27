@@ -49,7 +49,7 @@ class BeRocket_products_label_style_generate {
         return $css_all;
     }
     function javascript_include($label_id, $br_label) {
-        if( ! empty( $br_label['tooltip_content'] ) ) {
+        if( ! empty( $br_label['tooltip_content'] ) || ! empty( $br_label['tooltip_image'] ) ) {
             wp_enqueue_style( 'berocket_framework_tippy' );
             wp_enqueue_script( 'berocket_framework_tippy');
             wp_enqueue_style( 'berocket_tippy' );

@@ -63,6 +63,16 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                     $update                                   = true;
                 }
             }
+            if ( is_multisite() ) {
+                $options_ms = get_site_option( 'BeRocket_account_option' );
+                if( ! empty($options_ms) && is_array($options_ms) && isset($options_ms['plugin_key']) && is_array($options_ms['plugin_key']) ) {
+                    foreach ( $plugin as $plug_id => $plug ) {
+                        if ( isset( $options_ms[ 'plugin_key' ][ $plug[ 'id' ] ] ) && $options_ms[ 'plugin_key' ][ $plug[ 'id' ] ] != '' ) {
+                            $plugin[ $plug_id ][ 'key' ] = $options_ms[ 'plugin_key' ][ $plug[ 'id' ] ];
+                        }
+                    }
+                }
+            }
             self::$plugin_info = $plugin;
 
             if ( $update ) {
@@ -1267,5 +1277,5 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
     }
 
     BeRocket_updater::init();
-    add_action( 'plugins_loaded', array( 'BeRocket_updater', 'run' ), 999 );
+    add_action( 'init', array( 'BeRocket_updater', 'run' ), 1 );
 }

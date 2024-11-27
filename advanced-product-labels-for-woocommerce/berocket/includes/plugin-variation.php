@@ -3,7 +3,7 @@ if( ! class_exists('BeRocket_plugin_variations') ) {
     class BeRocket_plugin_variations {
         public $version_number = 0;
         public $plugin_name;
-        public $values, $info, $defaults;
+        public $values, $info, $defaults, $default;
         public function __construct() {
             add_filter('brfr_plugin_version_capability_'.$this->plugin_name, array($this, 'plugin_version_capability'), $this->version_number, 2);
             add_filter('brfr_plugin_defaults_value_'.$this->plugin_name, array($this, 'default_values'), $this->version_number, 2);

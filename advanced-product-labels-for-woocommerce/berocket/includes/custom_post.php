@@ -55,6 +55,7 @@ if ( ! class_exists('BeRocket_custom_post_class') ) {
                 'sortable' => false,
                 'can_be_disabled' => false,
             ), $this->post_type_parameters);
+            add_action( 'init', array( $this, 'init_translation' ), 1 );
             add_filter( 'init', array( $this, 'init' ) );
             add_filter( 'admin_init', array( $this, 'admin_init' ), 15 );
             add_filter( 'wp_insert_post_data', array( $this, 'wp_insert_post_data' ), 30, 2 );
@@ -70,6 +71,8 @@ if ( ! class_exists('BeRocket_custom_post_class') ) {
                 add_filter('BeRocket_admin_init_user_capabilities', array($this, 'init_user_capabilities'));
             }
         }
+
+        function init_translation() {}
 
         function init() {
             $this->default_settings = apply_filters('berocket_custom_post_'.$this->post_name.'_default_settings', $this->default_settings, self::$instance);
@@ -318,10 +321,11 @@ if ( ! class_exists('BeRocket_custom_post_class') ) {
         }
 
         public function wc_save_product( $post_id, $post ) {
-            do_action( 'berocket_custom_post_'.$this->post_name.'_wc_save_product_before', $post_id, $post, $this->post_type_parameters);
+            do_action( 'berocket_custom_post_'.$this->post_name.'_wc_save_product_before_check', $post_id, $post, $this->post_type_parameters);
             if ( ! $this->wc_save_check( $post_id, $post ) ) {
                 return false;
             }
+            do_action( 'berocket_custom_post_'.$this->post_name.'_wc_save_product_before', $post_id, $post, $this->post_type_parameters);
             $this->wc_save_product_without_check($post_id, $post);
             do_action( 'berocket_custom_post_'.$this->post_name.'_wc_save_product_after', $post_id, $post, $this->post_type_parameters);
         }
