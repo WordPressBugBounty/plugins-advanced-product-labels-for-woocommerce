@@ -177,7 +177,9 @@ class BeRocket_products_label extends BeRocket_Framework {
 
     }
     public function divi_initialize_extension() {
-        require_once plugin_dir_path( __FILE__ ) . 'divi/includes/LabelExtension.php';
+        if( class_exists('DiviExtension') ) {
+            require_once plugin_dir_path( __FILE__ ) . 'divi/includes/LabelExtension.php';
+        }
     }
 
     public function get_shortcodes( $shortcodes = array() ) {

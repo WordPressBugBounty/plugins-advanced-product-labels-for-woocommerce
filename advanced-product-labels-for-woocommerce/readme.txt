@@ -5,7 +5,7 @@ Donate link: https://berocket.com/woocommerce-advanced-product-labels/?utm_sourc
 Tags: labels, tag, mark, product labels, product tags, product marks, product sign, new product label, sale product label, new product badge, sale product badge, advanced product labels, woocommerce labels, woocommerce product labels, woocommerce tags, woocommerce marks, woo labels, woo product labels, wc labels, wc product labels, marked produc, add more labels, add more tags, custom product labels, custom product tags, custom product marks, custom labels, custom product badges, custom badges, per product type, per product label, single product label, single product page label, shop page label, shop page badges, change button label, change label, button label, simple label, variable product label, grouped product label, external product label, berocket, berocket advanced product labels for woocommerce
 Requires at least: 5.0
 Tested up to: 6.7
-Stable tag: 1.2.8
+Stable tag: 1.2.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -142,6 +142,10 @@ You can try this plugin's admin side [here](https://berocket.com/woocommerce-adv
 ---
 
 == Changelog ==
+
+= 1.2.9 =
+* Enhancement - Compatibility version: WooCommerce 9.5
+* Fix - Change CDN links for elements
 
 = 1.2.8 =
 * Enhancement - Compatibility version: Wordpress 6.7 and WooCommerce 9.4

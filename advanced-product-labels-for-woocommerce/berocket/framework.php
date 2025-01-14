@@ -35,8 +35,8 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
     include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
     load_plugin_textdomain('BeRocket_domain', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
     class BeRocket_Framework {
-        public static $framework_version = '3.0.3.2';
-        public $plugin_framework_version = '3.0.3.2';
+        public static $framework_version = '3.0.3.3';
+        public $plugin_framework_version = '3.0.3.3';
         public static $settings_name = '';
         public $addons;
         public $defaults = array();

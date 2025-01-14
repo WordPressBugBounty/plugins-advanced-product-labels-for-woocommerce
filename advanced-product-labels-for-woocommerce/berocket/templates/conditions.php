@@ -46,6 +46,7 @@ $condition_types = apply_filters($hook_name.'_types', array());
             $last_id = 0;
             foreach($value as $id => $data) {
                 $current_id = 1;
+                $first_element = true;
                 ob_start();
                 foreach($data as $current => $conditions) {
                     if( $current > $current_id ) {
@@ -62,7 +63,11 @@ $condition_types = apply_filters($hook_name.'_types', array());
                                 ?>
                             </select>
                         </span>
-                        <span class="button berocket_remove_condition"><i class="fa fa-minus"></i></span>
+                        <?php if( ! $first_element ) {
+                            echo '<span class="button berocket_remove_condition"><i class="fa fa-minus"></i></span>';
+                        } else {
+                            $first_element = false;
+                        } ?>
                         <div class="br_current_cond">
                         </div>
                     <?php 

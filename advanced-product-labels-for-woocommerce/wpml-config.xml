@@ -1,5 +1,5 @@
 <wpml-config>  
     <custom-types>
-        <custom-type translate="1">labels</custom-type>
+        <custom-type translate="1">br_labels</custom-type>
     </custom-types> 
 </wpml-config>
