@@ -186,6 +186,7 @@
     background-color: #f0f0f0;
     display: table;
     width: 100%;
+    table-layout: fixed;
 }
 
 .br_framework_settings .body ul.side {
@@ -285,6 +286,7 @@
 .br_framework_settings .body .content .framework-form-table {
     margin-top: 0;
     width: 100%;
+    table-layout: fixed;
 }
 
 .br_framework_settings .framework-form-table h2{
@@ -668,6 +670,13 @@
 .br_framework_settings .framework-form-table > tfoot > tr > td,
 .br_framework_settings .framework-form-table > tr > td {
     padding: 10px;
+}
+
+.br_framework_settings .framework-form-table > tbody > tr > td .br_field_settlabel_checkbox {
+    white-space: nowrap;
+}
+.br_framework_settings .framework-form-table > tbody > tr > td > .br_field_settlabel_checkbox span {
+    white-space: normal;
 }
 
 .br_framework_settings form .nav-block,

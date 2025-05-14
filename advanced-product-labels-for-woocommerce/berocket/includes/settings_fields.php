@@ -26,7 +26,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
         }
 
         function text( $html, $field_item, $field_name, $value, $class, $extra ) {
-            $html .= '<label>';
+            $html .= '<label class="br_field_settlabel_text">';
             if ( ! empty( $field_item[ 'label_be_for' ] ) ) {
                 $html .= '<span class="br_label_be_for">' . $field_item[ 'label_be_for' ] . '</span>';
             }
@@ -40,7 +40,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
         }
 
         function number( $html, $field_item, $field_name, $value, $class, $extra ) {
-            $html .= '<label>';
+            $html .= '<label class="br_field_settlabel_number">';
             if ( ! empty( $field_item[ 'label_be_for' ] ) ) {
                 $html .= '<span class="br_label_be_for">' . $field_item[ 'label_be_for' ] . '</span>';
             }
@@ -55,7 +55,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
 
         function radio( $html, $field_item, $field_name, $value, $class, $extra, $option_values, $option_deault_values ) {
             $radio_default = ( isset( $option_values ) ? $option_values : ( ! empty( $field_item[ 'default' ] ) ? $field_item[ 'value' ] : ( ! empty( $option_deault_values ) ? $option_deault_values : '' ) ) );
-            $html .= '<label>';
+            $html .= '<label class="br_field_settlabel_radio">';
             if ( ! empty( $field_item[ 'label_be_for' ] ) ) {
                 $html .= '<span class="br_label_be_for">' . $field_item[ 'label_be_for' ] . '</span>';
             }
@@ -69,7 +69,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
         }
 
         function checkbox( $html, $field_item, $field_name, $value, $class, $extra, $option_values, $option_deault_values ) {
-            $html .= '<label>';
+            $html .= '<label class="br_field_settlabel_checkbox">';
             if ( ! empty( $field_item[ 'label_be_for' ] ) ) {
                 $html .= '<span class="br_label_be_for">' . $field_item[ 'label_be_for' ] . '</span>';
             }
@@ -83,7 +83,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
         }
 
         function selectbox( $html, $field_item, $field_name, $value, $class, $extra ) {
-            $html .= '<label>';
+            $html .= '<label class="br_field_settlabel_selectbox">';
             if ( ! empty( $field_item[ 'label_be_for' ] ) ) {
                 $html .= '<span class="br_label_be_for">' . $field_item[ 'label_be_for' ] . '</span>';
             }

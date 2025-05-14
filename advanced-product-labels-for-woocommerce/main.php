@@ -963,7 +963,8 @@ class BeRocket_products_label extends BeRocket_Framework {
         $types_exist = array();
         $types_to_check = array(
             'page_id',
-            'date_time'
+            'date_time',
+            'single_product'
         );
         if( is_array($conditions) ) {
             foreach( $conditions as $condition_or ) {
@@ -983,6 +984,10 @@ class BeRocket_products_label extends BeRocket_Framework {
                     break;
                 case 'date_time':
                     return false;
+                    break;
+                case 'single_product':
+                    $single_product_page = is_product();
+                    $basic_cache_name .= ($single_product_page ? '_product' : '_shop');
                     break;
             }
         }

@@ -406,6 +406,12 @@ class BeRocket_products_label_better_position extends BeRocket_plugin_variations
             .berocket_better_labels .berocket_better_labels_position.berocket_better_labels_position_right {
                 align-items: end;
             }
+            .rtl .berocket_better_labels .berocket_better_labels_position.berocket_better_labels_position_left {
+                align-items: end;
+            }
+            .rtl .berocket_better_labels .berocket_better_labels_position.berocket_better_labels_position_right {
+                align-items: start;
+            }
             .berocket_better_labels .berocket_better_labels_position.berocket_better_labels_position_center {
                 align-items: center;
             }

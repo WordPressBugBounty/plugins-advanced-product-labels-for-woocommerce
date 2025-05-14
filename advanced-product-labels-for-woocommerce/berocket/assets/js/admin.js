@@ -577,12 +577,13 @@ jQuery(document).on('click', function() {
             event.preventDefault();
             var $this = $(this);
             var post_id = $(this).data('post_id');
+            var nonce = $(this).data('nonce');
             if( $this.is('.berocket_post_set_new_sortable_set') ) {
                 var order = $this.parents('.berocket_post_set_new_sortable_input').first().find('input').val();
             } else {
                 var order = $(this).data('order');
             }
-            $.post(location.href, {braction:'berocket_custom_post_sortable', BRsortable_id:post_id, BRorder:order}, function(html) {
+            $.post(location.href, {braction:'berocket_custom_post_sortable', BRsortable_id:post_id, BRorder:order, wp_nonce: nonce}, function(html) {
                 var $html = jQuery(html);
                 var $tbody = $html.find('.berocket_post_set_new_sortable').first().parents('tbody').first();
                 $('.berocket_post_set_new_sortable').first().parents('tbody').first().replaceWith($tbody);

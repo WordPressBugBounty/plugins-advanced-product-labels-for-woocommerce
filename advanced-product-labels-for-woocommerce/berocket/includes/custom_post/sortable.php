@@ -21,7 +21,10 @@ if ( ! class_exists('BeRocket_custom_post_sortable_addon_class') ) {
             $this->custom_post->get_custom_posts();
             add_action( 'pre_get_posts', array($this, 'sortable_get_posts'), 999999 );
             if( ! empty($_POST['braction']) && $_POST['braction'] == 'berocket_custom_post_sortable' ) {
-                $this->sortable_change();
+                $wp_nonce = ( empty($_POST['wp_nonce']) ? '' : $_POST['wp_nonce'] );
+                if ( current_user_can( 'manage_options' ) && wp_verify_nonce( $wp_nonce, 'berocket_information_close_notice' ) ) {
+                    $this->sortable_change();
+                }
             }
         }
         public function sortable_change() {
@@ -99,11 +102,12 @@ if ( ! class_exists('BeRocket_custom_post_sortable_addon_class') ) {
         }
         public function sortable_html_position($post_id, $order) {
             $html = '';
+            $nonce = wp_create_nonce('berocket_information_close_notice');
             if( $order > 0 ) {
-                $html .= '<a href="#order-up" class="berocket_post_set_new_sortable" data-post_id="'.$post_id.'" data-order="'.($order - 1).'"><i class="fa fa-arrow-up"></i></a>';
+                $html .= '<a href="#order-up" class="berocket_post_set_new_sortable" data-nonce="'.$nonce.'" data-post_id="'.$post_id.'" data-order="'.($order - 1).'"><i class="fa fa-arrow-up"></i></a>';
             }
-            $html .= '<span class="berocket_post_set_new_sortable_input"><input type="number" min="0" value="'.$order.'"><a class="berocket_post_set_new_sortable_set fa fa-arrow-circle-right" data-post_id="'.$post_id.'" href="#order-set"></a></span>';
-            $html .= '<a href="#order-up" class="berocket_post_set_new_sortable" data-post_id="'.$post_id.'" data-order="'.($order + 1).'"><i class="fa fa-arrow-down"></i></a>';
+            $html .= '<span class="berocket_post_set_new_sortable_input"><input type="number" min="0" value="'.$order.'"><a class="berocket_post_set_new_sortable_set fa fa-arrow-circle-right" data-nonce="'.$nonce.'" data-post_id="'.$post_id.'" href="#order-set"></a></span>';
+            $html .= '<a href="#order-up" class="berocket_post_set_new_sortable" data-nonce="'.$nonce.'" data-post_id="'.$post_id.'" data-order="'.($order + 1).'"><i class="fa fa-arrow-down"></i></a>';
             return $html;
         }
         public function sortable_manage_edit_columns($columns) {
@@ -134,7 +138,8 @@ if ( ! class_exists('BeRocket_custom_post_sortable_addon_class') ) {
                                         jQuery("#the-list .berocket_post_set_new_sortable_input").each(function() {
                                             BRsortable.push({id:jQuery(this).find(".berocket_post_set_new_sortable_set").data('post_id'), order:jQuery(this).find("input").val()});
                                         });
-                                        jQuery.post(location.href, {braction:'berocket_custom_post_sortable', BRsortable:BRsortable}, function(html) {
+                                        var nonce = "<?php echo wp_create_nonce('berocket_information_close_notice'); ?>";
+                                        jQuery.post(location.href, {braction:'berocket_custom_post_sortable', BRsortable:BRsortable, wp_nonce: nonce}, function(html) {
                                             var $html = jQuery(html);
                                             var $tbody = $html.find('.berocket_post_set_new_sortable').first().parents('tbody').first();
                                             jQuery('.berocket_post_set_new_sortable').first().parents('tbody').first().replaceWith($tbody);
