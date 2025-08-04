@@ -17,12 +17,22 @@ if( ! class_exists('BeRocket_framework_addon_lib') ) {
             }
         }
         function check_init() {
-            if ( ! empty( $this->php_file_name ) && file_exists( dirname( $this->absolute_file ) . DIRECTORY_SEPARATOR . $this->php_file_name . '.php' ) ) {
-                $this->init_active();
+            if ( ! empty( $this->php_file_name ) ) {
+                if( strpos($this->php_file_name, '%plugindir%') !== FALSE ) {
+                    $plugin_info = apply_filters('brfr_'.$this->plugin_name.'_addons_get_info', array());
+                    if( ! empty($plugin_info['plugin_dir']) ) {
+                        $file_path = str_replace('%plugindir%', $plugin_info['plugin_dir'], $this->php_file_name) . '.php';
+                        if( file_exists( $file_path ) ) {
+                            $this->init_active($file_path);
+                        }
+                    }
+                } elseif( file_exists( dirname( $this->absolute_file ) . DIRECTORY_SEPARATOR . $this->php_file_name . '.php' ) ) {
+                    $this->init_active(dirname( $this->absolute_file ) . DIRECTORY_SEPARATOR . $this->php_file_name . '.php');
+                }
             }
         }
-        function init_active() {
-            include_once(dirname( $this->absolute_file ) . DIRECTORY_SEPARATOR . $this->php_file_name . '.php');
+        function init_active($file_path = '') {
+            include_once($file_path);
         }
         function get_addon_data() {
             return array(

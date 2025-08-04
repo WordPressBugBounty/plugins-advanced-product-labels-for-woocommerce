@@ -13,7 +13,7 @@ if( ! function_exists( 'br_get_woocommerce_version' ) ){
         $plugin_file = 'woocommerce.php';
 
         if ( isset( $plugin_folder[$plugin_file]['Version'] ) ) {
-            return $plugin_folder[$plugin_file]['Version'];
+            return (float)$plugin_folder[$plugin_file]['Version'];
         }
 
         return NULL;

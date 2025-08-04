@@ -15,11 +15,16 @@ if( ! class_exists('BeRocket_framework_addons') ) {
             add_filter('brfr_'.$this->hook_name.'_addons', array($this, 'section'), 10, 4);
             add_filter('berocket_addons_info_'.$this->hook_name, array($this, 'sort_deprecated_addons'), 9001, 1);
             add_filter('berocket_addons_info_'.$this->hook_name, array($this, 'sort_paid_addons'), 9000, 1);
+            add_filter('brfr_'.$this->hook_name.'_addons_get_info', array($this, 'get_info'), 10, 4);
             add_action('init', array($this, 'init'), 1);
 
             new BeRocket_framework_libraries(array('tooltip'), $info, $values, $options);
 
             add_action( 'admin_init', array( $this, 'admin_init' ) );
+        }
+
+        function get_info() {
+            return $this->info;
         }
 
         function init() {
@@ -73,7 +78,11 @@ if( ! class_exists('BeRocket_framework_addons') ) {
             if ( empty( $plugin_version_capability ) || $plugin_version_capability < 10 ) {
                 $sorted_addon_info = array();
                 foreach ( $addon_info as $addon_i => $addon ) {
-                    if ( ! empty( $addon[ 'paid' ] ) ) {
+                    if ( ! empty( $addon[ 'paid' ] ) && ( empty( $plugin_version_capability ) || $plugin_version_capability < 10 ) ) {
+                        $sorted_addon_info[] = $addon;
+                        unset( $addon_info[ $addon_i ] );
+                    }
+                    if ( ! empty( $addon[ 'business' ] ) && ( empty( $plugin_version_capability ) || $plugin_version_capability < 100 ) ) {
                         $sorted_addon_info[] = $addon;
                         unset( $addon_info[ $addon_i ] );
                     }
@@ -151,11 +160,18 @@ if( ! class_exists('BeRocket_framework_addons') ) {
         function paid_only_sign( $html_array, $addon_info ) {
             $plugin_version_capability = apply_filters( 'brfr_get_plugin_version_capability_' . $this->hook_name, 0 );
 
-            if ( ! empty( $addon_info[ 'paid' ] ) && ( empty( $plugin_version_capability ) || $plugin_version_capability < 10 ) ) {
+            if ( ( ! empty( $addon_info[ 'paid' ] ) && ( empty( $plugin_version_capability ) || $plugin_version_capability < 10 ) )
+                || ( ! empty( $addon_info[ 'business' ] ) && ( empty( $plugin_version_capability ) || $plugin_version_capability < 100 ) ) ) {
                 $meta_data = '?utm_source=free_plugin&utm_medium=plugins&utm_campaign='.$this->info['plugin_name'];
                 $html = '<i class="berocket_addon_paid_sign fa fa-lock"></i>';
                 $html .= '<div class="berocket_addon_paid_get"><a target="_blank" href="https://berocket.com/' . $this->values[ 'premium_slug' ] . $meta_data . '"><span>
-                ' . __( 'Go Premium', 'BeRocket_domain' ) . '
+                ';
+                if( ! empty( $addon_info[ 'paid' ] ) ) {
+                    $html .= __( 'Go Premium', 'BeRocket_domain' );
+                } else {
+                    $html .= __( 'Go Business', 'BeRocket_domain' );
+                }
+                $html .= '
                 </span></a></div>';
                 $html_array = berocket_insert_to_array($html_array, 'close_addon_block', array('paid_only' => $html));
             }

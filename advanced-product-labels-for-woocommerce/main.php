@@ -978,6 +978,10 @@ class BeRocket_products_label extends BeRocket_Framework {
             }
         }
         foreach( $types_exist as $type_exist ) {
+            if( $additional_cache_name = apply_filters('bapl_cache_modifier_by_conditions_type', '', $type_exist, $conditions) ) {
+                $basic_cache_name .= $additional_cache_name;
+                continue;
+            }
             switch($type_exist) {
                 case 'page_id':
                     $basic_cache_name .= '_' . $this->cache_modifier_by_condition_page();

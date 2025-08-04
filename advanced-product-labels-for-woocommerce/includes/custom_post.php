@@ -1101,10 +1101,12 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         if( ! $this->wc_save_check($post_id, $post) ) {
             return;
         }
-        if( $post->post_type != 'product' && ! isset($_POST['br_labels']['color_use']) ) {
-            $_POST['br_labels']['color_use'] = 0;
+        if( ! empty($_POST['br_labels']) ) {
+            if( $post->post_type != 'product' && ! isset($_POST['br_labels']['color_use']) ) {
+                $_POST['br_labels']['color_use'] = 0;
+            }
+            $_POST['br_labels'] = apply_filters('berocket_apl_wc_save_product', $_POST['br_labels'], $post_id);
         }
-        $_POST['br_labels'] = apply_filters('berocket_apl_wc_save_product', $_POST['br_labels'], $post_id);
         parent::wc_save_product( $post_id, $post );
     }
     public function wc_save_product_without_check( $post_id, $post ) {

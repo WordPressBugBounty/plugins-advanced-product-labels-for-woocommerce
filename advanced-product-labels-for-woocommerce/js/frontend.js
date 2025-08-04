@@ -42,6 +42,7 @@ function berocket_regenerate_tooltip() {
     });
 }
 var brl_mscale_state = false;
+var berocket_labels_mobile_scale_reinit_id = false;
 function berocket_labels_mobile_scale() {
     var is_mobile = (jQuery(window).width() <= 768);
     if( (is_mobile && brl_mscale_state != 'mobile') || ( ! is_mobile && brl_mscale_state == 'mobile') || brl_mscale_state === false ) {
@@ -53,6 +54,13 @@ function berocket_labels_mobile_scale() {
         jQuery('.br_alabel').each(function() {
             berocket_labels_mobile_scale_single(jQuery(this), is_mobile)
         });
+        if( jQuery('.br_alabel_msc_rqr').length ) {
+            if( berocket_labels_mobile_scale_reinit_id !== false ) {
+                clearTimeout(berocket_labels_mobile_scale_reinit_id);
+                berocket_labels_mobile_scale_reinit_id = false;
+            }
+            setTimeout(berocket_labels_mobile_scale_reinit, 1000);
+        }
     }
 }
 function berocket_labels_mobile_scale_single($element, is_mobile) {
@@ -89,9 +97,6 @@ function berocket_labels_mobile_scale_single($element, is_mobile) {
         } else {
             $element.addClass('br_alabel_msc_rqr');
         }
-        if( jQuery('.br_alabel_msc_rqr').length ) {
-            setTimeout(berocket_labels_mobile_scale_reinit, 1000);
-        }
     }
 }
 function berocket_labels_mobile_scale_reinit() {
@@ -101,7 +106,11 @@ function berocket_labels_mobile_scale_reinit() {
         berocket_labels_mobile_scale_single(jQuery(this), is_mobile);
     });
     if( jQuery('.br_alabel_msc_rqr').length ) {
-        setTimeout(berocket_labels_mobile_scale_reinit, 1000);
+        if( berocket_labels_mobile_scale_reinit_id !== false ) {
+            clearTimeout(berocket_labels_mobile_scale_reinit_id);
+            berocket_labels_mobile_scale_reinit_id = false;
+        }
+        berocket_labels_mobile_scale_reinit_id = setTimeout(berocket_labels_mobile_scale_reinit, 1000);
     }
 }
 function berocket_labels_mobile_scale_reset() {
