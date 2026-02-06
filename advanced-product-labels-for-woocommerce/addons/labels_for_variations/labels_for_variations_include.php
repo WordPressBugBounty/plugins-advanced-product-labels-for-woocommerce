@@ -10,8 +10,10 @@ class BeRocket_products_label_labels_for_variations_class {
         add_filter( "berocket_advanced_label_editor_check_type_product", array( $this, 'check_cond_variation' ), 100, 3 );
         add_filter( "berocket_advanced_label_editor_check_type_attribute", array( $this, 'check_cond_attr_variation' ), 100, 3 );
         add_filter( "berocket_advanced_label_editor_check_type_stockstatus", array( $this, 'check_cond_stockstatus_variation' ), 100, 3 );
+        add_filter( "berocket_advanced_label_editor_check_type_stockquantity", array( $this, 'check_cond_stockquantity_variation' ), 100, 3 );
         add_filter( "berocket_advanced_label_editor_type_attribute", array( $this, 'cond_attr_variation' ), 100, 3 );
         add_filter( "berocket_advanced_label_editor_type_stockstatus", array( $this, 'cond_stockstatus_variation' ), 100, 3 );
+        add_filter( "berocket_advanced_label_editor_type_stockquantity", array( $this, 'cond_stockquantity_variation' ), 100, 3 );
         add_filter( "berocket_apl_better_labels_html", array( $this, "better_labels_html"), 10, 6 );
     }
 
@@ -121,6 +123,25 @@ class BeRocket_products_label_labels_for_variations_class {
         return $show_in;
     }
 
+    public function check_cond_stockquantity_variation($show_in, $condition, $additional) {
+        if( ! empty($condition['variation']) ) {
+            if( ! empty($additional['var_product']) && is_a($additional['var_product'], 'WC_Product_Variation') ) {
+                $product_stock = intval($additional['var_product']->get_stock_quantity('edit'));
+                $backorder = true;
+                if( ! empty($condition['backorder']) && $condition['backorder'] != 'any' ) {
+                    $backorder = $additional['product']->backorders_allowed();
+                    if( $condition['backorder'] == 'no' ) {
+                        $backorder = ! $backorder;
+                    }
+                }
+                $show = BeRocket_conditions::supcondition_check($product_stock, $condition['stockquantity'], $condition);
+                $show = $show && $backorder;
+                return $show;
+            }
+        }
+        return $show_in;
+    }
+
     public function cond_attr_variation($html, $name, $options) {
         $def_options = array('variation' => '');
         $options = array_merge($def_options, $options);
@@ -133,6 +154,13 @@ class BeRocket_products_label_labels_for_variations_class {
     }
 
     public function cond_stockstatus_variation($html, $name, $options) {
+        $def_options = array('variation' => '');
+        $options = array_merge($def_options, $options);
+        $html .= '<p><label>Display for variation:</label> <input type="checkbox" value="1" '.( empty($options['variation']) ? '' : 'checked ').(empty($options['is_example']) ? '' : 'data-').'name="' . $name . '[variation]"></p>';
+        return $html;
+    }
+
+    public function cond_stockquantity_variation($html, $name, $options) {
         $def_options = array('variation' => '');
         $options = array_merge($def_options, $options);
         $html .= '<p><label>Display for variation:</label> <input type="checkbox" value="1" '.( empty($options['variation']) ? '' : 'checked ').(empty($options['is_example']) ? '' : 'data-').'name="' . $name . '[variation]"></p>';

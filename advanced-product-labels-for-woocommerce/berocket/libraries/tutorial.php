@@ -185,6 +185,7 @@ jQuery(document).ready(function(){
 .br_framework_settings .br_tutorial_section > h2 {
     box-sizing: border-box;
     text-align: left;
+    text-align: start;
     padding: 20px 0 !important;
     color: #515861;
     font-size: 1.75rem;
@@ -194,11 +195,13 @@ jQuery(document).ready(function(){
 .br_tutorial_section_elements {
     display: flex;
     justify-content: left;
+    justify-content: start;
     flex-wrap: wrap;
+    gap: 20px;
 }
 .br_tutorial_section_elements .br_tutorial_element {
     flex-basis: 32%;
-    margin: 0 0 20px 1.5%;
+    margin: 0;
     flex-grow: 1;
     max-width: 32%;
     position: relative;
@@ -209,9 +212,6 @@ jQuery(document).ready(function(){
     overflow: hidden;
     border: 0 none;
     cursor: pointer;
-}
-.br_tutorial_section_elements .br_tutorial_element:nth-child(3n+1) {
-    margin-left: 0;
 }
 .br_tutorial_section_elements .br_tutorial_element > h3 {
     display: block;

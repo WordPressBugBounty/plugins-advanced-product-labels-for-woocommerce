@@ -12,6 +12,10 @@ foreach (glob(plugin_dir_path( __FILE__ ) . "includes/compatibility/*.php") as $
 {
     include_once($filename);
 }
+if( ( ! defined("BAPL_VER_PAID_DISABLE") || ! BAPL_VER_PAID_DISABLE ) && file_exists(__DIR__ . "/paid/paid.php") ) {
+    include_once(__DIR__ . "/paid/tripwire.php");
+    include_once(__DIR__ . "/paid/paid.php");
+}
 /**
  * Class BeRocket_products_label
  * REPLACE
@@ -130,7 +134,7 @@ class BeRocket_products_label extends BeRocket_Framework {
             new BeRocket_advanced_labels_custom_post();
         }
         $this->framework_data['fontawesome_frontend'] = true;
-        $this->active_libraries = array('addons', 'popup', 'tutorial');
+        $this->active_libraries = apply_filters('bapl_active_libraries', array('addons', 'popup', 'tutorial'));
         parent::__construct( $this );
 
 
@@ -277,6 +281,8 @@ class BeRocket_products_label extends BeRocket_Framework {
                 $this->info[ 'version' ]
             );
             wp_enqueue_style( 'berocket_products_label_admin_style' );
+        } else {
+            include_once('includes/admin/admin_bar.php');
         }
     }
     public function add_remove_shop_hook($type = 'add') {
@@ -318,6 +324,9 @@ class BeRocket_products_label extends BeRocket_Framework {
             function bapl_product_galery_move() {
                 jQuery(".woocommerce-product-gallery .br_alabel:not(.br_alabel_better_compatibility), .woocommerce-product-gallery .berocket_better_labels").each(function(i, o) {
                     jQuery(o).hide().parents(".woocommerce-product-gallery").append(jQuery(o));
+                    setTimeout(function() {
+                        jQuery(document).trigger('bapl_product_galery_appear');
+                    }, 50);
                 });
                 galleryReadyCheck = setInterval(function() {
                     if( jQuery(".woocommerce-product-gallery .woocommerce-product-gallery__trigger").length > 0 ) {
@@ -453,6 +462,8 @@ class BeRocket_products_label extends BeRocket_Framework {
                     $br_label = $this->custom_post->get_option($label);
                     if( ! isset($br_label['data']) || $this->check_label_on_post($label, $br_label['data'], $product) ) {
                         $label_ids[] = $label;
+                    } else {
+                        do_action( 'bapl_show_label_on_product_false', 'condition_restricted', $br_label['data'], $product, $label );
                     }
                 }
             }
@@ -539,6 +550,7 @@ class BeRocket_products_label extends BeRocket_Framework {
         $berocket_display_any_advanced_labels = true;
         $label_id = esc_html($label_id);
         if( empty($br_label) || ! is_array($br_label) ) {
+            do_action('bapl_show_label_on_product_false', 'empty_options', $br_label, $product, $label_id);
             return false;
         }
 
@@ -561,6 +573,7 @@ class BeRocket_products_label extends BeRocket_Framework {
         }
 
         if( $br_label['text'] === FALSE ) {
+            do_action('bapl_show_label_on_product_false', 'empty_text', $br_label, $product, $label_id);
             return false;
         }
         if( ! is_array($br_label['text']) ) {
@@ -673,7 +686,7 @@ class BeRocket_products_label extends BeRocket_Framework {
             $html['close_span'] = '</span>';
             $html['custom_css'] = $custom_css;
             $html['close_div']  = '</div>';
-            $html = apply_filters( 'berocket_apl_show_label_on_product_html', $html, $br_label, $product );
+            $html = apply_filters( 'berocket_apl_show_label_on_product_html', $html, $br_label, $product, $label_id );
 
             if ( $type_of_return == 'echo' ) {
                 echo implode($html);

@@ -11,6 +11,15 @@ var br_tooltip_number = 1;
 function berocket_regenerate_tooltip() {
 	jQuery('.tippy-box').parent().remove();
     jQuery('.br_alabel .br_tooltip').each(function() {
+        if( jQuery(this).is('.br_tooltip_ready') ) {
+            var elementWithTippy = jQuery(this).parents('.br_alabel').find('span');
+            if( elementWithTippy.length > 0 ) {
+                if( typeof(elementWithTippy[0]._tippy) != 'undefined' ) {
+                    elementWithTippy[0]._tippy.destroy();
+                }
+                jQuery(this).removeClass('br_tooltip_ready');
+            }
+        }
         if( ! jQuery(this).is('.br_tooltip_ready') ) {
             jQuery(this).addClass('br_tooltip_'+br_tooltip_number).addClass('br_tooltip_ready');
             jQuery(this).parents('.br_alabel').first().addClass('br_alabel_tooltip_'+br_tooltip_number);
@@ -117,21 +126,18 @@ function berocket_labels_mobile_scale_reset() {
     brl_mscale_state = false;
     berocket_labels_mobile_scale();
 }
-
+function bapl_init_labels_script() {
+    berocket_regenerate_tooltip();
+    berocket_labels_mobile_scale_reset();
+}
 (function ($){
-    $(document).ready( berocket_regenerate_tooltip );
-    $(document).ready( berocket_labels_mobile_scale );
-    $(document).on('berocket_ajax_products_loaded berocket_ajax_products_infinite_loaded', berocket_regenerate_tooltip);
-    $(document).on('berocket_ajax_products_loaded berocket_ajax_products_infinite_loaded', berocket_labels_mobile_scale_reset);
+    $(document).ready( function () { bapl_init_labels_script(); setTimeout(bapl_init_labels_script, 130); } );
+    $(document).on('berocket_ajax_products_loaded berocket_ajax_products_infinite_loaded', bapl_init_labels_script);
     $(window).on('resize', berocket_labels_mobile_scale);
-    $(document).on('bapl_new_label', berocket_regenerate_tooltip);
-    $(document).on('bapl_new_label', berocket_labels_mobile_scale_reset);
-    $(document).on('bapl_product_galery_appear', berocket_labels_mobile_scale_reset);
+    $(document).on('bapl_new_label', bapl_init_labels_script);
+    $(document).on('bapl_product_galery_appear', bapl_init_labels_script);
     $(document).ajaxComplete( function() {
-        setTimeout(function() {
-            berocket_regenerate_tooltip();
-            berocket_labels_mobile_scale_reset();
-        }, 130);
+        setTimeout(bapl_init_labels_script, 130);
     });
 })(jQuery);
 

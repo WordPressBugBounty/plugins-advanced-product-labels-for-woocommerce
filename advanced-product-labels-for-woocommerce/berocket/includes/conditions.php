@@ -42,6 +42,7 @@ if( ! class_exists('BeRocket_conditions') ) {
             if( ! isset($value) || ! is_array($value) ) {
                 $value = array();
             }
+            $global_class = empty($additional['global_class']) ? '' : $additional['global_class'];
             ob_start();
             include(plugin_dir_path( __DIR__ ) . "templates/conditions.php");
             $html = ob_get_clean();

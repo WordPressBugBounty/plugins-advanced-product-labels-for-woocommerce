@@ -662,6 +662,7 @@
     padding: 10px 10px 10px 0;
     font-size: 15px;
     text-align: left;
+    text-align: start;
 }
 
 
@@ -1067,24 +1068,47 @@
 .column-berocket_sortable {
     width: 120px;
     text-align: right;
+    line-height: 30px;
+    text-wrap-mode: nowrap;
 }
 .berocket_post_set_new_sortable_input {
     position: relative;
+    display: inline-block;
+    height: 30px;
 }
 .berocket_post_set_new_sortable_input input {
-    width: 80px;
-    padding-right: 20px;
+    width: 65px;
+    padding-right: 30px!important;
+    padding-left: 4px!important;
+    height: 30px;
+    min-height: 30px;
+    max-height: 30px;
 }
 .berocket_post_set_new_sortable_input .fa{
     position: absolute;
-    right: 5px;
+    right: 0;
     height: 100%;
     vertical-align: middle;
     display: inline-block;
-    font-size: 1.4em;
-    top: -0.1em;
+    font-size: 1em;
+    top: 0;
+    background-color: #2271b1;
+    border-radius: 0 4px 4px 0;
+    line-height: 30px;
+    height: 30px;
+    width: 20px;
+    color: white;
+    text-align: center;
 }
-
+.berocket_post_set_new_sortable_input .fa:hover {
+    background-color: #135e96;
+}
+.berocket_post_set_new_sortable {
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    line-height: 28px;
+}
 /* -------------- */
 /* ADDON LIST */
 .berocket_addons_list .berocket_addon_is_active {

@@ -3,8 +3,13 @@
 class BeRocket_products_label_free {
 
     function __construct() {
-        add_filter( 'berocket_labels_templates', array( __CLASS__, 'paid_templates' ) );
-        add_filter( 'berocket_labels_template_preview_start', array( __CLASS__, 'template_preview_start' ), 10, 3 );
+        add_action('init', array($this, 'init'));
+    }
+    function init() {
+        if( apply_filters('bapl_products_label_free', true) ) {
+            add_filter( 'berocket_labels_templates', array( __CLASS__, 'paid_templates' ) );
+            add_filter( 'berocket_labels_template_preview_start', array( __CLASS__, 'template_preview_start' ), 10, 3 );
+        }
     }
 
     public static function paid_templates( $templates = array() ) {

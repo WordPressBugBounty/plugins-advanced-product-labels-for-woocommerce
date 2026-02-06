@@ -4,8 +4,8 @@ Contributors: dholovnia, berocket
 Donate link: https://berocket.com/woocommerce-advanced-product-labels/?utm_source=wordpress_org&utm_medium=donate&utm_campaign=products_label
 Tags: labels, badges, mark, product labels, woocommerce labels
 Requires at least: 5.0
-Tested up to: 6.8
-Stable tag: 1.2.9.2
+Tested up to: 6.9
+Stable tag: 3.3.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -142,6 +142,22 @@ You can try this plugin's admin side [here](https://berocket.com/woocommerce-adv
 ---
 
 == Changelog ==
+
+= 3.3.3.1 =
+* Fix - RTL styles
+* Fix - JavaScript initialization for some AJAX update
+* Fix - PHP error on price calculation
+* Fix - Some admin JavaScript errors
+
+= 3.3.3 =
+* Enhancement - Add-on Image Bottom Position
+* Enhancement - Add-on Selector Compatibility
+* Enhancement - Some settings styles
+* Fix - Version display
+
+= 1.2.9.3 =
+* Enhancement - Compatibility version: WooCommerce 10.3
+* Fix - New plugin framework
 
 = 1.2.9.2 =
 * Enhancement - Compatibility version: WooCommerce 10.0

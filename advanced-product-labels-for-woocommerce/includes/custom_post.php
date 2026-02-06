@@ -1151,7 +1151,13 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
                 echo apply_filters('berocket_labels_products_column_text', $text, $label_type);
                 break;
             case "data":
-                $position = array('left' => __('Left', 'BeRocket_products_label_domain'), 'center' => __('Center', 'BeRocket_products_label_domain'), 'right' => __('Right', 'BeRocket_products_label_domain'));
+                $position = array(
+                    'left' => __('Left', 'BeRocket_products_label_domain'),
+                    'center' => __('Center', 'BeRocket_products_label_domain'),
+                    'right' => __('Right', 'BeRocket_products_label_domain'),
+                    'left brbottom' => __('Left Bottom', 'BeRocket_products_label_domain'), 
+                    'right brbottom' => __('Right Bottom', 'BeRocket_products_label_domain'),
+                );
                 $type = array(
                     'image' => __('On image', 'BeRocket_products_label_domain'), 
                     'label' => __('Label', 'BeRocket_products_label_domain'),

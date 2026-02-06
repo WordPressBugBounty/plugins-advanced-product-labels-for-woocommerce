@@ -236,7 +236,9 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
 
             $not_activated_notices = array();
             foreach ( self::$plugin_info as $plugin ) {
-                if ( ! self::check_plugin_activation($plugin[ 'id' ]) ) {
+                $check_plugin_activation = self::check_plugin_activation($plugin[ 'id' ]);
+                $is_active = ( ! empty($check_plugin_activation) && is_array($check_plugin_activation) && ! empty($check_plugin_activation['status']) );
+                if ( ! $is_active ) {
                     $version_capability = br_get_value_from_array($plugin, array('version_capability'), 15);
                     if ( $version_capability > 5 && ! in_array($version_capability, array(15, 3, 17)) ) {
                         $meta_data = '?utm_source=paid_plugin&utm_medium=notice&utm_campaign='.$plugin['plugin_name'];
@@ -326,8 +328,14 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                     }
                 }
                 if( count($check_keys) > 0 ) {
-                    $result = self::check_plugin_activation(false, array('keys' => $check_keys));
-                    $result = $result['plugins'];
+                    $check_plugin_activation = self::check_plugin_activation(false, array('keys' => $check_keys));
+                    $check_plugin_activation_plugins = $check_plugin_activation['plugins'];
+                    $result = array();
+                    if( is_array($check_plugin_activation_plugins) ) {
+                        foreach($check_plugin_activation_plugins as $plugin_id => $plugin_data) {
+                            $result[$plugin_id] = ( ! empty($plugin_data) && is_array($plugin_data) && ! empty($plugin_data['status']) );
+                        }
+                    }
                 }
             }
             $out = json_encode( $result );
@@ -815,7 +823,7 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                             );
                         }
                     }
-                    $keys_hash = md5(print_r($data_send, true));
+                    $keys_hash = md5(print_r($data_send, true)).'v2';
                     $plugin_activation = get_transient( 'br_plugin_activation' );
                 } else {
                     $keys_hash = '';
@@ -847,13 +855,19 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                                             if( ! empty($key_status->products) && is_array($key_status->products) ) {
                                                 $plugin_activation['plugins'][0] = true;
                                                 foreach($key_status->products as $product_id) {
-                                                    $plugin_activation['plugins'][intval($product_id)] = true;
+                                                    $plugin_activation['plugins'][intval($product_id)] = array(
+                                                        'status'  => true,
+                                                        'license' => 'paid'
+                                                    );
                                                 }
                                             } else {
                                                 $plugin_activation['plugins'][0] = false;
                                             }
                                         } elseif( ! empty($key_status->id) ) {
-                                            $plugin_activation['plugins'][intval($key_status->id)] = ! empty($key_status->status);
+                                            $plugin_activation['plugins'][intval($key_status->id)] = array(
+                                                'status'  => ! empty($key_status->status),
+                                                'license' => ( empty($key_status->license) ? 'paid' : $key_status->license )
+                                            );
                                         }
                                     }                                    
                                 }
@@ -867,7 +881,9 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                 if( $plugin_test_id === false ) {
                     $active = $plugin_activation;
                 } else {
-                    $active = (! empty($plugin_activation['plugins']) && is_array($plugin_activation['plugins']) && ! empty($plugin_activation['plugins'][$plugin_test_id]));
+                    if (! empty($plugin_activation['plugins']) && is_array($plugin_activation['plugins']) && isset($plugin_activation['plugins'][$plugin_test_id])) {
+                        $active = $plugin_activation['plugins'][$plugin_test_id];
+                    }
                 }
             }
             return $active;
@@ -877,8 +893,11 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
             $no_update_paid = array();
 
             foreach ( self::$plugin_info as $plugin ) {
-                $is_active = self::check_plugin_activation($plugin[ 'id' ]);
+                $check_plugin_activation = self::check_plugin_activation($plugin[ 'id' ]);
+                $is_active = ( ! empty($check_plugin_activation) && is_array($check_plugin_activation) && ! empty($check_plugin_activation['status']) );
+                $license_key_name = ( is_array($check_plugin_activation) && ! empty($check_plugin_activation['license']) ? $check_plugin_activation['license'] : 'paid' );
                 $plugin_data = BeRocket_Framework::get_product_data_berocket($plugin[ 'id' ]);
+                $plugin_licenses = apply_filters('brfr_plugin_get_licenses_current_id_' . $plugin[ 'id' ], array('free'));
                 if ( ! empty( self::$key ) && strlen( self::$key ) == 40 ) {
                     $key = self::$key;
                 }
@@ -888,17 +907,16 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
 
                 $responsed = false;
                 if ( $is_active && ! empty($plugin_data) && is_array($plugin_data) && is_array($plugin) && isset($plugin_data['version'])
-                && version_compare( (string)$plugin[ 'version' ], (string)$plugin_data['version'], '<' ) && ! empty($value) ) {
+                && ( version_compare( (string)$plugin[ 'version' ], (string)$plugin_data['version'], '<' ) || ! in_array($license_key_name, $plugin_licenses) ) && ! empty($value) ) {
                     $value->checked[ $plugin[ 'plugin' ] ]  = $plugin_data['version'];
                     $val                                    = array(
                         'id'          => 'br_' . $plugin[ 'id' ],
-                        'new_version' => $plugin_data['version'],
+                        'new_version' => $plugin_data['version'] . '(' . $license_key_name . ')',
                         'package'     => BeRocket_update_path . 'v1/update_product/' . $plugin[ 'id' ] . '/' . $key,
                         'url'         => BeRocket_cdn_path . 'product/' . $plugin[ 'slug' ],
                         'plugin'      => $plugin[ 'plugin' ],
                         'slug'        => $plugin[ 'slug' ]
                     );
-                    
                     if( ! empty($plugin['free_slug']) ) {
                         if( ! empty($value->response[ $plugin[ 'plugin' ] ]) ) {
                             $api = $value->response[ $plugin[ 'plugin' ] ];
@@ -965,7 +983,9 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                 $plugin_id   = array_search( $plugin, self::$slugs );
                 $plugin_data = self::get_plugin_data($plugin_id);
                 $version_capability = br_get_value_from_array($plugin_data, array('version_capability'), 15);
-                if( self::check_plugin_activation($plugin_id) || ($version_capability > 5 && ! in_array($version_capability, array(15, 3, 17))) ) {
+                $check_plugin_activation = self::check_plugin_activation($plugin_id);
+                $is_active = ( ! empty($check_plugin_activation) && is_array($check_plugin_activation) && ! empty($check_plugin_activation['status']) );
+                if( $is_active || ($version_capability > 5 && ! in_array($version_capability, array(15, 3, 17))) ) {
                     remove_action( 'install_plugins_pre_plugin-information', 'install_plugin_information' );
                     $plugin_info = get_transient( 'brplugin_info_' . $plugin_id );
 
@@ -1258,7 +1278,8 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                         'screen' => get_current_screen(),
                     )
                 );
-                $is_active = self::check_plugin_activation($plugin_data['id']);
+                $check_plugin_activation = self::check_plugin_activation($plugin_data['id']);
+                $is_active = ( ! empty($check_plugin_activation) && is_array($check_plugin_activation) && ! empty($check_plugin_activation['status']) );
                 if( ! $is_active ) {
                     $plugin_data = BeRocket_Framework::get_product_data_berocket($plugin[ 'id' ]);
                     if ( ! empty($plugin_data) && is_array($plugin_data) && version_compare($plugin_data['version'], $plugin[ 'version' ], '>') ) {

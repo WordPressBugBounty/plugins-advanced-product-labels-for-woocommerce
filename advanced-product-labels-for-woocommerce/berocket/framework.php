@@ -35,8 +35,9 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
     include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
     load_plugin_textdomain('BeRocket_domain', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
     class BeRocket_Framework {
-        public static $framework_version = '3.0.3.6';
-        public $plugin_framework_version = '3.0.3.6';
+        public static $framework_version = '3.0.4';
+        public $plugin_framework_version = '3.0.4';
+        public $licenses_current = array('free');
         public static $settings_name = '';
         public $addons;
         public $defaults = array();
@@ -57,7 +58,8 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
         protected $global_settings = array(
             'fontawesome_frontend_disable',
             'fontawesome_frontend_version',
-            'framework_products_per_page'
+            'framework_products_per_page',
+            'disable_admin_bar_panel'
         );
         public $check_lib = null;
         protected $check_init_array = array();
@@ -79,6 +81,11 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
             $this->cc = $child; // Child Class object
             do_action('BeRocket_framework_init_plugin', $this->cc->info);
             $this->plugin_version_capability = apply_filters('brfr_plugin_version_capability_'.$this->cc->info['plugin_name'], $this->plugin_version_capability, $this);
+            $this->licenses_current = apply_filters('brfr_plugin_licenses_current_'.$this->cc->info['plugin_name'], $this->licenses_current, $this);
+            add_filter('brfr_plugin_get_licenses_current_' . $this->cc->info['plugin_name'], array( $this, 'get_licenses_current' ) );
+            add_filter('brfr_plugin_get_licenses_current_id_' . $this->cc->info['id'], array( $this, 'get_licenses_current' ) );
+            add_filter('brfr_plugin_get_licenses_current_latest_' . $this->cc->info['plugin_name'], array( $this, 'get_licenses_latest' ) );
+            add_filter('plugins_list', array( $this, 'modify_license_type' ), 10, 1 );
             if( $this->plugin_version_capability == 15 && is_admin() ) {
                 $is_active_plugin = get_transient( 'berocket_framework_plugin_is_active_'.$this->info['id'] );
                 if( $is_active_plugin === false || is_admin() ) {
@@ -155,12 +162,32 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
             {
                 include_once($filename);
             }
+            $global_option = $this->get_global_option();
+            if( ! is_admin() && br_get_value_from_array($global_option, 'disable_admin_bar_panel') != 'disable' ) {
+                include_once('includes/admin/admin_bar.php');
+            }
         }
         public function init_check_lib() {
             if( empty($this->check_lib) ) {
                 include_once('libraries/check_init.php');
                 $this->check_lib = new BeRocket_framework_check_init_lib($this->check_init_array);
             }
+        }
+        public function get_licenses_current() {
+            return $this->licenses_current;
+        }
+        public function get_licenses_latest() {
+            return end($this->licenses_current);
+        }
+        public function modify_license_type($plugins_list) {
+            $plugin_base = plugin_basename( $this->cc->info[ 'plugin_file' ] );
+            $license_latest = apply_filters('brfr_plugin_get_licenses_current_latest_' . $this->cc->info['plugin_name'], 'free');
+            foreach($plugins_list as $type => $plugins) {
+                if( isset($plugins[$plugin_base]) && is_array($plugins[$plugin_base]) && ! empty($plugins[$plugin_base]['Version']) ) {
+                    $plugins_list[$type][$plugin_base]['Version'] .= '(' . $license_latest . ')';
+                }
+            }
+            return $plugins_list;
         }
         public function get_plugin_version_capability($version) {
             return $this->plugin_version_capability;
@@ -423,9 +450,11 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
          */
         public function set_styles() {
             $options = $this->get_option();
-            $previous_options = $this->get_option();
-            $custom_css = berocket_sanitize_array($options[ 'custom_css' ], array($this->cc->values[ 'settings_name' ]), $previous_options);
-            echo '<style>' . $custom_css . '</style>';
+            if( ! empty($options[ 'custom_css' ]) ) {
+                $previous_options = $this->get_option();
+                $custom_css = berocket_sanitize_array($options[ 'custom_css' ], array($this->cc->values[ 'settings_name' ]), $previous_options);
+                echo '<style>' . $custom_css . '</style>';
+            }
         }
         public function set_scripts() {
             $options = $this->get_option();
@@ -712,6 +741,10 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
                                 $item['td_class'] = (empty($item['td_class']) ? '' : ' class="'.$item['td_class'].'"');
                                 $page_content .= '<th scope="row">' . $item['label'] .'</th><td'.$item['td_class'].'>';
 
+                                if( ! empty($item['text_before']) ) {
+                                    $page_content .= $item['text_before'];
+                                }
+
                                 $field_items = array();
                                 if( isset($item['items']) && is_array($item['items']) ) {
                                     $field_items = $item['items'];
@@ -798,6 +831,10 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
                                     }
                                     $page_content .= $item_content;
                                     $item_i++;
+                                }
+
+                                if( ! empty($item['text_after']) ) {
+                                    $page_content .= $item['text_after'];
                                 }
 
                                 $page_content .= '</td>';

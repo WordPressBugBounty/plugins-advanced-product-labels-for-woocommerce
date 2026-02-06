@@ -183,7 +183,7 @@ var br_something_changed = false;
         });
         $(document).on('click', '.berocket_select_fontawesome .berocket_remove_fa',function(event) {
             event.preventDefault();
-            $(this).parents('.berocket_select_fontawesome').find('.berocket_selected_fa').html('');
+            $(this).parents('.berocket_select_fontawesome').find('.berocket_selected_fa').html('<i class="fa_select_removed"></i>');
             $(this).parents('.berocket_select_fontawesome').find('.berocket_fa_value').val('').trigger('change');
         });
         $(document).on('keyup', '.berocket_select_fontawesome .berocket_fa_search', function() {
@@ -344,8 +344,13 @@ var br_something_changed = false;
                                 $result_block = $('body').append($result_block);
                                 $('.berocket_search_result').css('position', 'absolute')
                                 .css('top', $search_box.offset().top+$search_box.height())
-                                .css('left', $search_box.offset().left)
                                 .outerWidth($search_box.outerWidth());
+                                if( getComputedStyle($search_box[0]).direction === 'rtl' ) {
+                                    var rtl_pos = ($('.berocket_search_result').offsetParent().outerWidth() - $search_box.offset().left) - $search_box.outerWidth();
+                                    $('.berocket_search_result').css('right', rtl_pos);
+                                } else {
+                                    $('.berocket_search_result').css('left', $search_box.offset().left);
+                                }
                             }
                             $('.berocket_product_search .berocket_loads').remove();
                         }, 'json');

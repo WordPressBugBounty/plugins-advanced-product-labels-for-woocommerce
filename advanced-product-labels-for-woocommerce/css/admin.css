@@ -846,6 +846,7 @@ input:checked + .br_slider:before {
 
 .brapl_line_setup_wrap .brapl_select_line_setup_id {
     float: left;
+    float: inline-start;
     margin-right: 5px;
 }
 .brapl_line_setup_wrap .lines_setup table {
@@ -884,4 +885,20 @@ input:checked + .br_slider:before {
 .post-type-br_labels .berocket_color .colpick {
     top: auto !important;
     left: auto !important;
+}
+.bapl_better_position_padding td {
+    display: flex;
+}
+.bapl_better_position_padding td label {
+    display: flex;
+    vertical-align: middle;
+    line-height: 2em;
+    gap: 5px;
+}
+.bapl_better_position_padding td label input {
+    height: 2em;
+}
+.bapl_imgbtm_selectors input,
+.bapl_selectors_compat input {
+    direction: ltr;
 }

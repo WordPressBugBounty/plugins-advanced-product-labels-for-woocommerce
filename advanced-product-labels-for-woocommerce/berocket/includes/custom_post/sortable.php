@@ -37,20 +37,18 @@ if ( ! class_exists('BeRocket_custom_post_sortable_addon_class') ) {
                     update_post_meta($BRsortable_id, 'berocket_post_order', $BRorder);
                 }
             }
-            if( ! empty($_POST['BRsortable']) ) {
-                $BRsortable = $_POST['BRsortable'];
-                if( ! is_array($BRsortable) ) {
-                    $BRsortable = array();
-                }
-                foreach($BRsortable as $BRsortable_post) {
-                    $BRsortable_id = sanitize_key($BRsortable_post['id']);
-                    $BRorder = sanitize_key($BRsortable_post['order']);
-                    $BRsortable_id = intval($BRsortable_id);
-                    $BRorder = intval($BRorder);
-                    if( current_user_can('edit_post', $BRsortable_id) ) {
-                        update_post_meta($BRsortable_id, 'berocket_post_order', $BRorder);
-                    }
-                }
+            if ( ! empty( $_POST['BRsortable'] ) ) {
+	            $BRsortable = $_POST['BRsortable'];
+	            if ( is_array( $BRsortable ) ) {
+		            foreach ( $BRsortable as $BRsortable_post ) {
+			            $BRsortable_id = intval( sanitize_key( $BRsortable_post['id'] ) );
+			            $BRorder       = intval( sanitize_key( $BRsortable_post['order'] ) );
+
+			            if ( current_user_can( 'edit_post', $BRsortable_id ) ) {
+				            update_post_meta( $BRsortable_id, 'berocket_post_order', $BRorder );
+			            }
+		            }
+	            }
             }
         }
         public function sortable_get_posts( $query ){
@@ -106,7 +104,7 @@ if ( ! class_exists('BeRocket_custom_post_sortable_addon_class') ) {
             if( $order > 0 ) {
                 $html .= '<a href="#order-up" class="berocket_post_set_new_sortable" data-nonce="'.$nonce.'" data-post_id="'.$post_id.'" data-order="'.($order - 1).'"><i class="fa fa-arrow-up"></i></a>';
             }
-            $html .= '<span class="berocket_post_set_new_sortable_input"><input type="number" min="0" value="'.$order.'"><a class="berocket_post_set_new_sortable_set fa fa-arrow-circle-right" data-nonce="'.$nonce.'" data-post_id="'.$post_id.'" href="#order-set"></a></span>';
+            $html .= '<span class="berocket_post_set_new_sortable_input"><input type="number" min="0" value="'.$order.'"><a class="berocket_post_set_new_sortable_set fa fa-arrow-right" data-nonce="'.$nonce.'" data-post_id="'.$post_id.'" href="#order-set"></a></span>';
             $html .= '<a href="#order-up" class="berocket_post_set_new_sortable" data-nonce="'.$nonce.'" data-post_id="'.$post_id.'" data-order="'.($order + 1).'"><i class="fa fa-arrow-down"></i></a>';
             return $html;
         }

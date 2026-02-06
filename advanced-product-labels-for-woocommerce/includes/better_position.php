@@ -4,6 +4,7 @@ class BeRocket_products_label_better_position extends BeRocket_plugin_variations
     public static $labels_html, $labels_html_default;
     public $plugin_name = 'products_label';
     public $version_number = 2;
+    public $license_name = 'free';
     function __construct() {
         parent::__construct();
         $this->defaults = array(
@@ -21,7 +22,7 @@ class BeRocket_products_label_better_position extends BeRocket_plugin_variations
         add_action('berocket_apl_wc_save_product', array( __CLASS__, 'wc_save_label_fix'), 30 );
         add_filter('brfr_data_products_label', array(__CLASS__, 'data_products_label'), 30);
         $types = array('image', 'label');
-        $positions = array('left', 'right', 'center');
+        $positions = array('left', 'right', 'center', 'right brbottom', 'left brbottom');
         self::$labels_html_default = array();
         foreach($types as $type) {
             self::$labels_html_default[$type] = array();
@@ -115,6 +116,7 @@ class BeRocket_products_label_better_position extends BeRocket_plugin_variations
     public static function data_products_label($data) {
         $data['General'][] = array(
             "label"    => __('Start for Better position labels', 'BeRocket_products_label_domain'),
+            'tr_class' => 'bapl_better_position_padding',
             "items" => array(
                 array(
                     "type"     => "number",

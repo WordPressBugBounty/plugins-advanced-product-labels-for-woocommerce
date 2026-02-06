@@ -288,7 +288,26 @@ if ( ! function_exists( 'br_select_fontawesome' ) ) {
         return $result;
     }
 }
+if ( ! function_exists( 'br_select_fontawesome_customization' ) ) {
+    function br_select_fontawesome_customization( $name, $value, $additional = array() ) {
+        $remove_button = ( isset($additional['remove_button']) ? $additional['remove_button'] : true );
+        $class = htmlentities( ( isset($additional['class']) && trim( $additional['class'] ) ) ? ' ' . trim( $additional['class'] ) : '' );
+        $extra = ( ( isset($additional['extra']) && trim( $additional['extra'] ) ) ? ' ' . trim( $additional['extra'] ) : '' );
+        $value = esc_attr(htmlentities($value));
+        $result = '<div class="berocket_select_fontawesome">';
+        $result .= berocket_fa_dark();
+        $result .= '<input type="hidden" name="' . $name . '" value="' . $value . '" readonly class="berocket_fa_value ' . $class . '"' . $extra . '/>';
+        if ( $remove_button ) {
+            $result .= '<a href="#" type="button" class="berocket_remove_fa"><i class="fa fa-undo"></i></a>';
+        }
+        $result .= '<span class="berocket_select_fa berocket_selected_fa">
+        ' . ( empty($value) ? '<i class="fa_select_removed"></i>' : '<i class="fa ' . $value . '"></i>' ) . '
+        </span>';
+        $result .= '</div>';
 
+        return $result;
+    }
+}
 if( ! function_exists( 'br_products_selector' ) ) {
     function br_products_selector($name, $value, $additional = array()) {
         $multiple = ( isset($additional['multiple']) ? $additional['multiple'] : true );

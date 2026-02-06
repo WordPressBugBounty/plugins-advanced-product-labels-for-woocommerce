@@ -157,11 +157,15 @@ if( ! class_exists('BeRocket_framework_addons') ) {
             return $html;
         }
 
-        function paid_only_sign( $html_array, $addon_info ) {
+        function version_check($addon_info) {
             $plugin_version_capability = apply_filters( 'brfr_get_plugin_version_capability_' . $this->hook_name, 0 );
+            return ( ( ! empty( $addon_info[ 'paid' ] ) && ( empty( $plugin_version_capability ) || $plugin_version_capability < 10 ) )
+                || ( ! empty( $addon_info[ 'business' ] ) && ( empty( $plugin_version_capability ) || $plugin_version_capability < 100 ) ) );
+        }
 
-            if ( ( ! empty( $addon_info[ 'paid' ] ) && ( empty( $plugin_version_capability ) || $plugin_version_capability < 10 ) )
-                || ( ! empty( $addon_info[ 'business' ] ) && ( empty( $plugin_version_capability ) || $plugin_version_capability < 100 ) ) ) {
+        function paid_only_sign( $html_array, $addon_info ) {
+
+            if ( $this->version_check($addon_info) ) {
                 $meta_data = '?utm_source=free_plugin&utm_medium=plugins&utm_campaign='.$this->info['plugin_name'];
                 $html = '<i class="berocket_addon_paid_sign fa fa-lock"></i>';
                 $html .= '<div class="berocket_addon_paid_get"><a target="_blank" href="https://berocket.com/' . $this->values[ 'premium_slug' ] . $meta_data . '"><span>
