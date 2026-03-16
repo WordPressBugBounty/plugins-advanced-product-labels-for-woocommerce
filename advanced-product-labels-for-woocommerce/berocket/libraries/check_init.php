@@ -48,8 +48,16 @@ if( ! class_exists('BeRocket_framework_check_init_lib') ) {
             return $result;
         }
         function check_woocommerce_version($data = array()) {
-            $result = ( is_plugin_active( 'woocommerce/woocommerce.php' ) || is_plugin_active_for_network( 'woocommerce/woocommerce.php' ) );
-            $result = $result && $this->version_compare(br_get_woocommerce_version(), $data);
+            if( defined( 'WC_VERSION' ) ) {
+                $version = WC_VERSION;
+                $result = $this->version_compare($version, $data);
+            } elseif ( class_exists( 'WooCommerce' ) && function_exists('WC') ) {
+                $version = WC()->version;
+                $result = $this->version_compare($version, $data);
+            } else {
+                $result = ( is_plugin_active( 'woocommerce/woocommerce.php' ) || is_plugin_active_for_network( 'woocommerce/woocommerce.php' ) );
+                $result = $result && $this->version_compare(br_get_woocommerce_version(), $data);
+            }
             $this->show_notice($result, $data);
             return $result;
         }

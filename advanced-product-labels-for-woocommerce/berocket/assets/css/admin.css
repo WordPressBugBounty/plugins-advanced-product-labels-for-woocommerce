@@ -1111,6 +1111,9 @@
 }
 /* -------------- */
 /* ADDON LIST */
+.berocket_addons_list h3 {
+    font-size: 2em;
+}
 .berocket_addons_list .berocket_addon_is_active {
     display: none;
 }
@@ -1179,10 +1182,15 @@
 .berocket_addons_list .berocket_addon_block img {
     display: block;
     width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 0 #ccc;
+}
+.berocket_addons_list .berocket_addon_block img.default {
     opacity: 0.7;
+    box-shadow: none;
 }
 .berocket_addons_list .berocket_addon_block .berocket_addon_name {
-    font-size: 24px;
+    font-size: 22px;
     margin-top: 15px;
     display: inline-block;
     position: absolute;

@@ -57,4 +57,3 @@ class BeRocket_products_label_style_generate {
         }
     }
 }
-new BeRocket_products_label_style_generate();

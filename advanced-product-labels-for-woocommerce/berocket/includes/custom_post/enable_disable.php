@@ -89,17 +89,28 @@ if ( ! class_exists('BeRocket_custom_post_enable_disable_addon_class') ) {
             if ( ! current_user_can( 'delete_post', $post_id ) ) {
                 wp_die( __( 'Sorry, you are not allowed to change this item status.', 'BeRocket_domain' ) );
             }
+            $current_url = wp_unslash( $_SERVER['REQUEST_URI'] );
             $this->change_post_isdisabled($post_id, $doaction);
 
-            wp_redirect(
-                add_query_arg(
-                    array(
-                        ($doaction == 'disable' ? 'disabled' : 'enabled') => 1,
-                        'ids'     => $post_id,
-                    ),
-                    $sendback
-                )
+            $sendback = add_query_arg(
+                array(
+                    ($doaction == 'disable' ? 'disabled' : 'enabled') => 1,
+                    'ids'     => $post_id,
+                ),
+                $sendback
             );
+
+            $current_url = add_query_arg(
+                array(
+                    ($doaction == 'disable' ? 'disabled' : 'enabled') => 1,
+                    'ids'     => $post_id,
+                ),
+                $current_url
+            );
+            if( $current_url == $sendback ) {
+                $sendback = admin_url('edit.php?post_type=' . $this->post_name);
+            }
+            wp_redirect( $sendback );
             exit();
         }
         public function disable_post_class($classes, $class, $post_id) {

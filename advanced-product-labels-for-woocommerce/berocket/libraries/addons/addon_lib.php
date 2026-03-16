@@ -39,6 +39,7 @@ if( ! class_exists('BeRocket_framework_addon_lib') ) {
                 'addon_file'    => $this->addon_file,
                 'addon_name'    => 'Addon',
                 'image'         => plugins_url('/default.png', __FILE__),
+                'image_class'   => 'default',
             );
         }
         function addon_info($addon_info) {

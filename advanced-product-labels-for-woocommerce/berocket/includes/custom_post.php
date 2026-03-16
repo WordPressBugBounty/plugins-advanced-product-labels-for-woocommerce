@@ -132,6 +132,27 @@ if ( ! class_exists('BeRocket_custom_post_class') ) {
 
             add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
             do_action( 'berocket_custom_post_'.$this->post_name.'_admin_init', $this->post_type_parameters);
+            add_filter( 'is_berocket_settings_page', array( $this, 'is_post_page' ) );
+        }
+
+        public function is_post_page($result) {
+            global $pagenow;
+            $post_type = $_GET['post_type'] ?? '';
+            $post_id   = $_GET['post'] ?? 0;
+            if ($pagenow === 'edit.php' && $post_type == $this->post_name) {
+                return true;
+            }
+
+            if ($pagenow === 'post-new.php' && $post_type == $this->post_name) {
+                return true;
+            }
+
+            if ($pagenow === 'post.php' && $post_id) {
+                if (get_post_type($post_id) == $this->post_name) {
+                    return true;
+                }
+            }
+            return $result;
         }
 
         public function admin_enqueue_scripts() {

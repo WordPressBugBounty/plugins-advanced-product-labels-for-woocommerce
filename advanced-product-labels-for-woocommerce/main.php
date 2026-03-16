@@ -51,7 +51,7 @@ class BeRocket_products_label extends BeRocket_Framework {
             'data' => array(
                 'version' => '3.0',
                 'operator' => '>=',
-                'notice'   => 'Plugin WooCommerce AJAX Products Filter required WooCommerce version 3.0 or higher'
+                'notice'   => 'Plugin WooCommerce Advanced Product Labels required WooCommerce version 3.0 or higher'
             )
         ),
         array(
@@ -141,6 +141,7 @@ class BeRocket_products_label extends BeRocket_Framework {
         if ( $this->init_validation() ) {
 
             $this->custom_post = BeRocket_advanced_labels_custom_post::getInstance();
+            new BeRocket_products_label_style_generate();
             add_action( 'woocommerce_product_write_panel_tabs', array( $this, 'product_edit_advanced_label' ) );
             if ( version_compare( br_get_woocommerce_version(), '2.7', '>=' ) ) {
                 add_action( 'woocommerce_product_data_panels', array( $this, 'product_edit_tab' ) );
@@ -733,6 +734,7 @@ class BeRocket_products_label extends BeRocket_Framework {
                     if( $product->has_child() ) {
                         foreach($product->get_children() as $child_id) {
                             $child = br_wc_get_product_attr($product, 'child', $child_id);
+                            if ( ! $child || ! is_a( $child, 'WC_Product' ) ) continue;
                             $child_sale = $child->get_sale_price('view');
                             $child_regular = $child->get_regular_price('view');
                             $child_sale = wc_get_price_to_display( $child, array( 'price' => $child_sale ) );
@@ -1165,24 +1167,6 @@ class BeRocket_products_label extends BeRocket_Framework {
                 ),
             ),
             'Javascript/CSS'     => array(
-                'global_font_awesome_disable' => array(
-                    "label"     => __( 'Disable Font Awesome', "BeRocket_products_label_domain" ),
-                    "type"      => "checkbox",
-                    "name"      => "fontawesome_frontend_disable",
-                    "value"     => '1',
-                    'label_for' => __('CSS files with Font Awesome will not be loaded on the front pages. Use this option only if you don\'t use Font Awesome icons in widgets, or you have Font Awesome in your theme.', 'BeRocket_products_label_domain'),
-                ),
-                'global_fontawesome_version' => array(
-                    "label"    => __( 'Font Awesome Version', "BeRocket_products_label_domain" ),
-                    "name"     => "fontawesome_frontend_version",
-                    "type"     => "selectbox",
-                    "options"  => array(
-                        array('value' => '', 'text' => __('Font Awesome 4', 'BeRocket_products_label_domain')),
-                        array('value' => 'fontawesome5', 'text' => __('Font Awesome 5', 'BeRocket_products_label_domain')),
-                    ),
-                    "value"    => '',
-                    "label_for" => __('Please, select the version that you have in your theme.', 'BeRocket_products_label_domain'),
-                ),
                 'font' => berocket_labels_googlefonts::select_fonts(),
                 array(
                     "type"  => "textarea",
@@ -1234,7 +1218,7 @@ class BeRocket_products_label extends BeRocket_Framework {
                 'additional_hooks_load' => array(
                     'value' => '',
                     'section' => 'additional_hooks_load',
-                )
+                ),
             ),
             'Addons' => array(
                 array(

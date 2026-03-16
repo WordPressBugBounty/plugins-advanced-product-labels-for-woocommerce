@@ -215,11 +215,12 @@
                 $(this.data('br_popup_object')).on("click", settings.yes_no_buttons.no_button, function (event){
                     event.preventDefault();
                     var popup_data = $this.data('br_popup_data');
+                    if ( settings.close_with.includes('no_button') ) {
+                        $this.enable_close();
+                        $this.hide_popup();
+                    }
                     if( popup_data.can_close_popup == false ) {
                         return;
-                    }
-                    if ( settings.close_with.includes('no_button') ) {
-                        $this.hide_popup();
                     }
                     
                     jQuery($this).trigger('br_popup-no_button', $this);

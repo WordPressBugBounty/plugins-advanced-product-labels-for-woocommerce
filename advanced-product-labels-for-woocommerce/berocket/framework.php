@@ -35,8 +35,8 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
     include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
     load_plugin_textdomain('BeRocket_domain', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
     class BeRocket_Framework {
-        public static $framework_version = '3.0.4';
-        public $plugin_framework_version = '3.0.4';
+        public static $framework_version = '3.0.4.5';
+        public $plugin_framework_version = '3.0.4.5';
         public $licenses_current = array('free');
         public static $settings_name = '';
         public $addons;
@@ -46,6 +46,7 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
         public $feature_list = array();
         public $libraries;
         public $info;
+        public $import_export = false;
         protected $disable_settings_for_admin = array();
         private $post;
         private $cc;
@@ -55,12 +56,6 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
             'fontawesome_frontend' => false,
         );
         protected $active_libraries = array();
-        protected $global_settings = array(
-            'fontawesome_frontend_disable',
-            'fontawesome_frontend_version',
-            'framework_products_per_page',
-            'disable_admin_bar_panel'
-        );
         public $check_lib = null;
         protected $check_init_array = array();
         public static function getInstance()
@@ -85,6 +80,7 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
             add_filter('brfr_plugin_get_licenses_current_' . $this->cc->info['plugin_name'], array( $this, 'get_licenses_current' ) );
             add_filter('brfr_plugin_get_licenses_current_id_' . $this->cc->info['id'], array( $this, 'get_licenses_current' ) );
             add_filter('brfr_plugin_get_licenses_current_latest_' . $this->cc->info['plugin_name'], array( $this, 'get_licenses_latest' ) );
+            add_filter('brfr_plugin_get_instance_' . $this->cc->info['plugin_name'], array( $this, 'getInstance_hook' ) );
             add_filter('plugins_list', array( $this, 'modify_license_type' ), 10, 1 );
             if( $this->plugin_version_capability == 15 && is_admin() ) {
                 $is_active_plugin = get_transient( 'berocket_framework_plugin_is_active_'.$this->info['id'] );
@@ -157,12 +153,15 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
             add_filter('brfr_get_plugin_version_capability_'.$this->cc->info['plugin_name'], array($this, 'get_plugin_version_capability'));
         }
         public function init_translation() {}
+        public function getInstance_hook($instance) {
+            return $this->cc::getInstance();
+        }
         public function include_once_files() {
             foreach (glob($this->info['plugin_dir'] . "/includes/*.php") as $filename)
             {
                 include_once($filename);
             }
-            $global_option = $this->get_global_option();
+            $global_option = self::get_global_option();
             if( ! is_admin() && br_get_value_from_array($global_option, 'disable_admin_bar_panel') != 'disable' ) {
                 include_once('includes/admin/admin_bar.php');
             }
@@ -382,10 +381,11 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
          * Initialize
          */
         public function init() {
-            $global_option = $this->get_global_option();
+            $global_option = self::get_global_option();
             wp_enqueue_script( "jquery" );
             if( is_admin() ) {
                 $this->register_font_awesome('fa5live');
+                include_once('includes/admin/import_export.php');
             } else {
                 if ( ! empty($global_option['framework_products_per_page']) && intval($global_option['framework_products_per_page']) > 0 ) {
                     add_filter( 'loop_shop_per_page', array($this, 'framework_products_per_page_set'), 999999999 );
@@ -422,7 +422,7 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
         }
 
         public function enqueue_fontawesome($force = false) {
-            $global_option = $this->get_global_option();
+            $global_option = self::get_global_option();
             if( empty($global_option['fontawesome_frontend_disable']) ) {
                 if( br_get_value_from_array($global_option, 'fontawesome_frontend_version') == 'fontawesome5' ) {
                     $this->register_font_awesome('fa5');
@@ -439,7 +439,7 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
             }
         }
         public function framework_products_per_page_set() {
-            $global_option = $this->get_global_option();
+            $global_option = self::get_global_option();
             return intval($global_option['framework_products_per_page']);
         }
 
@@ -1016,15 +1016,6 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
         public function save_settings_callback($settings) {
             if ( isset( $settings ) ) {
                 $settings = $this->sanitize_option( $settings );
-                if( count($this->global_settings) ) {
-                    $global_options = $this->get_global_option();
-                    foreach($this->global_settings as $global_setting) {
-                        if( isset($settings[$global_setting]) ) {
-                            $global_options[$global_setting] = $settings[$global_setting];
-                        }
-                    }
-                    $this->save_global_option($global_options);
-                }
             }
             return $settings;
         }
@@ -1122,28 +1113,28 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
                 $options = apply_filters('brfr_get_option_cache_' . $this->cc->info[ 'plugin_name' ], $options, $this->cc->defaults);
                 wp_cache_set( $this->cc->values[ 'settings_name' ], $options, 'berocket_framework_option', 600 );
             }
-            $global_options = $this->get_global_option();
-            if( count($this->global_settings) ) {
-                foreach($this->global_settings as $global_setting) {
-                    if( isset($global_options[$global_setting]) ) {
-                        $options[$global_setting] = $global_options[$global_setting];
-                    }
-                }
-            }
 
             $options = apply_filters('brfr_get_option_' . $this->cc->info[ 'plugin_name' ], $options, $this->cc->defaults);
 
             return $options;
         }
-        public function get_global_option() {
-            $option = get_option('berocket_framework_option_global');
-            if( ! is_array($option) ) {
-                $option = array();
+        public static function get_global_option($site = false) {
+            $option_func = $site ? 'get_site_option' : 'get_option';
+            $new_option = $option_func( 'BeRocket_account_option' );
+            if( ! is_array($new_option) ) {
+                $new_option = array();
             }
-            return $option;
+            if( empty($new_option['fontawesome_frontend_version']) ) {
+                $option = $option_func('berocket_framework_option_global');
+                if( is_array($option) ) {
+                    $new_option = array_merge($new_option, $option);
+                }
+            }
+            return $new_option;
         }
-        public function save_global_option($option) {
-            $option = update_option('berocket_framework_option_global', $option);
+        public static function save_global_option($option, $site = false) {
+            $option_func = $site ? 'update_site_option' : 'update_option';
+            $option = $option_func('BeRocket_account_option', $option);
             return $option;
         }
         public function is_settings_page($settings_page) {

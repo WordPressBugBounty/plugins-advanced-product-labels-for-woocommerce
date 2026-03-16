@@ -131,7 +131,7 @@ if( ! class_exists('BeRocket_framework_addons') ) {
                     'input'                 => '<input autocomplete="off" class="berocket_addon_is_active" name="'.$settings_name.'[addons][]" type="checkbox" value="'.$addon_info['addon_file'].'"'.($checked ? ' checked' : '').'>',
                     'open_addon_block'      => '<span class="berocket_addon_block">',
                     'active'                => '<span class="berocket_addon_active"><i class="fa fa-check"></i></span>',
-                    'image'                 => '<img src="'.$addon_info['image'].'">',
+                    'image'                 => '<img src="'.$addon_info['image'].'" class="'.$addon_info['image_class'].'">',
                     'addon_name'            => '<span class="berocket_addon_name">'.$addon_info['addon_name'].'</span>',
                     'close_addon_block'     => '</span>',
                     'close_label'           => '</label>',
