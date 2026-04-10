@@ -45,6 +45,11 @@ class BeRocket_conditions_advanced_labels extends BeRocket_conditions {
 class BeRocket_advanced_labels_custom_post extends BeRocket_custom_post_class {
     public $hook_name = 'berocket_advanced_label_editor';
     public $conditions, $templates, $templates_hide, $templates_rotate = array();
+    public $import_export = array(
+        'data' => array(
+            'export_type' => 'conditions',
+        )
+    );
     public static $base_color = '#f16543';
     protected static $instance;
     public $post_type_parameters = array(
@@ -52,33 +57,33 @@ class BeRocket_advanced_labels_custom_post extends BeRocket_custom_post_class {
         'can_be_disabled' => true
     );
     public $default_settings = array(
-        'bottom_padding' => 0,
-        'left_padding'   => 0,
-        'right_padding'  => 0,
-        'top_padding'    => 0,
+        'bottom_padding' => '0',
+        'left_padding'   => '0',
+        'right_padding'  => '0',
+        'top_padding'    => '0',
 
-        'bottom_margin'  => -10,
-        'left_margin'    => -10,
-        'right_margin'   => -10,
-        'top_margin'     => -10,
+        'bottom_margin'  => '-10',
+        'left_margin'    => '-10',
+        'right_margin'   => '-10',
+        'top_margin'     => '-10',
 
-        'padding_horizontal' => -10,
-        'padding_top'        => -10,
+        'padding_horizontal' => '-10',
+        'padding_top'        => '-10',
 
-        'better_position'        => 1,
-        'border_radius'          => 3,
-        'color_use'              => 1,
+        'better_position'        => '1',
+        'border_radius'          => '3',
+        'color_use'              => '1',
         'content_type'           => 'text',
         'data'                   => array(),
         'discount_minus'         => '',
         'font_color'             => '#ffffff',
-        'font_size'              => 14,
+        'font_size'              => '14',
         'image'                  => '',
         'image_height'           => '35',
         'image_width'            => '60',
         'img_title'              => '',
         'label_from_post'        => '',
-        'line_height'            => 1.2,
+        'line_height'            => '1.2',
         'line_height_units'      => 'em',
         'position'               => 'right',
         'text'                   => 'SALE',
@@ -88,14 +93,14 @@ class BeRocket_advanced_labels_custom_post extends BeRocket_custom_post_class {
         'text_before_nl'         => '',
         'template'               => '',
         'tooltip_close_delay'    => '0',
-        'tooltip_close_on_click' => '0',
+        'tooltip_close_on_click' => '',
         'tooltip_content'        => '',
         'tooltip_max_width'      => '300',
         'tooltip_open_delay'     => '0',
         'tooltip_open_on'        => 'click',
         'tooltip_position'       => 'top',
         'tooltip_theme'          => 'dark',
-        'tooltip_use_arrow'      => '0',
+        'tooltip_use_arrow'      => '',
         'type'                   => 'image',
         'zindex'                 => '500',
 
@@ -122,6 +127,10 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         'i3_custom_css'     => 'display: block;height: 0;position: absolute;width: 0;',
         'i4_custom_class'   => '',
         'i4_custom_css'     => 'display: block;height: 0;position: absolute;width: 0;',
+        'border_width'      => '0',
+        'custom_image'      => '',
+        'custom_image_size' => '',
+        'line'              => '1'
     );
     function __construct() {
         $this->templates_hide = array(
@@ -1080,11 +1089,6 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
     public function wc_save_check($post_id, $post) {
         if ( $this->post_name != $post->post_type && $post->post_type != 'product' ) {
             return false;
-        }
-        $current_settings = get_post_meta( $post_id, $this->post_name, true );
-
-        if( $post->post_type != 'product' && empty($current_settings) ) {
-            update_post_meta( $post_id, $this->post_name, $this->default_settings );
         }
 
         if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {

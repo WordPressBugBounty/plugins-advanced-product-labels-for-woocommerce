@@ -965,6 +965,83 @@ if ( ! class_exists( 'berocket_admin_notices' ) ) {
                 .berocket-notice-icon .berocket-ico-warning:before {
                   color:#ffb900
                 }
+                .br-notice-text-label {
+                    display: inline-block;
+                    background-color: #ffd453;
+                    padding: 6px 11px 11px;
+                    border-radius: 20px;
+                }
+                /* or 
+                    display: inline-block;
+                    background-position: center top;
+                    background-image: linear-gradient(to bottom, #fbf6e5 0%, #ffe65a 50%, #fbf6e5 100%);
+                    background-size: 100% 1em;
+                    background-repeat: no-repeat;
+                 */
+                .berocket-notice-template-big {
+                    display: flex
+                }
+                .berocket-notice-description-container {
+                    padding-top: 0;
+                    padding-bottom: 0;
+                    position: relative;
+                    top: -8px; 
+                    width: 50%;
+                }
+                .berocket-notice-actions-container {
+                    text-align: center;
+                    display: flex;
+                    justify-items: center;
+                    flex-wrap: wrap;
+                    width: 50%;
+                    line-height: 
+                }
+                .berocket-notice-buttons-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-top: 25px;
+                    width: 100%;
+                }
+                @media only screen and (max-width: 1400px) {
+                    .berocket-notice-actions-container {
+                        width: 370px;
+                    }
+                    .berocket-notice-buttons-container {
+                        flex-wrap: wrap;
+                        margin-top: 15px;
+                    }
+                    .berocket-notice-buttons-container span {
+                        display: none;
+                    }
+                    .berocket-notice-buttons-container a {
+                        margin-top: 10px;
+                    }
+                    .berocket-notice-buttons-container a.button {
+                        padding-left: 10px !important;
+                        padding-right: 10px !important;
+                        font-size: 22px !important;
+                        width: 100%;
+                    }
+                    .berocket-notice-description-container {
+                        width: 100%;
+                    }
+                }
+                @media only screen and (max-width: 1200px) {
+                    .berocket-notice-template-big {
+                        flex-wrap: wrap;
+                    }
+                    .berocket-notice-description-container {
+                        width: 100%;
+                        text-align: center;
+                    }
+                    .berocket-notice-description-container ul {
+                        display: none;
+                    }
+                    .berocket-notice-actions-container {
+                        margin: 15px auto 0;
+                    }
+                }
                 @media only screen and (max-width: 782px) {
                     .berocket-notice .notice-action-link {
                         margin-top: 15px !important;
@@ -973,6 +1050,12 @@ if ( ! class_exists( 'berocket_admin_notices' ) ) {
                     }
                     .berocket-notice p {
                         margin-right: 0 !important;
+                    }
+                    .berocket-notice-description-container h1 {
+                        line-height: 1.2 !important;
+                    }
+                    .berocket-notice-actions-container {
+                        width: 100%;
                     }
                 }
                 @media only screen and (max-width: 500px) {
@@ -1642,33 +1725,22 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
 	            if( $plugin === false ) {
 		            $plugin = self::get_plugin_data( 1 );
 	            }
-                if ( time() > 1637841600 and time() < 1637841600+302400 ) {
-                    echo "
-                    <div class='berocket-above-settings-banner' style='background: #1a1a1a; padding: 0;'>
-                        <a href='{$plugin['url']}?utm_source=free_plugin&utm_medium=settings&utm_campaign={$cur_plugin->info['plugin_name']}&utm_content=top' target='_blank' 
-                        style='background: transparent; width: auto; border: 0 none; box-shadow: none; padding: 0; margin: 0;'>
-                            <img alt='{$plugin['title']}' src='https://berocket.ams3.cdn.digitaloceanspaces.com/g/bf21-1202x280.jpg' style='display: block;'>
-                        </a>
-                    </div>";
-                } else if ( time() > 1637841600+302400 and time() < 1637841600+302400+518400 ) {
-	                echo "
-                    <div class='berocket-above-settings-banner berocket-cm21-settings-wrapper' style='background: #07002e; padding: 0;'>
-                        <a href='{$plugin['url']}?utm_source=free_plugin&utm_medium=settings&utm_campaign={$cur_plugin->info['plugin_name']}&utm_content=top' target='_blank' >
-                            <img alt='{$plugin['title']}' src='https://berocket.ams3.cdn.digitaloceanspaces.com/g/cm21.jpg'>
-                            <div class='berocket-cm21-settings'>
-                                <div class='berocket-cm21-settings-header'>
-                                    <p>Don't lose another 5% of the discount. Purchase now!</p>
-                                </div>
-                                <p style='top: 30%; left: 6%; '><span>Monday: <span style='padding-left: 20px; font-size: 1.25em; font-weight: bold;'>-30%</span></span></p>
-                                <p style='top: 32%; left: 55%;'><span>Tuesday: <span style='padding-left: 15px; font-size: 1.2em; font-weight: bold;'>-25%</span></span></p>
-                                <p style='top: 48%; left: 10%;'><span>Wednesday: <span style='padding-left: 5px; font-size: 1.15em'>-20%</span></span></p>
-                                <p style='top: 50%; left: 59%;'><span>Thursday: <span style='padding-left: 10px; font-size: 1.1em'>-15%</span></span></p>
-                                <p style='top: 66%; left: 16%;'><span>Friday: <span style='padding-left: 20px; font-size: 0.9em'>-10%</span></span></p>
-                                <p style='top: 68%; left: 63%;'><span>Saturday: <span style='padding-left: 15px; font-size: 0.9em'>-5%</span></span></p>
-                            </div>
-                            <div class='berocket-cm21-settings-mobiles-title' style='display: none;'>Up to 30% off sitewide!</div>
-                        </a>
-                    </div>";
+
+	            $start_time = mktime(0, 0, 0, 4, 13, 2026);
+	            $end_time   = mktime(23, 59, 59, 4, 17, 2026);
+	            $c_notice   = berocket_admin_notices::get_notice_by_path(array(
+                    19,
+                    $end_time,
+                    $start_time,
+                    'spring_premium_days_2026'
+                ));
+	            $is_closed = false;
+	            if ( ! isset( $c_notice['closed'] ) or $c_notice['closed'] > 0 ) {
+		            $is_closed = true;
+	            }
+
+                if ( ! $is_closed and time() >= $start_time and time() < $end_time ) {
+                    // do nothing
                 } else {
 	                echo "
                     <div class='berocket-above-settings-banner' style='background: {$plugin['bg_top']};'>

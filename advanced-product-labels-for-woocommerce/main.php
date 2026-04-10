@@ -16,6 +16,7 @@ if( ( ! defined("BAPL_VER_PAID_DISABLE") || ! BAPL_VER_PAID_DISABLE ) && file_ex
     include_once(__DIR__ . "/paid/tripwire.php");
     include_once(__DIR__ . "/paid/paid.php");
 }
+include_once(plugin_dir_path( __FILE__ ) . "includes/admin/funnels.php");
 /**
  * Class BeRocket_products_label
  * REPLACE
@@ -83,10 +84,10 @@ class BeRocket_products_label extends BeRocket_Framework {
         );
 
         $this->defaults = array(
-            'disable_labels'    => '0',
-            'disable_plabels'   => '0',
-            'disable_ppage'     => '0',
-            'remove_sale'       => '0',
+            'disable_labels'    => '',
+            'disable_plabels'   => '',
+            'disable_ppage'     => '',
+            'remove_sale'       => '',
             'custom_css'        => '.product .images {position: relative;}',
             'script'            => array(
                 'js_page_load'      => '',
@@ -97,7 +98,64 @@ class BeRocket_products_label extends BeRocket_Framework {
             'product_hook_label'=> 'woocommerce_product_thumbnails+15',
             'fontawesome_frontend_disable' => '',
             'fontawesome_frontend_version' => '',
-            'font_family' => '',
+            'font_family'       => '',
+            'addons'            => array(),
+            'lines'             => array(
+                "1" => array(
+                    "hide_type"         => "none",
+                    "max-height"        => "",
+                    "label-count"       => "",
+                    "background-color"  => "#ffffff"
+                ),
+                "2" => array(
+                    "hide_type"         => "none",
+                    "max-height"        => "",
+                    "label-count"       => "",
+                    "background-color"  => "#ffffff"
+                ),
+                "3" => array(
+                    "hide_type"         => "none",
+                    "max-height"        => "",
+                    "label-count"       => "",
+                    "background-color"  => "#ffffff"
+                ),
+                "4" => array(
+                    "hide_type"         => "none",
+                    "max-height"        => "",
+                    "label-count"       => "",
+                    "background-color"  => "#ffffff"
+                ),
+                "5" => array(
+                    "hide_type"         => "none",
+                    "max-height"        => "",
+                    "label-count"       => "",
+                    "background-color"  => "#ffffff"
+                ),
+                "6" => array(
+                    "hide_type" => "none",
+                    "max-height" => "",
+                    "label-count" => "",
+                    "background-color" => "#ffffff"
+                ),
+                "7" => array(
+                    "hide_type"         => "none",
+                    "max-height"        => "",
+                    "label-count"       => "",
+                    "background-color"  => "#ffffff"
+                ),
+                "8" => array(
+                    "hide_type"         => "none",
+                    "max-height"        => "",
+                    "label-count"       => "",
+                    "background-color"  => "#ffffff"
+                ),
+                "9" => array(
+                    "hide_type"         => "none",
+                    "max-height"        => "",
+                    "label-count"       => "",
+                    "background-color"  => "#ffffff"
+                )
+            )
         );
 
         $this->values = array(

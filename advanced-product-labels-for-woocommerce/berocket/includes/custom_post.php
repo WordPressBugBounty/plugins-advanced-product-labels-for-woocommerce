@@ -36,6 +36,7 @@ if ( ! class_exists('BeRocket_custom_post_class') ) {
         public $post_settings, $post_name;
         public $post_type_parameters = array();
         public $addons = array();
+        public $import_export = false;
         protected static $instance;
 
         public static function getInstance() {
@@ -44,6 +45,9 @@ if ( ! class_exists('BeRocket_custom_post_class') ) {
                 static::$instance = new static();
             }
             return static::$instance;
+        }
+        public function getInstance_hook($instance) {
+            return $this->getInstance();
         }
 
         function __construct () {
@@ -70,6 +74,7 @@ if ( ! class_exists('BeRocket_custom_post_class') ) {
             if( ! empty($this->post_settings['capability_type']) && $this->post_settings['capability_type'] != 'product' ) {
                 add_filter('BeRocket_admin_init_user_capabilities', array($this, 'init_user_capabilities'));
             }
+            add_filter('brfr_custom_post_get_instance_' . $this->post_name, array( $this, 'getInstance_hook' ) );
         }
 
         function init_translation() {}
@@ -324,12 +329,6 @@ if ( ! class_exists('BeRocket_custom_post_class') ) {
                 return false;
             }
 
-            $current_settings = get_post_meta( $post_id, $this->post_name, true );
-
-            if( empty($current_settings) ) {
-                update_post_meta( $post_id, $this->post_name, $this->default_settings );
-            }
-
             if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
                 return false;
             }
@@ -358,11 +357,13 @@ if ( ! class_exists('BeRocket_custom_post_class') ) {
 
                 if( is_array($post_data) ) {
                     $settings = BeRocket_Framework::recursive_array_set($this->default_settings, $post_data);
-                } else {
+                } elseif( ! is_array($this->default_settings) ) {
                     $settings = $post_data;
                 }
 
-                update_post_meta( $post_id, $this->post_name, $settings );
+                if( isset($settings) ) {
+                    update_post_meta( $post_id, $this->post_name, $settings );
+                }
             }
 
             if ( ! empty($_POST['berocket_copy_from_custom_post']) ) {

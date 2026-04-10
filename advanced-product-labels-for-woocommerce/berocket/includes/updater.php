@@ -1324,7 +1324,7 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
         }
 
 	    public static function plugin_api_data($res, $action, $args) {
-		    if ( $plugin_id = array_search( $args->slug, self::$slugs ) ) {
+		    if ( property_exists($args, 'slug') && $plugin_id = array_search( $args->slug, self::$slugs ) ) {
 			    if ( $transient_res = get_transient( 'brplugin_info_' . $plugin_id ) ) {
 				    return $transient_res;
 			    } else {
