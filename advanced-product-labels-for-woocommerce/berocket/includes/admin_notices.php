@@ -173,7 +173,16 @@ if ( ! class_exists( 'berocket_admin_notices' ) ) {
 		        }
 	        }
             // not found, lets create a value
-            if ( ! $current_notice ) {
+            if ( empty( $current_notice ) || ! is_array( $current_notice ) ) {
+                if ( ! isset( $notices[ $options['priority'] ] ) || ! is_array( $notices[ $options['priority'] ] ) ) {
+                    $notices[ $options['priority'] ] = array();
+                }
+                if ( ! isset( $notices[ $options['priority'] ][ $options['end'] ] ) || ! is_array( $notices[ $options['priority'] ][ $options['end'] ] ) ) {
+                    $notices[ $options['priority'] ][ $options['end'] ] = array();
+                }
+                if ( ! isset( $notices[ $options['priority'] ][ $options['end'] ][ $options['start'] ] ) || ! is_array( $notices[ $options['priority'] ][ $options['end'] ][ $options['start'] ] ) ) {
+                    $notices[ $options['priority'] ][ $options['end'] ][ $options['start'] ] = array();
+                }
 		        $notices[ $options['priority'] ][ $options['end'] ][ $options['start'] ][ $options['name'] ] = array();
 		        $current_notice = &$notices[ $options['priority'] ][ $options['end'] ][ $options['start'] ][ $options['name'] ];
             }
