@@ -15,7 +15,7 @@ if ( ! class_exists( 'brlabel_free_funnels' ) ) {
 			$media      = '?utm_source=' . $type . '_plugin&utm_medium=admin_notice&utm_campaign=spring_2026&utm_content=top_banner_cta&utm_term=labels';
 			$start_time = mktime(0, 0, 0, 4, 13, 2026);
 			$end_time   = mktime(23, 59, 59, 4, 17, 2026);
-			$c_notice   = berocket_admin_notices::get_notice_by_path(array( 19, $end_time, $start_time, $name ));
+			$c_notice   = berocket_admin_notices::get_notice_by_priority_and_name( 19, $name );
 
 			$is_closed = false;
 			if ( isset( $c_notice['closed'] ) and $c_notice['closed'] > 0 ) {

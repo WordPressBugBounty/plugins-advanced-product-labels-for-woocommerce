@@ -144,9 +144,27 @@ if ( ! class_exists( 'berocket_admin_notices' ) ) {
 
             return $current_notice;
         }
+
+	    public static function get_notice_by_priority_and_name( $priority, $name ) {
+		    $notices = get_option( 'berocket_admin_notices' );
+
+            if ( is_array( $notices ) and ! empty( $notices[ $priority ] ) ) {
+			    foreach ( $notices[ $priority ] as $end_time => $end_level_value ) {
+				    foreach ( $end_level_value as $start_time => $start_level_value ) {
+					    if ( ! empty( $start_level_value[ $name ] ) ) {
+						    return $notices[ $priority ][ $end_time ][ $start_time ][ $name ];
+					    }
+				    }
+			    }
+		    }
+
+		    return false;
+	    }
+
         public static function berocket_array_udiff_assoc_notice($a1, $a2) {
             return json_encode($a1) > json_encode($a2);
         }
+
         public static function set_notice_by_path($options, $replace = false, $find_names = false) {
             self::$subscribed = get_option('berocket_email_subscribed');
             if( self::$subscribed && $options['subscribe'] ) {

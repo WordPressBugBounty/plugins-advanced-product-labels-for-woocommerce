@@ -39,6 +39,10 @@ class BeRocket_products_label extends BeRocket_Framework {
     );
     public $labels_ids = false;
     public $products_labels_ids = array();
+    public $import_export = array();
+    public $import_export_posts = array(
+        'br_labels'
+    );
     public $shortcodes = array(
         'br-wapl'       => 'set_atts_shortcode',
         'br-wapl-label' => 'set_label_label_shortcode',

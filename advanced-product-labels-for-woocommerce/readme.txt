@@ -5,7 +5,7 @@ Donate link: https://berocket.com/woocommerce-advanced-product-labels/?utm_sourc
 Tags: labels, badges, mark, product labels, woocommerce labels
 Requires at least: 5.0
 Tested up to: 6.9.4
-Stable tag: 3.3.3.4
+Stable tag: 3.3.3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -147,6 +147,10 @@ You can try this plugin's admin side [here](https://berocket.com/woocommerce-adv
 ---
 
 == Changelog ==
+
+= 3.3.3.5 =
+* Enhancement - Compatibility version: WooCommerce 10.7
+* Fix - Plugins notice mark on BeRocket element
 
 = 3.3.3.4 =
 * Enhancement - Compatibility version: Wordpress 6.9.4 and WooCommerce 10.6.2
