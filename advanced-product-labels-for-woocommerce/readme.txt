@@ -5,7 +5,7 @@ Donate link: https://berocket.com/woocommerce-advanced-product-labels/?utm_sourc
 Tags: labels, badges, mark, product labels, woocommerce labels
 Requires at least: 5.0
 Tested up to: 6.9.4
-Stable tag: 3.3.3.5
+Stable tag: 3.3.3.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,11 +14,6 @@ Promote exclusive discounts, new products or free shipping. Create labels easily
 == Description ==
 
 Creating labels has come really easy and fast with the Advanced Product Labels plugin. Promote your free products, show “Free Shipping” or other special attributes of products. By using conditions you can add each label to specific products in your shop.
-
-= 🚀 Spring Premium Days is LIVE! =
-**Save 30%** on Pro features across BeRocket plugins. 
-*Add smart product labels to highlight deals, new arrivals, and best sellers. Countdown timers create urgency that motivates customers to buy now.*
-🌿 Improve your store today. [**Limited time offer!**](https://berocket.com/woocommerce-advanced-product-labels/?utm_source=free_plugin&utm_medium=wporg&utm_campaign=spring_2026&utm_content=top_ad_cta&utm_term=products_label)
 
 = Features: =
 &#9989; Custom labels on products
@@ -147,6 +142,9 @@ You can try this plugin's admin side [here](https://berocket.com/woocommerce-adv
 ---
 
 == Changelog ==
+
+= 3.3.3.6 =
+* Fix - PHP fatal error on plugin update when other BeRocket plugin installed
 
 = 3.3.3.5 =
 * Enhancement - Compatibility version: WooCommerce 10.7
