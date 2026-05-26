@@ -94,10 +94,6 @@
     margin: 0!important;
     padding: 0!important;
 }
-.woocommerce .product span.onsale{
-    padding: 0;
-    z-index: 100;
-}
 .br_alabel_sale_p.br_alabel_image > span {
     font-size: 16px;
     padding: 0;
@@ -117,6 +113,13 @@
 .berocket_tooltip_image {
     max-height: 100%;
     max-width: 100%;
+}
+
+.br_alabel > span i.template-i,
+.br_alabel > span i.template-span-before,
+.br_alabel > span i.template-i-before,
+.br_alabel > span i.template-i-after {
+    border-width: 0;
 }
 
 /************** css templates ***************/

@@ -145,32 +145,37 @@ class BeRocket_products_label_labels_for_variations_class {
     public function cond_attr_variation($html, $name, $options) {
         $def_options = array('variation' => '');
         $options = array_merge($def_options, $options);
-        $html .= '<p><label>Display for variation:</label> <select '.(empty($options['is_example']) ? '' : 'data-').'name="' . $name . '[variation]">';
+        $html .= '<label>Display for variation:</label> <select '.(empty($options['is_example']) ? '' : 'data-').' name="' . $name . '[variation]">';
         $html .= '<option value="">Only Product</option>';
         $html .= '<option value="variation"'.($options['variation'] == 'variation' ? ' selected' : '').'>Only Variation</option>';
         $html .= '<option value="both"'.($options['variation'] == 'both' ? ' selected' : '').'>Both Variation and Product</option>';
-        $html .= '</select></p>';
+        $html .= '</select>';
         return $html;
     }
 
     public function cond_stockstatus_variation($html, $name, $options) {
         $def_options = array('variation' => '');
         $options = array_merge($def_options, $options);
-        $html .= '<p><label>Display for variation:</label> <input type="checkbox" value="1" '.( empty($options['variation']) ? '' : 'checked ').(empty($options['is_example']) ? '' : 'data-').'name="' . $name . '[variation]"></p>';
+        $html .= '<p style="margin-left: 45px;"><label><input type="checkbox" value="1" '.( empty($options['variation']) ? '' : 'checked ').(empty($options['is_example']) ? '' : 'data-').'name="' . $name . '[variation]">' . __('Display for variation', 'BeRocket_products_label_domain') . '</label></p>';
         return $html;
     }
 
     public function cond_stockquantity_variation($html, $name, $options) {
         $def_options = array('variation' => '');
         $options = array_merge($def_options, $options);
-        $html .= '<p><label>Display for variation:</label> <input type="checkbox" value="1" '.( empty($options['variation']) ? '' : 'checked ').(empty($options['is_example']) ? '' : 'data-').'name="' . $name . '[variation]"></p>';
+        $html .= '<p style="margin-left: 45px;"><label><input type="checkbox" value="1" '.( empty($options['variation']) ? '' : 'checked ').(empty($options['is_example']) ? '' : 'data-').'name="' . $name . '[variation]">' . __('Display for variation', 'BeRocket_products_label_domain') . '</label></p>';
         return $html;
     }
 
     public function better_labels_html($html, $html_type, $html_positions, $product, $type = true, $product_id = '') {
         if( ! empty($product) && is_a($product, 'WC_Product') && $html_type === $type ) {
+            global $wp_query;
             $current_page = get_queried_object_id();
-            if( $product->get_id() == $current_page ) {
+            if( empty($current_page) && ! empty($wp_query->queried_object_id) ) {
+                $current_page = $wp_query->queried_object_id;
+            }
+            $current_product_id = ( is_a($product, 'WC_Product_Variation') ? $product->get_parent_id() : $product->get_id() );
+            if( $current_product_id == $current_page ) {
                 $html .= '<i style="display:none!important;" class="brapl_variation_replace" data-type="'.$html_type.'"></i>';
             }
         }

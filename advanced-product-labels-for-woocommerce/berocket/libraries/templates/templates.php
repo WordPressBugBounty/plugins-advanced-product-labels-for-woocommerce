@@ -157,7 +157,7 @@ if ( ! class_exists('BeRocket_framework_templates') ) {
             $plugin_version_capability = apply_filters( 'brfr_get_plugin_version_capability_' . $this->hook_name, 0 );
 
             if ( ! empty( $template_info[ 'paid' ] ) && ( empty( $plugin_version_capability ) || $plugin_version_capability < 10 ) ) {
-                $meta_data = '?utm_source=free_plugin&utm_medium=plugins&utm_campaign='.$this->info['plugin_name'];
+                $meta_data = '?utm_source=plugin&utm_medium=settings&utm_campaign=upgrade&utm_content=templates&utm_term='.($this->info['plugin_sku'] ?? $this->info['plugin_name']);
                 $html = '<i class="berocket_template_paid_sign fa fa-lock"></i>';
                 $html .= '<div class="berocket_template_paid_get"><a target="_blank" href="https://berocket.com/' . $this->values[ 'premium_slug' ] . $meta_data . '"><span>
                 <i class="fa fa-star" aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i><i class="fa fa-star" aria-hidden="true"></i>

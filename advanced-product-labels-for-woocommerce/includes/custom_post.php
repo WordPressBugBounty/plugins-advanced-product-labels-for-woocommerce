@@ -28,7 +28,7 @@ class BeRocket_conditions_advanced_labels extends BeRocket_conditions {
     }
     public static function condition_single_product($html, $name, $options) {
         $html .= static::supcondition($name, $options);
-        $html .= '<p>' . __('Single Product page on product itself', 'BeRocket_products_label_domain') . '</p>';
+        $html .= '<label>&nbsp; ' . __('Single Product page on product itself', 'BeRocket_products_label_domain') . '</label>';
         return $html;
     }
     public static function check_condition_single_product($show, $condition, $additional) {
@@ -392,7 +392,6 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
             'rewrite'             => false,
             'query_var'           => false,
             'supports'            => array( 'title' ),
-            'show_in_nav_menus'   => false,
             'show_in_nav_menus'   => false,
         );
         
@@ -1023,19 +1022,19 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         <?php
     }
     public function section_templates( $html, $item, $options ) {
-        $html = "<tr><th>
+        $html = "<th>
                     <div class='br_settings_vtab" . ( ( strpos( $options['template'], 'css' ) !== false || empty($options['template']) ) ? ' active' : '' ) . "' data-tab='css-templates'>" . __('CSS Templates', 'BeRocket_products_label_domain') . "</div>
                     <div class='br_settings_vtab" . ( ( strpos( $options['template'], 'image' ) !== false ) ? ' active' : '' ) . "' data-tab='image-templates'>" . __('Image Templates', 'BeRocket_products_label_domain') . "</div>
                     <div class='br_settings_vtab" . ( ( strpos( $options['template'], 'advanced' ) !== false ) ? ' active' : '' ) . "' data-tab='advanced-templates'>" . __('Advanced Templates', 'BeRocket_products_label_domain') . "</div>
                 </th>
                 <td class='br_label_css_templates'>";
         $html .= $this->get_templates_section_html( $options['template'] );
-        $html .= "</div></td></tr>";
+        $html .= "</div></td>";
 
         return $html;
     }
     public static function section_content_type_description($html, $item, $options, $name) {
-        $html .= '<tr class="brapl_label_content_type_limit_display"><td colspan="2">
+        $html .= '<td colspan="2"></td></tr><tr class="brapl_label_content_type_limit_display"><td colspan="2">
             <p style="font-size:1.5em;">' . __( 'Label will be displayed only for products with discount', 'BeRocket_products_label_domain' ) . '</p>
         <script>
         function brapl_label_content_type_limit_display() {
@@ -1052,7 +1051,7 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         return $html;
     }
     public static function section_custom_css_explanation($html, $item, $options, $name) {
-        $html .= '<tr><td colspan="2">' . __( 'It is settings for advanced users. Please do not use it if you don\'t know how it work.<br/ > This options is provided for designer and programmers.<br />How labels looks in HTML<br />'. 'BeRocket_products_label_domain' ) . 
+        $html .= '<td colspan="2">' . __( 'These are settings for advanced users. Please do not use it if you don\'t know how it works.<br/> These options are provided for designer and programmers.<br/>How label looks in HTML<br/>', 'BeRocket_products_label_domain' ) .
         '&lt;div&gt;<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&lt;span&gt;<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;i&gt;&lt;/i&gt;<br>
@@ -1062,7 +1061,7 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;b&gt;' 
         . __( 'TEXT OF LABEL', 'BeRocket_products_label_domain' ) . '&lt;/b&gt;<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&lt;/span&gt;<br>
-        &lt;/div&gt;</td></tr>';
+        &lt;/div&gt;</td>';
         return $html;
     }
     public function get_option( $post_id ) {

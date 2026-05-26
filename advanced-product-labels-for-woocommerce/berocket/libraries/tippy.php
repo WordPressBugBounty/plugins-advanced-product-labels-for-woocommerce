@@ -28,12 +28,10 @@ if( ! class_exists('BeRocket_tooltip_display') ) {
                 'allowHTML' => 'true'
             ), $options);
             foreach($options as $option_name => $option_value) {
-                if( in_array($option_name, array('content', 'placement', 'animation')) ) {
+                if( in_array($option_name, array('content', 'placement', 'animation', 'theme', 'followCursor')) ) {
                     $option_value = json_encode($option_value);
                 } elseif( is_bool($option_value) ) {
                     $option_value = ($option_value ? 'true' : 'false');
-                } else {
-                    $option_value = $option_value;
                 }
                 $options[$option_name] = $option_value;
             }

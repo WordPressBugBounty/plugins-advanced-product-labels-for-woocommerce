@@ -1,10 +1,7 @@
 <?php
 $plugin_info   = get_plugin_data( $this->cc->info[ 'plugin_file' ] );
-if( ! empty($this->plugin_version_capability) && $this->plugin_version_capability > 10 ) {
-    $meta_data = '?utm_source=paid_plugin&utm_medium=plugins&utm_campaign='.$this->info['plugin_name'];
-} else {
-    $meta_data = '?utm_source=free_plugin&utm_medium=plugins&utm_campaign='.$this->info['plugin_name'];
-}
+$meta_data = '?utm_source=plugin&utm_medium=settings&utm_campaign=upgrade&utm_term='.($this->info['plugin_sku'] ?? $this->info['plugin_name']);
+
 $dplugin_name  = $this->cc->info['full_name'];
 $dplugin_link  = 'https://berocket.com/' . $this->cc->values['premium_slug'] . $meta_data;
 $dplugin_price = $this->cc->info['price'];

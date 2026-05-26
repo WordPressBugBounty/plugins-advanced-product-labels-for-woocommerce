@@ -289,8 +289,37 @@
     table-layout: fixed;
 }
 
-.br_framework_settings .framework-form-table h2{
+.br_framework_settings .framework-form-table h2 {
     padding: 0 !important
+}
+.br_framework_settings .framework-form-table .br_field {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.br_framework_settings .framework-form-table .br_field label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 4px;
+}
+.br_framework_settings .framework-form-table .berocket_text_input_message .br_field label {
+    min-width: 100%;
+}
+.br_framework_settings .framework-form-table .br_field label input[type="checkbox"],
+.br_framework_settings .framework-form-table .br_field label input[type="radio"]{
+    margin: 0;
+}
+.br_framework_settings .framework-form-table .br_field label .br_label_for {
+    white-space: break-spaces;
+}
+.br_framework_settings .framework-form-table .label_per_line .br_field label {
+    flex-basis: 100%;
+}
+@media screen and (max-width: 1500px) {
+    .br_framework_settings .framework-form-table .br_field label {
+        flex-wrap: wrap;
+    }
 }
 
 
@@ -374,6 +403,11 @@
     font-size: 13px;
     box-shadow: none;
     border-radius: 4px;
+}
+
+#ee_hide_premium.button{
+    min-height: auto;
+    line-height: 30px;
 }
 
 .br_framework_settings .br_colorpicker {
@@ -1647,7 +1681,6 @@
 }
 .br_label_for {
     display: inline-block;
-    margin-left: 10px;
 }
 .br_cond_woo_category li {
     margin: 0;
@@ -1655,4 +1688,14 @@
 .br_cond_woo_category ul ul {
     margin-left: 10px;
     margin-top: 5px;
+}
+.berocket_aapf_upload_icon.button.fa,
+.berocket_aapf_remove_icon.button.fa {
+    font-weight: 900!important;
+}
+.wp-core-ui .framework-form-table .button, 
+.wp-core-ui .framework-form-table .button-primary, 
+.wp-core-ui .framework-form-table .button-secondary {
+    line-height: 2.15384615;
+    min-height: 40px;
 }

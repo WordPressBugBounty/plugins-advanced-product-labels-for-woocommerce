@@ -18,6 +18,7 @@ $condition_types = apply_filters($hook_name.'_types', array());
                         foreach($condition_types as $condition_type_slug => $condition_type_name) {
                             echo '<option value="', $condition_type_slug, '">', $condition_type_name, '</option>';
                         }
+                        do_action($hook_name.'_conditions_select_after');
                         ?>
                     </select>
                 </span>
@@ -60,6 +61,7 @@ $condition_types = apply_filters($hook_name.'_types', array());
                                 foreach($condition_types as $condition_type_slug => $condition_type_name) {
                                     echo '<option value="', $condition_type_slug, '"', ( isset($conditions['type']) && $conditions['type'] == $condition_type_slug ? ' selected' : '' ) , '>', $condition_type_name, '</option>';
                                 }
+                                do_action($hook_name.'_conditions_select_after');
                                 ?>
                             </select>
                         </span>
@@ -69,16 +71,16 @@ $condition_types = apply_filters($hook_name.'_types', array());
                             $first_element = false;
                         } ?>
                         <div class="br_current_cond">
+                            <?php
+                            $condition_html = apply_filters($hook_name . '_type_' . $conditions['type'], '', $name_for_condition . '[' . $id . '][' . $current . ']', $conditions);
+                            if( ! empty($condition_html) ) {
+                                echo '<div class="br_cond br_cond_', $conditions['type'], '">
+                                ', $condition_html, '
+                                <input type="hidden" name="' . $name_for_condition . '[' . $id . '][' . $current . '][type]" value="', $conditions['type'], '">
+                                </div>';
+                            }
+                            ?>
                         </div>
-                    <?php 
-                    $condition_html = apply_filters($hook_name . '_type_' . $conditions['type'], '', $name_for_condition . '[' . $id . '][' . $current . ']', $conditions);
-                    if( ! empty($condition_html) ) {
-                        echo '<div class="br_cond br_cond_', $conditions['type'], '">
-                        ', $condition_html, '
-                        <input type="hidden" name="' . $name_for_condition . '[' . $id . '][' . $current . '][type]" value="', $conditions['type'], '">
-                        </div>';
-                    }
-                    ?>
                     </div>
                     <?php
                 }

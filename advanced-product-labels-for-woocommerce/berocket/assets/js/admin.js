@@ -65,7 +65,10 @@ var br_something_changed = false;
                 $('.nav-block-active').removeClass('nav-block-active');
                 $(this).addClass('active');
                 $('.'+$(this).data('block')+'-block').addClass('nav-block-active');
-                $('.br_framework_settings .content .title').html( $(this).html() );
+                $ee_hide_premium = $('body.berocket_settings_page #brfr_ee_hide_locked_features').length?
+                    $('#brfr_ee_hide_locked_features').prop('outerHTML')
+                    : '';
+                $('.br_framework_settings .content .title').html( $(this).html()+$ee_hide_premium);
                 window.history.replaceState(null, null, $(this).attr('href'));
                 $(this).trigger('brlinktab_opened');
                 $('.'+$(this).data('block')+'-block').trigger('brtab_opened');

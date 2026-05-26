@@ -1,6 +1,7 @@
 .brfr_import_export_form textarea {
     width: 100%;
-    min-height: 60px;
+    min-height: 160px;
+    border-radius: 5px;
 }
 
 .brfr_import_wrap,
@@ -125,4 +126,7 @@
     margin-bottom: 6px;
     color: #50575e;
     word-break: break-all;
+}
+.brfr_import_export_block .brfr_import_all .brfr_import_send {
+    margin-top: 15px;
 }

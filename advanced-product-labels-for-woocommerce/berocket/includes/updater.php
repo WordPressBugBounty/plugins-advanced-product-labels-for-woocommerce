@@ -552,7 +552,10 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
             </script>
             <style>
                 .toplevel_page_berocket_account .dashicons-before img {
-                    max-width: 16px;
+                    max-width: 20px;
+                }
+                .admin-color-modern .toplevel_page_berocket_account .dashicons-before img {
+                    opacity: 1 !important;
                 }
             </style>
             <?php
@@ -562,14 +565,14 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
             add_menu_page( __('BeRocket Account Settings', 'BeRocket_domain'), __('BeRocket Account', 'BeRocket_domain'), 'manage_berocket', 'berocket_account', array(
                     __CLASS__,
                     'account_form_network'
-                ), plugin_dir_url( __FILE__ ) . 'ico.png', '55.55' );
+                ), 'https://apicdn.berocket.com/logo_rocket_white.png', '55.55' );
         }
 
         public static function main_menu_item() {
             add_menu_page( 'BeRocket Account', 'BeRocket', 'manage_berocket', 'berocket_account', array(
                     __CLASS__,
                     'account_form'
-                ), plugin_dir_url( __FILE__ ) . 'ico.png', '55.55' );
+                ), 'https://apicdn.berocket.com/logo_rocket_white.png', '55.55' );
         }
 
         public static function account_page() {

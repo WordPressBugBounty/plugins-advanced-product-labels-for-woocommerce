@@ -1,9 +1,19 @@
 <?php
 $feature_list = ( empty($this->cc->feature_list) ? null : $this->cc->feature_list );
+
+$banner = [ "buy_now"           => __( 'BUY NOW', 'BeRocket_domain' ),
+            "get_it_now"        => __( 'GET IT NOW', 'BeRocket_domain' ),
+            "remove_banner"     => __( 'REMOVE BANNER', 'BeRocket_domain' ),
+            "unlock_premium"    => __( 'UNLOCK PREMIUM', 'BeRocket_domain' ),
+            "upgrade_now"       => __( 'UPGRADE NOW', 'BeRocket_domain' ),
+            "go_premium"        => __( 'GO PREMIUM', 'BeRocket_domain' ),
+            "remove_limits"     => __( 'REMOVE LIMITS', 'BeRocket_domain' ),
+            "unlock_everything" => __( 'UNLOCK EVERYTHING', 'BeRocket_domain' ) ];
+$banner_key = array_rand( $banner );
 $dplugin_link = 'https://berocket.com/' . $this->cc->values['premium_slug'];
 $dplugin_lic = br_get_value_from_array($this->cc->info, 'lic_id');
-$plugin_landing_page = 'https://berocket.com/woocommerce-advanced-product-labels/?coupon=pluwq5cq&utm_source=free_plugin&utm_medium=settings&utm_campaign=labels&utm_content=read_more';
-$dplugin_lic_link = $plugin_landing_pricing = 'https://berocket.com/woocommerce-advanced-product-labels/?coupon=pluwq5cq&vap&utm_source=free_plugin&utm_medium=settings&utm_campaign=labels&utm_content=buy_now#buy_now';
+$plugin_landing_page = 'https://berocket.com/woocommerce-advanced-product-labels/?coupon=pluwq5cq&utm_source=plugin&utm_medium=settings&utm_campaign=upgrade&utm_content=sidebar_read_more&utm_term=labels';
+$dplugin_lic_link = $plugin_landing_pricing = 'https://berocket.com/woocommerce-advanced-product-labels/?coupon=pluwq5cq&vap&utm_source=plugin&utm_medium=settings&utm_campaign=upgrade&utm_content=sidebar_' . $banner_key . '&utm_term=labels#buy_now';
 if ( isset($this->plugin_version_capability) && $this->plugin_version_capability <= 5 ) {
     echo apply_filters('berocket_rate_plugin_window', '', br_get_value_from_array($this->cc->info, 'id'));
     if ( ! empty( $feature_list ) && count( $feature_list ) > 0 ) { ?>
@@ -23,7 +33,7 @@ if ( isset($this->plugin_version_capability) && $this->plugin_version_capability
                 <span>Read more about</span>
                 <a class="get_premium_version" href="%link%" target="_blank">PREMIUM VERSION</a>
                 <span class="divider">OR</span>
-                <a class="buy_premium_version" href="%licence_link%" target="_blank">BUY NOW</a>
+                <a class="buy_premium_version" href="%licence_link%" target="_blank">%buy_now_text%</a>
                 <span>and get Up to <b>%discount% discount</b></span>
             </div>
             <p class="berocket_paid_features_support">Support the plugin by purchasing paid version<br>
@@ -36,6 +46,7 @@ if ( isset($this->plugin_version_capability) && $this->plugin_version_capability
 
             $text = str_replace( '%feature_list%', $feature_text,           $text );
             $text = str_replace( '%link%',         $plugin_landing_page,    $text );
+            $text = str_replace( '%buy_now_text%', $banner[ $banner_key ],  $text );
             $text = str_replace( '%licence%',      $plugin_landing_page,    $text );
             $text = str_replace( '%licence_link%', $plugin_landing_pricing, $text );
             $text = str_replace( '%discount%',     $dpdiscount,             $text );

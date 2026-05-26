@@ -438,6 +438,8 @@ var page_loading = true;
             if( $('.br_label_backcolor_use').prop('checked') ) {
                 $('[name="br_labels[color]"]').closest('tr').show();
             }
+        } else {
+            br_template_hide_class_for_elements(["img_title"], true);
         }
     }
     function br_template_hide_class_for_elements (elements, add) {

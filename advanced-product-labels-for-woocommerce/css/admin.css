@@ -861,7 +861,7 @@ input:checked + .br_slider:before {
     display: none;
 }
 
-.br_framework_settings .framework-form-table tbody td label {
+.br_framework_settings .framework-form-table tbody td label.berocket_addon_label {
     margin-right: 10px;
 }
 
@@ -891,8 +891,7 @@ input:checked + .br_slider:before {
 }
 .bapl_better_position_padding td label {
     display: flex;
-    vertical-align: middle;
-    line-height: 2em;
+    align-items: center;
     gap: 5px;
 }
 .bapl_better_position_padding td label input {

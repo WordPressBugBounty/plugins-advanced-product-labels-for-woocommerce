@@ -90,7 +90,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
             $html .= '<select'.( empty($field_item['disabled']) ? '' : ' disabled=disabled').' name="' . $field_name . '"' . $class . $extra . '>';
             if ( isset( $field_item[ 'options' ] ) and is_array( $field_item[ 'options' ] ) and count( $field_item[ 'options' ] ) ) {
                 foreach ( $field_item[ 'options' ] as $option ) {
-                    $html .= '<option value="' . $option[ 'value' ] . '"' . ( ( $value == $option[ 'value' ] ) ? ' selected="selected" ' : '' ) . '>' . $option[ 'text' ] . '</option>';
+                    $html .= '<option value="' . $option[ 'value' ] . '"' . ( ( $value == $option[ 'value' ] ) ? ' selected="selected" ' : '' ) . ( $option[ 'extra' ] ?? '' ) . '>' . $option[ 'text' ] . '</option>';
                 }
             } else {
                 $html .= "<option>Options data is corrupted!</option>";

@@ -1357,7 +1357,7 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
                                 data-function="berocket_rate_star_close_notice"
                                 data-later="0"
                                 data-wp_nonce="' . wp_create_nonce('berocket_rate_stars_close') . '"
-                                data-thanks_html=\'<picture><source type="image/webp" srcset="'.plugin_dir_url( __FILE__ ).'../assets/images/Thank-you.webp" alt="Feature Request"><img src="https://berocket.com/images/plugin/Thank-you.png" style="width: 100%;" alt="Feature Request"></picture><h3 class="berocket_thank_you_rate_us">'.__('Each good feedback is very important for plugin growth', 'BeRocket_domain').'</h3>\'
+                                data-thanks_html=\'<picture><source type="image/webp" srcset="'.plugin_dir_url( __FILE__ ).'../assets/images/Thank-you.webp" alt="Feature Request"><img src="https://berocket.com/images/plugin/Thank-you.png" style="max-width: 100%;" alt="Feature Request"></picture><h3 class="berocket_thank_you_rate_us">'.__('Each good feedback is very important for plugin growth', 'BeRocket_domain').'</h3>\'
                                 href="https://wordpress.org/support/plugin/'.$plugin['free_slug'].'/reviews/?filter=5#new-post"
                                 target="_blank">'.__('Ok, you deserved it', 'BeRocket_domain').'</a>
                             <span class="brfirts"> | </span>
@@ -1512,7 +1512,7 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
                                 data-later="0"
                                 data-wp_nonce="' . wp_create_nonce('berocket_rate_stars_close') . '"
                                 data-function="berocket_rate_star_close_notice"
-                                data-thanks_html=\'<picture><source type="image/webp" srcset="'.plugin_dir_url( __FILE__ ).'../assets/images/Thank-you.webp" alt="Feature Request"><img src="https://berocket.com/images/plugin/Thank-you.png" style="width: 100%;" alt="Feature Request"></picture><h3 class="berocket_thank_you_rate_us">'.__('Each good feedback is very important for plugin growth', 'BeRocket_domain').'</h3>\'
+                                data-thanks_html=\'<picture><source type="image/webp" srcset="'.plugin_dir_url( __FILE__ ).'../assets/images/Thank-you.webp" alt="Feature Request"><img src="https://berocket.com/images/plugin/Thank-you.png" style="max-width: 100%;" alt="Feature Request"></picture><h3 class="berocket_thank_you_rate_us">'.__('Each good feedback is very important for plugin growth', 'BeRocket_domain').'</h3>\'
                                 href="https://wordpress.org/support/plugin/'.$plugin['free_slug'].'/reviews/?filter=5#new-post"
                                 target="_blank">'.__('Ok, you deserved it', 'BeRocket_domain').'</a>
                                 <p>'.__('Support the plugin by setting good feedback.<br>We really need this.', 'BeRocket_domain').'</p>
@@ -1769,13 +1769,28 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
                 if ( ! $is_closed and time() >= $start_time and time() < $end_time ) {
                     // do nothing
                 } else {
+	                $banner = [ "get_it_now"              => __( 'Get it now', 'BeRocket_domain' ),
+                                "remove_banner"           => __( 'Remove banner', 'BeRocket_domain' ),
+                                "unlock_premium"          => __( 'Unlock Premium', 'BeRocket_domain' ),
+                                "upgrade_now"             => __( 'Upgrade Now', 'BeRocket_domain' ),
+                                "go_premium"              => __( 'Go Premium', 'BeRocket_domain' ),
+                                "unlock_all_features"     => __( 'Unlock All Features', 'BeRocket_domain' ),
+                                "access_premium_features" => __( 'Access Premium Features', 'BeRocket_domain' ),
+                                "power_up_your_store"     => __( 'Power Up Your Store', 'BeRocket_domain' ),
+                                "remove_limits"           => __( 'Remove Limits', 'BeRocket_domain' ),
+                                "unlock_everything"       => __( 'Unlock Everything', 'BeRocket_domain' ),
+                                "remove_this_banner"      => __( 'Remove This Banner', 'BeRocket_domain' ) ];
+	                $banner_key = array_rand( $banner );
 	                echo "
                     <div class='berocket-above-settings-banner' style='background: {$plugin['bg_top']};'>
                         <div style='background-image: url(\"{$plugin['image_top']}\")'>
                             <div>
                                 <h1>{$plugin['title']}</h1>
                                 <p>" . ( empty( $plugin['desc_top'] ) ? $plugin['desc'] : $plugin['desc_top'] ) . "</p>
-                                <a href='{$plugin['url']}" . ( str_contains( $plugin[ 'url' ], '?') ? '&' : '?' ) . "utm_source=free_plugin&utm_medium=settings&utm_campaign={$cur_plugin->info['plugin_name']}&utm_content=top' target='_blank'>" . __( 'Get it now', 'BeRocket_domain' ) . "</a>
+                                <a href='{$plugin['url']}" . ( str_contains( $plugin[ 'url' ], '?') ? '&' : '?' ) .
+                                    "utm_source=plugin&utm_medium=banner&utm_campaign=upgrade&utm_content=top_" . $banner_key .
+                                    "&utm_term={$cur_plugin->info['plugin_sku']}' target='_blank'>" . $banner[ $banner_key ] .
+                                "</a>
                             </div>
                         </div>
                     </div>
@@ -2020,7 +2035,7 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
         function show_related_window( $html, $plugin_id, $plugin, $location = 'sidebar' ) {
             add_action( 'admin_footer', array( $this, 'wp_footer_js' ) );
             $plugins = self::get_plugin_data();
-            $plugins_use = array_rand($plugins, 2);
+            $plugins_use = [array_rand($plugins)];
 
             foreach($plugins_use as $plugin_use) {
                 $plugin_data = $plugins[$plugin_use];
@@ -2035,8 +2050,9 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
                             <p>' . $plugin_data[ 'desc' ] . '</p>
                             <a class="brfirst" href="' . $plugin_data[ 'url' ]
                                 . ( str_contains( $plugin_data[ 'url' ], '?') ? '&' : '?' )
-                                . 'utm_source=free_plugin&utm_medium=settings&utm_campaign=' . $plugin->info['plugin_name']
-                                . '&utm_content=sidebar" target="_blank">From: $' . $plugin_data[ 'price' ] . '</a>
+                                . 'utm_source=plugin&utm_medium=settings&utm_term=' . ( $plugin->info['plugin_sku'] ?? $plugin->info['plugin_name'] )
+                                . '&utm_campaign=upgrade&utm_content=sidebar"'
+                                . ' target="_blank">From: $' . $plugin_data[ 'price' ] . '</a>
                         </div>
                     </div>
                 </div>';
@@ -2203,7 +2219,7 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
                         <div class="berocket_feature_request_thanks" style="display: none;">
                             <picture>
                                 <source type="image/webp" srcset="'.plugin_dir_url( __FILE__ ).'../assets/images/Thank-you.webp" alt="Feature Request">
-                                <img src="https://berocket.com/images/plugin/Thank-you.png" style="width: 100%;" alt="Feature Request">
+                                <img src="https://berocket.com/images/plugin/Thank-you.png" style="max-width: 100%;" alt="Feature Request">
                             </picture>';
                     if( empty($disabled[$plugin_id]) || $disabled[$plugin_id]['time'] != 0 ) {
                         $html .= '
@@ -2217,7 +2233,7 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
                                 data-later="0"
                                 data-wp_nonce="' . wp_create_nonce('berocket_rate_stars_close') . '"
                                 data-function="berocket_rate_star_close_notice"
-                                data-thanks_html=\'<picture><source type="image/webp" srcset="'.plugin_dir_url( __FILE__ ).'../assets/images/Thank-you.webp" alt="Feature Request"><img src="https://berocket.com/images/plugin/Thank-you.png" style="width: 100%;" alt="Feature Request"></picture><h3 class="berocket_thank_you_rate_us">'.__('Each good feedback is very important for plugin growth', 'BeRocket_domain').'</h3>\'
+                                data-thanks_html=\'<picture><source type="image/webp" srcset="'.plugin_dir_url( __FILE__ ).'../assets/images/Thank-you.webp" alt="Feature Request"><img src="https://berocket.com/images/plugin/Thank-you.png" style="max-width: 100%;" alt="Feature Request"></picture><h3 class="berocket_thank_you_rate_us">'.__('Each good feedback is very important for plugin growth', 'BeRocket_domain').'</h3>\'
                                 href="https://wordpress.org/support/plugin/'.$plugin['free_slug'].'/reviews/?filter=5#new-post"
                                 target="_blank">'.__('This plugin deserves 5 stars', 'BeRocket_domain').'</a></li>
                             <li><a class="berocket_rate_next_time brsecond"

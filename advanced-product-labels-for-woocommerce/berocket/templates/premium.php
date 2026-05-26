@@ -1,10 +1,18 @@
 <?php
 $feature_list = ( empty($this->cc->feature_list) ? null : $this->cc->feature_list );
-if( ! empty($this->plugin_version_capability) && $this->plugin_version_capability > 10 ) {
-    $meta_data = 'utm_source=paid_plugin&utm_medium=plugins&utm_campaign='.$this->info['plugin_name'];
-} else {
-    $meta_data = 'utm_source=free_plugin&utm_medium=plugins&utm_campaign='.$this->info['plugin_name'];
-}
+
+$banner = [ "buy_now"           => __( 'BUY NOW', 'BeRocket_domain' ),
+            "get_it_now"        => __( 'Get it now', 'BeRocket_domain' ),
+            "remove_banner"     => __( 'Remove banner', 'BeRocket_domain' ),
+            "unlock_premium"    => __( 'Unlock Premium', 'BeRocket_domain' ),
+            "upgrade_now"       => __( 'Upgrade Now', 'BeRocket_domain' ),
+            "go_premium"        => __( 'Go Premium', 'BeRocket_domain' ),
+            "remove_limits"     => __( 'Remove Limits', 'BeRocket_domain' ),
+            "unlock_everything" => __( 'Unlock Everything', 'BeRocket_domain' ) ];
+$banner_key = array_rand( $banner );
+$meta_data = 'utm_source=plugin&utm_medium=settings&utm_campaign=upgrade&utm_content=sidebar_' . $banner_key .
+             '&utm_term='.($this->info['plugin_sku'] ?? $this->info['plugin_name']);
+
 $dplugin_link = 'https://berocket.com/' . $this->cc->values['premium_slug'] . '?' . $meta_data;
 $plugin_data = berocket_admin_notices_rate_stars::get_plugin_data($this->info['id']);
 if( $plugin_data != FALSE ) {
@@ -31,7 +39,7 @@ if ( isset($this->plugin_version_capability) && $this->plugin_version_capability
                 <span>Read more about</span>
                 <a class="get_premium_version" href="%link%" target="_blank">PREMIUM VERSION</a>
                 <span class="divider">OR</span>
-                <a class="buy_premium_version" href="%licence_link%" target="_blank">BUY NOW</a>
+                <a class="buy_premium_version" href="%licence_link%" target="_blank">%buy_now_text%</a>
                 <span>and get Up to <b>%discount% discount</b></span>
             </div>
             <p class="berocket_paid_features_support">Support the plugin by purchasing paid version<br>
@@ -44,6 +52,7 @@ if ( isset($this->plugin_version_capability) && $this->plugin_version_capability
 
             $text = str_replace( '%feature_list%', $feature_text,               $text );
             $text = str_replace( '%link%',         $dplugin_link,               $text );
+            $text = str_replace( '%buy_now_text%', $banner[ $banner_key ],      $text );
             $text = str_replace( '%licence%',      $dplugin_lic,                $text );
             $text = str_replace( '%licence_link%', $dplugin_link . '#buy_now',  $text );
             $text = str_replace( '%discount%',     $dpdiscount,                 $text );

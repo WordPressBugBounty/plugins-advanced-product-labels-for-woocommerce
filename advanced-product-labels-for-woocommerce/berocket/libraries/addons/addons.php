@@ -166,7 +166,7 @@ if( ! class_exists('BeRocket_framework_addons') ) {
         function paid_only_sign( $html_array, $addon_info ) {
 
             if ( $this->version_check($addon_info) ) {
-                $meta_data = '?utm_source=free_plugin&utm_medium=plugins&utm_campaign='.$this->info['plugin_name'];
+                $meta_data = '?utm_source=plugin&utm_medium=settings&utm_campaign=upgrade&utm_content=addons&utm_term='.($this->info['plugin_sku'] ?? $this->info['plugin_name']);
                 $html = '<i class="berocket_addon_paid_sign fa fa-lock"></i>';
                 $html .= '<div class="berocket_addon_paid_get"><a target="_blank" href="https://berocket.com/' . $this->values[ 'premium_slug' ] . $meta_data . '"><span>
                 ';

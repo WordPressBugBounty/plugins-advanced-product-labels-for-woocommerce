@@ -40,7 +40,7 @@ class BeRocket_products_label_free {
             ),
         );
 
-        for ( $i = 6; $i < 17; $i++ ) {
+        for ( $i = 6; $i < 31; $i++ ) {
             $templates[ 'css' ][ $i ] = $empty;
         }
 
@@ -59,7 +59,7 @@ class BeRocket_products_label_free {
         if ( $type == 'css' && $template_value > 5 || $type != 'css' && $template_value != 1000 ) {
             $html .= "
             <section class='premium-only'>
-                <a target='_blank' href='https://berocket.com/l/labels-upgrade?utm_source=free_plugin&utm_medium=settings&utm_campaign=products_label&utm_content=label&utm_term=" . $type . '_' . $template_value ."'>
+                <a target='_blank' href='https://berocket.com/woocommerce-advanced-product-labels/?utm_source=plugin&utm_medium=settings&utm_campaign=upgrade&utm_content=" . $type . '_' . $template_value ."&utm_term=labels'>
                     <span>
                         <i class='fa fa-star' aria-hidden='true'></i>
                         Go Premium

@@ -78,6 +78,7 @@ class BeRocket_products_label extends BeRocket_Framework {
             'key'         => '',
             'name'        => '',
             'plugin_name' => 'products_label',
+            'plugin_sku'  => 'labels',
             'full_name'   => 'WooCommerce Advanced Product Labels',
             'norm_name'   => 'Product Labels',
             'price'       => '24',
@@ -171,20 +172,15 @@ class BeRocket_products_label extends BeRocket_Framework {
         );
         // List of the features missed in free version of the plugin
         $this->feature_list = array(
-            'Conditions by product attribute, sale price, stock quantity, page ID',
-            '30 CSS templates',
-            '12 Advanced templates',
-            '14 Image templates',
-            'Discount Amount type of Label',
-            'Custom Discount type of Label',
-            'Image type of Label',
-            'Time left for discount type of Label',
-            'Product attribute type of Label',
-            'Gradient and Shadow',
-            'Size Multiplier',
-            'Discount Timer',
-            'In-title labels',
-            'More options for stylization'
+            '50+ Premium Label Templates',
+            'Discount Countdown Timers',
+            'Advanced Product Conditions',
+            'Image & Custom Badge Labels',
+            'Gradient & Shadow Effects',
+            'In-title Product Labels',
+            'Advanced Style Customization',
+            'Dynamic Sale & Stock Labels',
+            'Mobile-Optimized Label Controls',
         );
 
         global $berocket_label_css_styles;
