@@ -1,7 +1,9 @@
 <?php
 namespace BeRocket\EngagementEngine;
 
-\define('BR_EE_OPTION', 'berocket_ee');
+include_once __DIR__ . '/classes/data_store.php';
+
+\define('BR_EE_OPTION', DataStore::DATA_OPTION);
 \define('BR_EE_HIDDEN', 'berocket_ee_lf_hidden');
 \define('BR_EE_LIST', ['locked_features', 'smart_triggers', 'notices', 'news', 'banners']);
 
@@ -18,11 +20,10 @@ class EngagementEngine {
 	}
 
 	public function load_data() {
-		$timer = get_option( 'berocket_engagement_engine_load_data_time', 1 );
+		$timer = get_option( DataStore::LOADED_AT_OPTION, 1 );
 
-		// 86400, update once per 24 hours
-		if ( time() > $timer + 86400 ) {
-			update_option( 'berocket_engagement_engine_load_data_time', time() );
+		if ( ! DataStore::is_current_timestamp( $timer ) ) {
+			update_option( DataStore::LOADED_AT_OPTION, time() );
 			( new DataLoader() )->load();
 		}
 	}

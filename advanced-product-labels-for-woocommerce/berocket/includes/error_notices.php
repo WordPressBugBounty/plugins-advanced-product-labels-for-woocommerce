@@ -63,7 +63,7 @@ if( ! class_exists('BeRocket_error_notices') ) {
             if( count($errors) ) {
                 foreach($errors as $error) {
                     $html .= '<div class="berocket_plugin_error">
-                    <h4><small>'.date('Y-m-d h:i:s',br_get_value_from_array($error, 'time', current_time('timestamp'))) .'</small>'.br_get_value_from_array($error, 'message', 'No error message').'</h4>
+                    <h4><small>'.esc_html(date('Y-m-d h:i:s',br_get_value_from_array($error, 'time', current_time('timestamp')))) .'</small>'.esc_html(br_get_value_from_array($error, 'message', 'No error message')).'</h4>
                     <div style="display:none;">';
                     if( ! empty($error['data']) ) {
                         $error_data = print_r($error['data'], true);
@@ -71,7 +71,7 @@ if( ! class_exists('BeRocket_error_notices') ) {
                             $error_data = substr($error_data, 8);
                             $error_data = substr($error_data, 0, -2);
                         }
-                        $html .= '<pre>'.$error_data.'</pre>';
+                        $html .= '<pre>'.esc_html($error_data).'</pre>';
                     }
                     $html .= '</div>
                     </div>';

@@ -575,17 +575,56 @@ class BeRocket_products_label_better_position extends BeRocket_plugin_variations
     }
 
     public static function color_listener() {
-        if( isset( $_POST ['tax_color_set'] ) ) {
-            if ( current_user_can( 'manage_options' ) ) {
-                foreach( $_POST['tax_color_set'] as $key => $value ) {
-                    update_metadata( 'berocket_term', sanitize_text_field($key), sanitize_text_field($_POST['tax_color_set_type']), sanitize_text_field($value) );
-                }
-                unset( $_POST['tax_color_set'] );
+        $doing_ajax = wp_doing_ajax();
+        if ( $doing_ajax ) {
+            if ( ! current_user_can( 'edit_products' ) ) {
+                wp_die( '', '', array( 'response' => 403 ) );
             }
-        } elseif( defined('DOING_AJAX') && DOING_AJAX ) {
-            echo self::color_list_view( sanitize_text_field($_POST['tax_color_set_type']), sanitize_text_field($_POST['tax_color_set_name']), true );
+            check_ajax_referer( 'br_labels_check', 'br_labels_nonce' );
+        }
+
+        if( isset( $_POST ['tax_color_set'] ) ) {
+            if ( ! current_user_can( 'manage_options' ) || ( ! $doing_ajax && ! self::verify_label_nonce() ) ) {
+                return;
+            }
+
+            $meta_type = isset( $_POST['tax_color_set_type'] )
+                ? sanitize_key( wp_unslash( $_POST['tax_color_set_type'] ) )
+                : '';
+            if ( ! in_array( $meta_type, array( 'color', 'image' ), true ) || ! is_array( $_POST['tax_color_set'] ) ) {
+                return;
+            }
+
+            foreach( wp_unslash( $_POST['tax_color_set'] ) as $key => $value ) {
+                $term_id = absint( $key );
+                if ( $term_id && is_scalar( $value ) ) {
+                    update_metadata( 'berocket_term', $term_id, $meta_type, sanitize_text_field( (string) $value ) );
+                }
+            }
+            unset( $_POST['tax_color_set'] );
+        } elseif( $doing_ajax ) {
+            $meta_type = isset( $_POST['tax_color_set_type'] )
+                ? sanitize_key( wp_unslash( $_POST['tax_color_set_type'] ) )
+                : '';
+            $taxonomy_name = isset( $_POST['tax_color_set_name'] )
+                ? sanitize_key( wp_unslash( $_POST['tax_color_set_name'] ) )
+                : '';
+            if ( ! in_array( $meta_type, array( 'color', 'image' ), true ) || ! taxonomy_exists( $taxonomy_name ) ) {
+                wp_die( '', '', array( 'response' => 400 ) );
+            }
+
+            echo self::color_list_view( $meta_type, $taxonomy_name, true );
             wp_die();
         }
+    }
+
+    private static function verify_label_nonce() {
+        if ( empty( $_POST['br_labels_nonce'] ) || ! is_scalar( $_POST['br_labels_nonce'] ) ) {
+            return false;
+        }
+
+        $nonce = sanitize_text_field( wp_unslash( $_POST['br_labels_nonce'] ) );
+        return (bool) wp_verify_nonce( $nonce, 'br_labels_check' );
     }
 
     public static function color_list_view( $type, $taxonomy_name ) {
@@ -604,19 +643,21 @@ class BeRocket_products_label_better_position extends BeRocket_plugin_variations
         $html .= '<table>';
         if( is_array($terms) ) {
             foreach( $terms as $term ) {
+                $term_id = absint( $term->term_id );
+                $term_name = esc_attr( $term->name );
                 $html .= '<tr>';
-                $meta = get_metadata('berocket_term', $term->term_id, $type);
+                $meta = get_metadata('berocket_term', $term_id, $type);
                 $meta = br_get_value_from_array($meta, 0);
                 $meta = esc_attr($meta);
-                $html .= '<th>' . $term->name . '</th>';
+                $html .= '<th>' . esc_html( $term->name ) . '</th>';
                 if( $type == 'color' ) {
                     $function = 'br_color_picker';
                     $default = 'ffffff';
-                    $html .= '<td>' . $function('tax_color_set[' . $term->term_id . ']', $meta, $default, array('extra' => "data-term_id='".$term->term_id."' data-term_name='".$term->name."'")) . '</td>';
+                    $html .= '<td>' . $function('tax_color_set[' . $term_id . ']', $meta, $default, array('extra' => "data-term_id='" . $term_id . "' data-term_name='" . $term_name . "'")) . '</td>';
                 } else {
                     $function = 'br_fontawesome_image';
                     $default = '';
-                    $html .= '<td>' . $function('tax_color_set[' . $term->term_id . ']', $meta, array('extra' => "data-term_id='".$term->term_id."' data-term_name='".$term->name."'")) . '</td>';
+                    $html .= '<td>' . $function('tax_color_set[' . $term_id . ']', $meta, array('extra' => "data-term_id='" . $term_id . "' data-term_name='" . $term_name . "'")) . '</td>';
                 }
                 $html .= '</tr>';
             }

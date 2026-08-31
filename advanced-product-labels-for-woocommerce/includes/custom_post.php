@@ -12,8 +12,13 @@ class BeRocket_conditions_advanced_labels extends BeRocket_conditions {
         $conditions['condition_date_time'] = array(
             'func' => 'check_condition_date_time',
             'type' => 'date_time',
-            'name' => __('Date Time', 'BeRocket_products_label_domain'),
+            'name' => __('Schedule', 'BeRocket_products_label_domain'),
             'save' => 'save_condition_date_time'
+        );
+        $conditions['condition_user_role'] = array(
+            'func' => 'check_condition_user_role',
+            'type' => 'user_role',
+            'name' => __('User Role', 'BeRocket_products_label_domain')
         );
         return apply_filters('brapl_conditions_advanced_labels_get_conditions', $conditions);
     }
@@ -25,6 +30,12 @@ class BeRocket_conditions_advanced_labels extends BeRocket_conditions {
     }
     public static function save_condition_date_time($show, $condition, $additional) {
         return apply_filters('brapl_condition_date_time_check', $show, $condition, $additional);
+    }
+    public static function condition_user_role($html, $name, $options) {
+        return apply_filters('brapl_condition_user_role_html', $html, $name, $options);
+    }
+    public static function check_condition_user_role($show, $condition, $additional) {
+        return apply_filters('brapl_condition_user_role_check', $show, $condition, $additional);
     }
     public static function condition_single_product($html, $name, $options) {
         $html .= static::supcondition($name, $options);
@@ -52,6 +63,7 @@ class BeRocket_advanced_labels_custom_post extends BeRocket_custom_post_class {
     );
     public static $base_color = '#f16543';
     protected static $instance;
+    private $rule_save_rejection = array();
     public $post_type_parameters = array(
         'sortable' => true,
         'can_be_disabled' => true
@@ -400,6 +412,7 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         add_filter('brfr_berocket_advanced_label_editor_templates', array($this, 'section_templates'), 10, 4);
         add_filter( 'berocket_label_adjust_options', array( $this, 'adjust_options' ), 1, 2 );
         add_filter( 'berocket_label_custom_get_options', array( $this, 'get_custom_options' ), 10, 2 );
+        add_action( 'admin_notices', array( $this, 'rule_save_admin_notice' ) );
 
         parent::__construct();
     }
@@ -506,7 +519,14 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         if( empty($options['data']) ) {
             $options['data'] = array();
         }
+        echo '<div data-brapl-conditions-editor>';
         echo $this->conditions->build($options['data']);
+        if( function_exists('berocket_growth_suite_render_conditions_matching_skus_control') ) {
+            echo '<div data-brapl-matching-skus-mount>';
+            berocket_growth_suite_render_conditions_matching_skus_control( (int) $post->ID );
+            echo '</div>';
+        }
+        echo '</div>';
     }
     public function description($post) {
         ?>
@@ -1094,7 +1114,16 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
             return false;
         }
 
-        if( empty($_REQUEST[$this->post_name.'_nonce']) || ! wp_verify_nonce($_REQUEST[$this->post_name.'_nonce'], $this->post_name.'_check') ) {
+        $nonce_name = $this->post_name . '_nonce';
+        if ( empty( $_REQUEST[$nonce_name] ) || ! is_scalar( $_REQUEST[$nonce_name] ) ) {
+            return false;
+        }
+        $nonce = sanitize_text_field( wp_unslash( $_REQUEST[$nonce_name] ) );
+        if ( ! wp_verify_nonce( $nonce, $this->post_name . '_check' ) ) {
+            return false;
+        }
+
+        if ( ! current_user_can( 'edit_post', $post_id ) ) {
             return false;
         }
 
@@ -1104,13 +1133,93 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         if( ! $this->wc_save_check($post_id, $post) ) {
             return;
         }
+        $this->rule_save_rejection = array();
+        $validated_rule_payload = false;
         if( ! empty($_POST['br_labels']) ) {
-            if( $post->post_type != 'product' && ! isset($_POST['br_labels']['color_use']) ) {
-                $_POST['br_labels']['color_use'] = 0;
+            $label_data = wp_unslash( $_POST['br_labels'] );
+            if( $post->post_type != 'product' && ! isset($label_data['color_use']) ) {
+                $label_data['color_use'] = 0;
             }
-            $_POST['br_labels'] = apply_filters('berocket_apl_wc_save_product', $_POST['br_labels'], $post_id);
+            $label_data = apply_filters('berocket_apl_wc_save_product', $label_data, $post_id);
+            if (
+                $post->post_type === $this->post_name
+                && function_exists( 'berocket_growth_suite_prepare_rule_save' )
+            ) {
+                $rule_save = berocket_growth_suite_prepare_rule_save( $post_id, $label_data );
+                if ( empty( $rule_save['valid'] ) || empty( $rule_save['should_write'] ) ) {
+                    $this->rule_save_rejection = isset( $rule_save['errors'] ) && is_array( $rule_save['errors'] )
+                        ? $rule_save['errors']
+                        : array();
+                    if ( function_exists( 'add_filter' ) ) {
+                        add_filter( 'redirect_post_location', array( $this, 'rule_save_redirect_location' ), 99 );
+                    }
+                    do_action(
+                        'berocket_growth_suite_rule_save_rejected',
+                        $post_id,
+                        $this->rule_save_rejection
+                    );
+                    return;
+                }
+                $label_data = $rule_save['payload'];
+                $validated_rule_payload = ! empty( $rule_save['active'] );
+            }
+            $_POST['br_labels'] = $label_data;
         }
-        parent::wc_save_product( $post_id, $post );
+        if ( $validated_rule_payload && function_exists( 'berocket_growth_suite_mark_validated_rule_payload' ) ) {
+            berocket_growth_suite_mark_validated_rule_payload();
+        }
+        try {
+            parent::wc_save_product( $post_id, $post );
+        } finally {
+            if ( $validated_rule_payload && function_exists( 'berocket_growth_suite_clear_validated_rule_payload' ) ) {
+                berocket_growth_suite_clear_validated_rule_payload();
+            }
+        }
+    }
+
+    public function rule_save_redirect_location( $location ) {
+        if ( ! is_string( $location ) || empty( $this->rule_save_rejection[0] ) ) {
+            return $location;
+        }
+
+        $error = $this->rule_save_rejection[0];
+        $code = isset( $error['code'] ) && is_string( $error['code'] )
+            ? $error['code']
+            : 'invalid_rule_model';
+        $path = isset( $error['path'] ) && is_string( $error['path'] )
+            ? $error['path']
+            : '$.rule_model';
+
+        if ( function_exists( 'remove_query_arg' ) ) {
+            $location = remove_query_arg( 'message', $location );
+        }
+        if ( function_exists( 'add_query_arg' ) ) {
+            $location = add_query_arg(
+                array(
+                    'brapl_rule_save_error' => $code,
+                    'brapl_rule_save_path'  => $path,
+                ),
+                $location
+            );
+        }
+
+        return $location;
+    }
+
+    public function rule_save_admin_notice() {
+        if ( empty( $_GET['brapl_rule_save_error'] ) || ! is_scalar( $_GET['brapl_rule_save_error'] ) ) {
+            return;
+        }
+
+        $code = sanitize_key( wp_unslash( $_GET['brapl_rule_save_error'] ) );
+        $path = isset( $_GET['brapl_rule_save_path'] ) && is_scalar( $_GET['brapl_rule_save_path'] )
+            ? sanitize_text_field( wp_unslash( $_GET['brapl_rule_save_path'] ) )
+            : '$.rule_model';
+
+        echo '<div class="notice notice-error"><p>';
+        echo esc_html__( 'Rule changes were not saved. Fix the reported rule error and try again.', 'BeRocket_products_label_domain' );
+        echo ' <code>' . esc_html( $code ) . '</code> <code>' . esc_html( $path ) . '</code>';
+        echo '</p></div>';
     }
     public function wc_save_product_without_check( $post_id, $post ) {
         if ( $post->post_type == 'product' ) {
@@ -1126,6 +1235,25 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
         } else {
             parent::wc_save_product_without_check( $post_id, $post );
         }
+    }
+
+    public function wp_insert_post_data( $data, $post ) {
+        if ( ! isset( $post['ID'] ) || ! $post['ID'] || $post['post_type'] !== $this->post_name ) {
+            return $data;
+        }
+
+        if ( ! in_array( $data['post_status'], array( 'publish', 'trash' ), true ) ) {
+            $post_type_object = get_post_type_object( $this->post_name );
+            if (
+                $post_type_object
+                && ! empty( $post_type_object->cap->publish_posts )
+                && current_user_can( $post_type_object->cap->publish_posts )
+            ) {
+                $data['post_status'] = 'publish';
+            }
+        }
+
+        return $data;
     }
 
     public function manage_edit_columns ( $columns ) {
@@ -1175,6 +1303,12 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
     public function get_templates_section_html( $current_template = '' ) {
         global $post;
         $label_type = $this->get_option($post->ID);
+        $custom_image = empty( $label_type['custom_image'] ) || ! is_scalar( $label_type['custom_image'] )
+            ? ''
+            : esc_url_raw( (string) $label_type['custom_image'] );
+        $custom_image_size = empty( $label_type['custom_image_size'] ) || ! is_scalar( $label_type['custom_image_size'] )
+            ? ''
+            : sanitize_text_field( (string) $label_type['custom_image_size'] );
 
         $i = 1;
         $html = '';
@@ -1252,12 +1386,12 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
                     $html .= "  <input id='thumb_layout_{$i}' type='radio' name='br_labels[template]'";
 
                     foreach ( $template_styles as $template_style_name => $template_style_value ) {
-                        if ( $template_value == 1000 and $template_style_name == 'span_custom_css' and ! empty( $label_type['custom_image'] ) ) {
-                            $template_style_value .= "background: transparent url(" . $label_type['custom_image'] . ") no-repeat right top/contain;";
+                        if ( $template_value == 1000 and $template_style_name == 'span_custom_css' and ! empty( $custom_image ) ) {
+                            $template_style_value .= 'background: transparent url("' . $custom_image . '") no-repeat right top/contain;';
                         }
-                        $html .= " data-" . $template_style_name . "='" . $template_style_value . "'";
+                        $html .= ' data-' . sanitize_key( $template_style_name ) . "='" . esc_attr( $template_style_value ) . "'";
                     }
-                    $html .= " data-template_hide='" . json_encode($template_hide) . "'";
+                    $html .= " data-template_hide='" . esc_attr( wp_json_encode( $template_hide ) ) . "'";
 
                     $rotate = empty( $this->templates_rotate["{$type}-{$template_value}"] ) ? 0 : 1;
                     $html .= " data-template_rotate='$rotate'";
@@ -1268,12 +1402,12 @@ display: -ms-flexbox; position: relative; right: 0;text-align: center;',
                     if ( $template_value == 1000 ) {
                         do_action('berocket_enqueue_media');
                         $html .= " class='br_not_change' value='{$type}-{$template_value}' />
-                                <label class='template-preview-{$type} {$type}-{$template_value} " . ( ! empty( $label_type['custom_image'] ) ? 'has_custom_image' : '' ) . "' for='thumb_layout_{$i}'>
+                                <label class='template-preview-{$type} {$type}-{$template_value} " . ( ! empty( $custom_image ) ? 'has_custom_image' : '' ) . "' for='thumb_layout_{$i}'>
                                     <span class='berocket_selected_image'>" .
-                                        ( ! empty( $label_type['custom_image'] ) ? "<img src='{$label_type['custom_image']}' alt=''>" : '' ) .
+                                        ( ! empty( $custom_image ) ? "<img src='" . esc_url( $custom_image ) . "' alt=''>" : '' ) .
                                     "</span>
-                                    <input type='hidden' class='br_not_change berocket_image_value template-preview-custom-image-input' name='br_labels[custom_image]' value='" . ( ! empty( $label_type['custom_image'] ) ? $label_type['custom_image'] : '' ) . "' />
-                                    <input type='hidden' class='br_not_change berocket_image_value_size' name='br_labels[custom_image_size]' value='" . ( ! empty( $label_type['custom_image_size'] ) ? $label_type['custom_image_size'] : '' ) . "' />
+                                    <input type='hidden' class='br_not_change berocket_image_value template-preview-custom-image-input' name='br_labels[custom_image]' value='" . esc_attr( $custom_image ) . "' />
+                                    <input type='hidden' class='br_not_change berocket_image_value_size' name='br_labels[custom_image_size]' value='" . esc_attr( $custom_image_size ) . "' />
                                     <span class='template-preview-custom-image berocket_upload_image' data-for='thumb_layout_{$i}'>
                                         <b>" . __( 'Custom<br />Image', 'BeRocket_products_label_domain' ) . "<br /></b>
                                         <input type='button' class='button tiny-button' value='Upload'/>

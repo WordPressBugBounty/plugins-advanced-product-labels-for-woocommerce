@@ -226,6 +226,7 @@ class BeRocket_products_label extends BeRocket_Framework {
             add_filter( 'berocket_apl_label_show_div_style', array($this, 'get_correct_div_style'), 1, 2);
             add_filter( 'berocket_apl_label_show_custom_css', array($this, 'get_correct_custom_css'), 1, 3);
             add_filter( 'berocket_apl_label_sanitize_data', array($this, 'sanitize_label_data'), 1, 2);
+            add_filter( 'berocket_apl_wc_save_product', array($this, 'sanitize_label_data_for_storage'), 5, 1);
             add_filter( 'berocket_apl_label_show_text_each', array($this, 'get_correct_text_each'), 1, 3);
             add_filter( 'berocket_labels_tooltip_content', array( $this, 'build_tooltip_content'), 1, 3 );
             add_filter( 'berocket_labels_shortcodes_list', array( $this, 'get_shortcodes') );
@@ -234,13 +235,20 @@ class BeRocket_products_label extends BeRocket_Framework {
             add_action( "berocket_labels_show_label_on_product", array ( $this, 'show_label_on_product' ), 10, 4 );
             add_action( "brapl_move_parent_next", array( $this, "move_parent_next" ));
             do_action('brapl_construct_end', $this);
+            add_action( 'after_setup_theme', array($this, 'divi_initialize_divi5_extension') );
             add_action( 'divi_extensions_init', array($this, 'divi_initialize_extension') );
             add_filter( 'brapl_check_label_on_post', array($this, 'check_label_on_post'), 10, 3 );
         }
 
     }
+    public function divi_initialize_divi5_extension() {
+        if( function_exists('et_builder_d5_enabled') && et_builder_d5_enabled() ) {
+            require_once plugin_dir_path( __FILE__ ) . 'divi5/includes/integration.php';
+            BRAPL_Divi5_Integration::init();
+        }
+    }
     public function divi_initialize_extension() {
-        if( class_exists('DiviExtension') ) {
+        if( class_exists('DiviExtension') && ( ! function_exists('et_builder_d5_enabled') || ! et_builder_d5_enabled() ) ) {
             require_once plugin_dir_path( __FILE__ ) . 'divi/includes/LabelExtension.php';
         }
     }
@@ -495,6 +503,82 @@ class BeRocket_products_label extends BeRocket_Framework {
         return $this->labels_ids;
     }
 
+    /**
+     * Return a product only when its storefront data is public.
+     *
+     * Public AJAX endpoints must not render labels or expose timer data for
+     * drafts, private products, or password-protected products.
+     *
+     * @param mixed $product_id Product or variation ID.
+     *
+     * @return WC_Product|false
+     */
+    public static function get_public_product( $product_id ) {
+        if ( ! is_scalar( $product_id ) ) {
+            return false;
+        }
+
+        $product_id = absint( $product_id );
+        $product    = $product_id ? wc_get_product( $product_id ) : false;
+        if ( ! is_a( $product, 'WC_Product' ) ) {
+            return false;
+        }
+
+        $product_post = get_post( $product->get_id() );
+        if (
+            ! is_a( $product_post, 'WP_Post' )
+            || ! in_array( $product_post->post_type, array( 'product', 'product_variation' ), true )
+            || 'publish' !== $product_post->post_status
+            || ! empty( $product_post->post_password )
+        ) {
+            return false;
+        }
+
+        if ( is_a( $product, 'WC_Product_Variation' ) ) {
+            $parent_post = get_post( $product->get_parent_id() );
+            if (
+                ! is_a( $parent_post, 'WP_Post' )
+                || 'product' !== $parent_post->post_type
+                || 'publish' !== $parent_post->post_status
+                || ! empty( $parent_post->post_password )
+            ) {
+                return false;
+            }
+        }
+
+        return $product;
+    }
+
+    /**
+     * Check whether a label can be exposed on the storefront.
+     *
+     * @param mixed $label_id Label post ID.
+     *
+     * @return bool
+     */
+    public static function is_public_label( $label_id ) {
+        if ( ! is_scalar( $label_id ) ) {
+            return false;
+        }
+
+        $label = get_post( absint( $label_id ) );
+        return (
+            is_a( $label, 'WP_Post' )
+            && 'br_labels' === $label->post_type
+            && 'publish' === $label->post_status
+            && empty( $label->post_password )
+        );
+    }
+
+    /**
+     * Cap work performed by public batch AJAX endpoints.
+     *
+     * @return int
+     */
+    public static function get_public_ajax_limit() {
+        return max( 1, absint( apply_filters( 'berocket_labels_public_ajax_limit', 100 ) ) );
+    }
+
     public function get_product_labels_ids( $label_ids, $product ) {
         $product_post = br_wc_get_product_post($product);
         $product_id = $product_post->ID;
@@ -531,14 +615,16 @@ class BeRocket_products_label extends BeRocket_Framework {
         return $label_ids;
     }
     public function ajax_get_label() {
-        if ( !current_user_can( 'edit_products' ) || empty($_POST['br_labels']) ) wp_die();
-
-        do_action( 'berocket_apl_set_label_start', 'demo' );
-        $br_labels = $_POST['br_labels'];
-        if( ! empty( $br_labels['tooltip_content'] ) ) {
-            $br_labels['tooltip_content'] = stripslashes($br_labels['tooltip_content']);
+        if ( ! current_user_can( 'edit_products' ) ) {
+            wp_die( '', '', array( 'response' => 403 ) );
+        }
+        check_ajax_referer( 'br_labels_check', 'br_labels_nonce' );
+        if ( empty( $_POST['br_labels'] ) || ! is_array( $_POST['br_labels'] ) ) {
+            wp_die( '', '', array( 'response' => 400 ) );
         }
 
+        do_action( 'berocket_apl_set_label_start', 'demo' );
+        $br_labels = $this->sanitize_label_data( wp_unslash( $_POST['br_labels'] ) );
         $br_labels = apply_filters( 'berocket_label_adjust_options', $br_labels, 'demo' );
 
         $this->show_label_on_product( $br_labels, 'demo', 'demo' );
@@ -654,7 +740,7 @@ class BeRocket_products_label extends BeRocket_Framework {
         //apply filters to get all data
 
         $div_class = apply_filters('berocket_apl_label_show_div_class', $div_class, $br_label, $product);
-        $div_class = esc_html($div_class);
+        $div_class = esc_attr($div_class);
         $div_extra = apply_filters('berocket_apl_label_show_div_extra', array(), $br_label, $product);
         $div_extra = implode(' ', $div_extra);
         if( ! empty($div_extra) ) {
@@ -686,7 +772,10 @@ class BeRocket_products_label extends BeRocket_Framework {
                 $background_color = $br_label['color'];
             }
             if ( br_get_value_from_array($br_label, 'template') == 'image-1000' && !empty( $br_label['custom_image'] ) ) {
-                $label_style_each .= " background: transparent url('{$br_label['custom_image']}') no-repeat right top/contain;";
+                $custom_image = esc_url_raw( $br_label['custom_image'] );
+                if ( ! empty( $custom_image ) ) {
+                    $label_style_each .= ' background: transparent url("' . $custom_image . '") no-repeat right top/contain;';
+                }
             }
 
             $text = apply_filters('berocket_apl_label_show_text_each', $text, $br_label, $product);
@@ -713,32 +802,32 @@ class BeRocket_products_label extends BeRocket_Framework {
             }
 
             $html = array();
-            $html['open_div'] = '<div class="' . $div_class . '" style="' . $div_style . '"' . $div_extra . '>';
+            $html['open_div'] = '<div class="' . $div_class . '" style="' . esc_attr( $div_style ) . '"' . $div_extra . '>';
 
             $span_custom_class = apply_filters( 'berocket_apl_label_show_span_class', $br_label['div_custom_class'], $br_label, $product, $style_id );
             $span_extra = apply_filters( 'berocket_apl_label_show_span_extra', '', $br_label, $product, $style_id );
             
-            $html['open_span'] = '<span ' . $tooltip_data . ' style="' . $label_style_each . '"' .
-                                 ( empty( $span_custom_class ) ? '' : ' class="' . esc_html( $span_custom_class ) . '"' ) .
+            $html['open_span'] = '<span ' . $tooltip_data . ' style="' . esc_attr( $label_style_each ) . '"' .
+                                 ( empty( $span_custom_class ) ? '' : ' class="' . esc_attr( $span_custom_class ) . '"' ) .
                                  ( empty( $span_extra ) ? '' : ' ' . $span_extra )
                                  . '>';
 
             if( ! empty($br_label['i1_custom_class']) || ! empty($br_label['i1_custom_css']) ) {
-                $html['template-span-before'] = '<i' . ( empty( $i1_style ) ? '' : ' style="' . htmlentities($i1_style) . '"' ) . ' class="template-span-before ' . esc_html(berocket_isset($br_label['i1_custom_class'])) . '"></i>';
+                $html['template-span-before'] = '<i' . ( empty( $i1_style ) ? '' : ' style="' . esc_attr( $i1_style ) . '"' ) . ' class="template-span-before ' . esc_attr(berocket_isset($br_label['i1_custom_class'])) . '"></i>';
             }
             if( ! empty($br_label['i2_custom_class']) || ! empty($br_label['i2_custom_css']) ) {
-                $html['template-i'] = '<i' . ( empty( $i2_style ) ? '' : ' style="' . htmlentities($i2_style) . '"' ) . ' class="template-i ' . esc_html(berocket_isset($br_label['i2_custom_class'])) . '"></i>';
+                $html['template-i'] = '<i' . ( empty( $i2_style ) ? '' : ' style="' . esc_attr( $i2_style ) . '"' ) . ' class="template-i ' . esc_attr(berocket_isset($br_label['i2_custom_class'])) . '"></i>';
             }
             if( ! empty($br_label['i3_custom_class']) || ! empty($br_label['i3_custom_css']) ) {
-                $html['template-i-before'] = '<i' . ( empty( $i3_style ) ? '' : ' style="' . htmlentities($i3_style) . '"' ) . ' class="template-i-before ' . esc_html(berocket_isset($br_label['i3_custom_class'])) . '"></i>';
+                $html['template-i-before'] = '<i' . ( empty( $i3_style ) ? '' : ' style="' . esc_attr( $i3_style ) . '"' ) . ' class="template-i-before ' . esc_attr(berocket_isset($br_label['i3_custom_class'])) . '"></i>';
             }
             if( ! empty($br_label['i4_custom_class']) || ! empty($br_label['i4_custom_css']) ) {
-                $html['template-i-after'] = '<i' . ( empty( $i4_style ) ? '' : ' style="' . htmlentities($i4_style) . '"' ) . ' class="template-i-after ' . esc_html(berocket_isset($br_label['i4_custom_class'])) . '"></i>';
+                $html['template-i-after'] = '<i' . ( empty( $i4_style ) ? '' : ' style="' . esc_attr( $i4_style ) . '"' ) . ' class="template-i-after ' . esc_attr(berocket_isset($br_label['i4_custom_class'])) . '"></i>';
             }
 
             $html['template-b'] = '<b' . 
-                ( empty( $b_style ) ? '' : ' style="' . htmlentities($b_style) . '"' ) 
-                . ( empty( $br_label['b_custom_class'] ) ? '' : ' class="' . esc_html($br_label['b_custom_class']) . '"' ) . '>'
+                ( empty( $b_style ) ? '' : ' style="' . esc_attr( $b_style ) . '"' )
+                . ( empty( $br_label['b_custom_class'] ) ? '' : ' class="' . esc_attr($br_label['b_custom_class']) . '"' ) . '>'
                 . $text . '</b>';
 
             $html['tooltip']    = $tooltip_content;
@@ -758,16 +847,311 @@ class BeRocket_products_label extends BeRocket_Framework {
     }
 
     public function sanitize_label_data($br_label) {
+        if ( ! is_array( $br_label ) ) {
+            return array();
+        }
+
         if( empty($br_label['content_type']) ) {
             $br_label['content_type'] = 'text';
+        } elseif ( is_scalar( $br_label['content_type'] ) ) {
+            $br_label['content_type'] = sanitize_key( $br_label['content_type'] );
+        } else {
+            $br_label['content_type'] = 'text';
         }
-        if ( $br_label['color'][0] != '#' ) {
-            $br_label['color'] = '#'.$br_label['color'];
+
+        if ( isset( $br_label['type'] ) ) {
+            $allowed_types = array( 'image', 'label', 'in_title' );
+            $br_label['type'] = in_array( $br_label['type'], $allowed_types, true )
+                ? $br_label['type']
+                : 'label';
         }
-        if ( isset($br_label['font_color']) && $br_label['font_color'][0] != '#' ) {
-            $br_label['font_color'] = '#'.$br_label['font_color'];
+
+        if ( isset( $br_label['position'] ) ) {
+            $allowed_positions = array( 'left', 'center', 'right', 'left brbottom', 'right brbottom' );
+            $br_label['position'] = in_array( $br_label['position'], $allowed_positions, true )
+                ? $br_label['position']
+                : 'left';
         }
+
+        if ( isset( $br_label['template'] ) ) {
+            $br_label['template'] = is_scalar( $br_label['template'] )
+                ? sanitize_key( $br_label['template'] )
+                : '';
+        }
+
+        $color_fields = array(
+            'color',
+            'font_color',
+            'border_color',
+            'shadow_color',
+            'gradient_start_color',
+            'gradient_end_color',
+            'svg_border_color',
+        );
+        foreach ( $color_fields as $color_field ) {
+            if ( isset( $br_label[$color_field] ) ) {
+                $br_label[$color_field] = $this->sanitize_label_color( $br_label[$color_field] );
+            }
+        }
+
+        $numeric_fields = array(
+            'image_height',
+            'image_width',
+            'border_radius',
+            'line_height',
+            'font_size',
+            'padding_top',
+            'padding_horizontal',
+            'zindex',
+            'border_width',
+            'opacity',
+            'mobile_multiplier',
+            'mobile_multiplier_num',
+            'size_multiplier',
+            'size_multiplier_num',
+            'opacity_num',
+            'shadow_blur',
+            'shadow_blur_num',
+            'shadow_opacity',
+            'shadow_shift_down',
+            'shadow_shift_down_num',
+            'shadow_shift_right',
+            'shadow_shift_right_num',
+            'svg_border_width',
+            'gradient_angle',
+            'gradient_start_position',
+            'gradient_start_position_num',
+            'gradient_end_position',
+            'gradient_end_position_num',
+            'timer_margin_top',
+            'timer_margin_right',
+            'timer_margin_bottom',
+            'timer_margin_left',
+            'tooltip_open_delay',
+            'tooltip_close_delay',
+            'tooltip_max_width',
+            'top_padding',
+            'right_padding',
+            'bottom_padding',
+            'left_padding',
+            'top_margin',
+            'right_margin',
+            'bottom_margin',
+            'left_margin',
+        );
+        foreach ( $numeric_fields as $numeric_field ) {
+            if ( isset( $br_label[$numeric_field] ) && $br_label[$numeric_field] !== '' ) {
+                $br_label[$numeric_field] = ( $numeric_field === 'zindex' )
+                    ? intval( $br_label[$numeric_field] )
+                    : floatval( $br_label[$numeric_field] );
+            }
+        }
+
+        if ( isset( $br_label['opacity'] ) && $br_label['opacity'] !== '' ) {
+            $br_label['opacity'] = max( 0, min( 1, floatval( $br_label['opacity'] ) ) );
+        }
+        if ( isset( $br_label['shadow_opacity'] ) && $br_label['shadow_opacity'] !== '' ) {
+            $br_label['shadow_opacity'] = max( 0, min( 1, floatval( $br_label['shadow_opacity'] ) ) );
+        }
+        foreach ( array( 'gradient_start_position', 'gradient_start_position_num', 'gradient_end_position', 'gradient_end_position_num' ) as $position_field ) {
+            if ( isset( $br_label[$position_field] ) && $br_label[$position_field] !== '' ) {
+                $br_label[$position_field] = max( 0, min( 100, floatval( $br_label[$position_field] ) ) );
+            }
+        }
+
+        $unit_defaults = array(
+            'image_height_units'       => 'px',
+            'image_width_units'        => 'px',
+            'border_radius_units'      => 'px',
+            'line_height_units'        => 'em',
+            'font_size_units'          => 'px',
+            'padding_top_units'        => 'px',
+            'padding_horizontal_units' => 'px',
+            'padding_units'            => 'px',
+            'margin_units'             => 'px',
+            'timer_margin_units'       => 'px',
+        );
+        $allowed_units = apply_filters(
+            'berocket_apl_allowed_css_units',
+            array( 'px', 'em', 'rem', '%', 'vw', 'vh', 'vmin', 'vmax', 'ch', 'ex' )
+        );
+        foreach ( $unit_defaults as $unit_field => $default_unit ) {
+            if ( isset( $br_label[$unit_field] ) && ! in_array( $br_label[$unit_field], $allowed_units, true ) ) {
+                $br_label[$unit_field] = $default_unit;
+            }
+        }
+
+        foreach ( array( 'custom_image', 'image', 'tooltip_image' ) as $url_field ) {
+            if ( isset( $br_label[$url_field] ) ) {
+                $br_label[$url_field] = is_scalar( $br_label[$url_field] )
+                    ? esc_url_raw( (string) $br_label[$url_field] )
+                    : '';
+            }
+        }
+
+        if ( isset( $br_label['label_link'] ) ) {
+            $br_label['label_link'] = is_scalar( $br_label['label_link'] )
+                ? esc_url_raw( (string) $br_label['label_link'] )
+                : '';
+        }
+
+        if ( isset( $br_label['custom_image_size'] ) ) {
+            $custom_image_size = is_scalar( $br_label['custom_image_size'] )
+                ? sanitize_text_field( (string) $br_label['custom_image_size'] )
+                : '';
+            $br_label['custom_image_size'] = preg_match( '/^\d+(?:\.\d+)?\*\d+(?:\.\d+)?$/', $custom_image_size )
+                ? $custom_image_size
+                : '';
+        }
+
+        if ( isset( $br_label['rotate'] ) ) {
+            $rotate = is_scalar( $br_label['rotate'] ) ? (string) $br_label['rotate'] : '';
+            $br_label['rotate'] = preg_match( '/^-?(?:\d+(?:\.\d+)?|\.\d+)(?:deg|rad|turn)$/', $rotate )
+                ? $rotate
+                : '0deg';
+        }
+
+        if ( isset( $br_label['gradient_orientation'] ) ) {
+            $allowed_gradient_orientations = array( 'linear', 'radial', 'elliptical' );
+            $br_label['gradient_orientation'] = in_array( $br_label['gradient_orientation'], $allowed_gradient_orientations, true )
+                ? $br_label['gradient_orientation']
+                : 'linear';
+        }
+
+        if ( isset( $br_label['gradient_position'] ) ) {
+            $allowed_gradient_positions = array(
+                'at top left',
+                'at top center',
+                'at top right',
+                'at left center',
+                'at center center',
+                'at right center',
+                'at bottom left',
+                'at bottom center',
+                'at bottom right',
+            );
+            $br_label['gradient_position'] = in_array( $br_label['gradient_position'], $allowed_gradient_positions, true )
+                ? $br_label['gradient_position']
+                : 'at top left';
+        }
+
+        if ( isset( $br_label['timer_template'] ) ) {
+            $timer_template = is_scalar( $br_label['timer_template'] )
+                ? sanitize_key( (string) $br_label['timer_template'] )
+                : '';
+            $allowed_timer_templates = array( 'compact-1', 'large-1', 'large-2', 'large-3', 'large-4', 'large-5', 'large-6', 'large-7' );
+            $br_label['timer_template'] = in_array( $timer_template, $allowed_timer_templates, true )
+                ? $timer_template
+                : '';
+        }
+
+        if ( isset( $br_label['hide_on_device'] ) ) {
+            $hide_on_device = is_array( $br_label['hide_on_device'] ) ? $br_label['hide_on_device'] : array();
+            $br_label['hide_on_device'] = array_values(
+                array_filter(
+                    $hide_on_device,
+                    static function( $device ) {
+                        return is_string( $device ) && in_array( $device, array( 'mobile', 'tablet', 'desktop' ), true );
+                    }
+                )
+            );
+        }
+
+        foreach ( array( 'attribute_values', 'label_from_post' ) as $id_list_field ) {
+            if ( isset( $br_label[$id_list_field] ) ) {
+                $id_list = is_array( $br_label[$id_list_field] ) ? $br_label[$id_list_field] : array();
+                $br_label[$id_list_field] = array_values(
+                    array_unique(
+                        array_filter(
+                            array_map( 'absint', array_filter( $id_list, 'is_scalar' ) )
+                        )
+                    )
+                );
+            }
+        }
+
+        if ( isset( $br_label['img_title'] ) ) {
+            $br_label['img_title'] = is_scalar( $br_label['img_title'] )
+                ? sanitize_text_field( (string) $br_label['img_title'] )
+                : '';
+        }
+
+        if ( isset( $br_label['font_family'] ) ) {
+            $br_label['font_family'] = preg_replace(
+                '/[^a-zA-Z0-9 _-]/',
+                '',
+                is_scalar( $br_label['font_family'] )
+                    ? sanitize_text_field( (string) $br_label['font_family'] )
+                    : ''
+            );
+        }
+
+        foreach ( array( 'text', 'text_before', 'text_after', 'tooltip_content' ) as $html_field ) {
+            if ( ! isset( $br_label[$html_field] ) ) {
+                continue;
+            }
+
+            if ( is_array( $br_label[$html_field] ) && $html_field === 'text' ) {
+                $br_label[$html_field] = array_map(
+                    static function( $value ) {
+                        return is_scalar( $value ) ? wp_kses_post( (string) $value ) : '';
+                    },
+                    $br_label[$html_field]
+                );
+            } elseif ( is_scalar( $br_label[$html_field] ) ) {
+                $br_label[$html_field] = wp_kses_post( (string) $br_label[$html_field] );
+            } else {
+                $br_label[$html_field] = '';
+            }
+        }
+
+        foreach ( array( 'div_custom_css', 'span_custom_css', 'b_custom_css', 'i1_custom_css', 'i2_custom_css', 'i3_custom_css', 'i4_custom_css' ) as $css_field ) {
+            if ( isset( $br_label[$css_field] ) ) {
+                $br_label[$css_field] = is_scalar( $br_label[$css_field] )
+                    ? wp_strip_all_tags( (string) $br_label[$css_field] )
+                    : '';
+            }
+        }
+
+        foreach ( array( 'tooltip_position', 'tooltip_open_on', 'tooltip_theme' ) as $tooltip_field ) {
+            if ( isset( $br_label[$tooltip_field] ) ) {
+                $br_label[$tooltip_field] = is_scalar( $br_label[$tooltip_field] )
+                    ? sanitize_text_field( (string) $br_label[$tooltip_field] )
+                    : '';
+            }
+        }
+
+        foreach ( array( 'div_custom_class', 'span_custom_class', 'b_custom_class', 'i1_custom_class', 'i2_custom_class', 'i3_custom_class', 'i4_custom_class' ) as $class_field ) {
+            if ( isset( $br_label[$class_field] ) ) {
+                $br_label[$class_field] = is_scalar( $br_label[$class_field] )
+                    ? sanitize_text_field( (string) $br_label[$class_field] )
+                    : '';
+            }
+        }
+
         return $br_label;
+    }
+
+    public function sanitize_label_data_for_storage( $br_label ) {
+        return $this->sanitize_label_data( $br_label );
+    }
+
+    private function sanitize_label_color( $color ) {
+        if ( ! is_scalar( $color ) ) {
+            return '';
+        }
+
+        $color = trim( sanitize_text_field( (string) $color ) );
+        if ( $color === '' ) {
+            return '';
+        }
+
+        if ( $color[0] !== '#' ) {
+            $color = '#' . $color;
+        }
+
+        $sanitized_color = sanitize_hex_color( $color );
+        return empty( $sanitized_color ) ? '' : $sanitized_color;
     }
     public function get_correct_text($text, $br_label, $product) {
         if( $product === 'demo' ) {
@@ -905,6 +1289,9 @@ class BeRocket_products_label extends BeRocket_Framework {
         }
 
         if ( ! empty( $font_family ) ) {
+            $font_family = preg_replace( '/[^a-zA-Z0-9 _-]/', '', sanitize_text_field( (string) $font_family ) );
+        }
+        if ( ! empty( $font_family ) ) {
             $font_handle = 'berocket-label-font-' . str_replace( ' ', '_', $font_family );
             if ( ! wp_style_is( $font_handle ) ) {
                 wp_enqueue_style( $font_handle, '//fonts.googleapis.com/css?family=' . str_replace(' ', '+', $font_family ) );            
@@ -967,7 +1354,7 @@ class BeRocket_products_label extends BeRocket_Framework {
 
     public function build_tooltip_content( $br_label ) {
         $br_label['tooltip_content'] = empty( $br_label['tooltip_content'] ) ? '' 
-            : "<span class='berocket_tooltip_text'>{$br_label['tooltip_content']}</span>";
+            : "<span class='berocket_tooltip_text'>" . wp_kses_post( $br_label['tooltip_content'] ) . '</span>';
         return $br_label;
     }
 
@@ -977,22 +1364,57 @@ class BeRocket_products_label extends BeRocket_Framework {
         $tooltip_data = '';
 
         if( !empty( $tooltip_content ) ) {
-            $br_label['tooltip_open_delay'] = (empty($br_label['tooltip_open_delay']) ? '0' : $br_label['tooltip_open_delay']);
-            $br_label['tooltip_close_delay'] = (empty($br_label['tooltip_close_delay']) ? '0' : $br_label['tooltip_close_delay']);
-            $tooltip_data .= ' data-tippy-delay="['.$br_label['tooltip_open_delay'].', '.$br_label['tooltip_close_delay'].']"';
+            $br_label['tooltip_open_delay'] = empty( $br_label['tooltip_open_delay'] ) ? 0 : absint( $br_label['tooltip_open_delay'] );
+            $br_label['tooltip_close_delay'] = empty( $br_label['tooltip_close_delay'] ) ? 0 : absint( $br_label['tooltip_close_delay'] );
+            $tooltip_data .= ' data-tippy-delay="' . esc_attr(
+                wp_json_encode(
+                    array(
+                        $br_label['tooltip_open_delay'],
+                        $br_label['tooltip_close_delay'],
+                    )
+                )
+            ) . '"';
             if( ! empty($br_label['tooltip_position']) ) {
-                $tooltip_data .= ' data-tippy-placement="'.$br_label['tooltip_position'].'"';
+                $allowed_placements = array(
+                    'auto',
+                    'auto-start',
+                    'auto-end',
+                    'top',
+                    'top-start',
+                    'top-end',
+                    'right',
+                    'right-start',
+                    'right-end',
+                    'bottom',
+                    'bottom-start',
+                    'bottom-end',
+                    'left',
+                    'left-start',
+                    'left-end',
+                );
+                $tooltip_position = in_array( $br_label['tooltip_position'], $allowed_placements, true )
+                    ? $br_label['tooltip_position']
+                    : 'top';
+                $tooltip_data .= ' data-tippy-placement="' . esc_attr( $tooltip_position ) . '"';
             }
             if( ! empty($br_label['tooltip_max_width']) ) {
-                $tooltip_data .= ' data-tippy-maxWidth="'.$br_label['tooltip_max_width'].'px"';
+                $tooltip_data .= ' data-tippy-maxWidth="' . esc_attr( absint( $br_label['tooltip_max_width'] ) . 'px' ) . '"';
             }
             if( ! empty($br_label['tooltip_open_on']) ) {
-                $tooltip_data .= empty( $br_label['label_link'] )
-                    ? "data-tippy-trigger='{$br_label['tooltip_open_on']}'" 
-                    : "data-tippy-trigger='mouseenter'";
+                $allowed_triggers = array( 'mouseenter', 'focus', 'click', 'manual', 'mouseenter focus' );
+                $tooltip_trigger = in_array( $br_label['tooltip_open_on'], $allowed_triggers, true )
+                    ? $br_label['tooltip_open_on']
+                    : 'mouseenter focus';
+                if ( ! empty( $br_label['label_link'] ) ) {
+                    $tooltip_trigger = 'mouseenter';
+                }
+                $tooltip_data .= ' data-tippy-trigger="' . esc_attr( $tooltip_trigger ) . '"';
             }
             if( ! empty($br_label['tooltip_theme']) ) {
-                $tooltip_data .= ' data-tippy-theme="'.$br_label['tooltip_theme'].'"';
+                $tooltip_themes = array_filter(
+                    array_map( 'sanitize_html_class', preg_split( '/\s+/', $br_label['tooltip_theme'] ) )
+                );
+                $tooltip_data .= ' data-tippy-theme="' . esc_attr( implode( ' ', $tooltip_themes ) ) . '"';
             }
             $tooltip_data .= ' data-tippy-hideOnClick="'.(empty($br_label['tooltip_close_on_click']) ? 'trigger' : 'true').'"';
             $tooltip_data .= ' data-tippy-arrow="'.(empty($br_label['tooltip_use_arrow']) ? 'false' : 'true').'"';
@@ -1037,7 +1459,8 @@ class BeRocket_products_label extends BeRocket_Framework {
         $types_to_check = array(
             'page_id',
             'date_time',
-            'single_product'
+            'single_product',
+            'user_role'
         );
         if( is_array($conditions) ) {
             foreach( $conditions as $condition_or ) {

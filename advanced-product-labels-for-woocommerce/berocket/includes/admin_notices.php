@@ -174,7 +174,7 @@ if ( ! class_exists( 'berocket_admin_notices' ) ) {
                 return false;
             }
 
-	        $notices = get_option('berocket_admin_notices');
+	        $notices = get_option('berocket_admin_notices', []);
 
             // search if $current_notice exists, start and end time should be ignored, use priority and name only
 	        if ( is_array( $notices ) and ! empty( $notices[ $options['priority'] ] ) ) {
@@ -443,6 +443,7 @@ if ( ! class_exists( 'berocket_admin_notices' ) ) {
                 $notice['html'] .=
                 '<div><form class="berocket_subscribe_form" method="POST" action="' . admin_url( 'admin-ajax.php' ) . '">
                     <input type="hidden" name="berocket_action" value="berocket_subscribe_email">
+                    <input type="hidden" name="wp_nonce" value="' . wp_create_nonce('berocket_subscribe_email') . '">
                     <input class="berocket_subscribe_email" type="email" name="email" value="' . $user_email . '">
                     <input type="submit" class="button-primary button berocket_notice_submit" value="Subscribe">
                 </form></div>';
@@ -1135,10 +1136,11 @@ if ( ! class_exists( 'berocket_admin_notices' ) ) {
                                 var data = $this.serialize();
                                 data = data+"&action="+$this.find("[name=\'berocket_action\']").val();
                             } else {
+                                var wpNonce = $this.find("[name=\'wp_nonce\']").val() || "";
                                 if( jQuery(".berocket_plugin_id_subscribe").length ) {
-                                    var data = {email:email, action: $this.find("[name=\'berocket_action\']").val(), plugin:jQuery(".berocket_plugin_id_subscribe").val()};
+                                    var data = {email:email, action: $this.find("[name=\'berocket_action\']").val(), plugin:jQuery(".berocket_plugin_id_subscribe").val(), wp_nonce:wpNonce};
                                 } else {
-                                    var data = {email:email, action: $this.find("[name=\'berocket_action\']").val()};
+                                    var data = {email:email, action: $this.find("[name=\'berocket_action\']").val(), wp_nonce:wpNonce};
                                 }
                             }
                             var url = $this.attr("action");
@@ -1225,7 +1227,8 @@ if ( ! class_exists( 'berocket_admin_notices' ) ) {
             wp_die();
         }
         public static function subscribe() {
-            if ( ! ( current_user_can( 'manage_options' ) ) ) {
+	        $wp_nonce = ( empty($_POST['wp_nonce']) ? '' : $_POST['wp_nonce'] );
+            if ( ! ( current_user_can( 'manage_options' ) ) || ! wp_verify_nonce( $wp_nonce, 'berocket_subscribe_email' ) ) {
                 echo __( 'Do not have access for this feature', 'BeRocket_domain' );
                 wp_die();
             }
@@ -1253,7 +1256,7 @@ if ( ! class_exists( 'berocket_admin_notices' ) ) {
                 ));
                 if( ! is_wp_error($response) ) {
                     $out = wp_remote_retrieve_body($response);
-                    echo $out;
+                    echo wp_kses_post($out);
                 }
             }
             wp_die();
@@ -1476,10 +1479,10 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
                 echo __( 'Do not have access for this feature', 'BeRocket_domain' );
                 wp_die();
             }
-            $plugin = (empty($_GET['brfeature_plugin']) ? (empty($_POST['brfeature_plugin']) ? '' : $_POST['brfeature_plugin']) : $_GET['brfeature_plugin']);
-            $email = (empty($_GET['brfeature_email']) ? (empty($_POST['brfeature_email']) ? '' : $_POST['brfeature_email']) : $_GET['brfeature_email']);
-            $title = (empty($_GET['brfeature_title']) ? (empty($_POST['brfeature_title']) ? '' : $_POST['brfeature_title']) : $_GET['brfeature_title']);
-            $description = (empty($_GET['brfeature_description']) ? (empty($_POST['brfeature_description']) ? '' : $_POST['brfeature_description']) : $_GET['brfeature_description']);
+            $plugin = sanitize_key(wp_unslash(empty($_GET['brfeature_plugin']) ? (empty($_POST['brfeature_plugin']) ? '' : $_POST['brfeature_plugin']) : $_GET['brfeature_plugin']));
+            $email = sanitize_email(wp_unslash(empty($_GET['brfeature_email']) ? (empty($_POST['brfeature_email']) ? '' : $_POST['brfeature_email']) : $_GET['brfeature_email']));
+            $title = sanitize_text_field(wp_unslash(empty($_GET['brfeature_title']) ? (empty($_POST['brfeature_title']) ? '' : $_POST['brfeature_title']) : $_GET['brfeature_title']));
+            $description = sanitize_textarea_field(wp_unslash(empty($_GET['brfeature_description']) ? (empty($_POST['brfeature_description']) ? '' : $_POST['brfeature_description']) : $_GET['brfeature_description']));
             if( ! empty($plugin) && ! empty($title) && ! empty($description) ) {
                 $response = wp_remote_post( 'https://berocket.com/api/data/add_feature_request', array(
                     'body'        => array(
@@ -1721,8 +1724,8 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
                     }
 
                     foreach ( $plugins as &$plugin ) {
-                        if ( $plugin[ 'plugin_id' ] == berocket_isset( $plugin_data[ 'id' ] ) && isset( $plugin_data[ 'price' ] ) ) {
-                            $plugin[ 'price' ] = $plugin_data[ 'price' ];
+                        if ( $plugin[ 'plugin_id' ] == berocket_isset( $plugin_data[ 'id' ] ) && isset( $plugin_data[ 'price' ] ) && is_scalar( $plugin_data[ 'price' ] ) ) {
+                            $plugin[ 'price' ] = sanitize_text_field( (string) $plugin_data[ 'price' ] );
                             break;
                         }
                     }
@@ -1787,7 +1790,7 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
                             <div>
                                 <h1>{$plugin['title']}</h1>
                                 <p>" . ( empty( $plugin['desc_top'] ) ? $plugin['desc'] : $plugin['desc_top'] ) . "</p>
-                                <a href='{$plugin['url']}" . ( str_contains( $plugin[ 'url' ], '?') ? '&' : '?' ) .
+                                <a href='{$plugin['url']}" . ( strpos( $plugin['url'], '?' ) !== false ? '&' : '?' ) .
                                     "utm_source=plugin&utm_medium=banner&utm_campaign=upgrade&utm_content=top_" . $banner_key .
                                     "&utm_term={$cur_plugin->info['plugin_sku']}' target='_blank'>" . $banner[ $banner_key ] .
                                 "</a>
@@ -2049,7 +2052,7 @@ if( ! class_exists( 'berocket_admin_notices_rate_stars' ) ) {
                             <h3>' . $plugin_data[ 'title' ] . '</h3>
                             <p>' . $plugin_data[ 'desc' ] . '</p>
                             <a class="brfirst" href="' . $plugin_data[ 'url' ]
-                                . ( str_contains( $plugin_data[ 'url' ], '?') ? '&' : '?' )
+                                . ( strpos( $plugin_data[ 'url' ], '?' ) !== false ? '&' : '?' )
                                 . 'utm_source=plugin&utm_medium=settings&utm_term=' . ( $plugin->info['plugin_sku'] ?? $plugin->info['plugin_name'] )
                                 . '&utm_campaign=upgrade&utm_content=sidebar"'
                                 . ' target="_blank">From: $' . $plugin_data[ 'price' ] . '</a>

@@ -2,21 +2,32 @@
 class BeRocket_products_label_image_bottom_class {
     function __construct() {
         add_action('wp_enqueue_scripts', array($this, 'load_scripts'));
+        add_action('berocket_apl_load_admin_edit_scripts', array($this, 'load_admin_scripts'));
         add_filter( 'brfr_data_berocket_advanced_label_editor', array( $this, 'additional_settings' ), 1000 );
         add_filter( 'brfr_data_products_label', array( $this, 'plugin_settings' ), 1000 );
     }
 
     public function load_scripts() {
+        $options = BeRocket_products_label::getInstance()->get_option();
+        $this->enqueue_assets(
+            empty($options['img_bottom_parent']) ? '.product' : $options['img_bottom_parent'],
+            empty($options['img_bottom_find']) ? 'img' : $options['img_bottom_find']
+        );
+    }
+
+    public function load_admin_scripts() {
+        $this->enqueue_assets('.berocket_label_preview', '.berocket_product_image');
+    }
+
+    private function enqueue_assets($parent, $find) {
         wp_enqueue_style( 'berocket_image_bottom_css', plugins_url( 'assets/frontend.css', __FILE__ ) );
         wp_enqueue_script( 'berocket_image_bottom', plugins_url( 'assets/frontend.js', __FILE__ ), array( 'jquery' ) );
-        $BeRocket_products_label = BeRocket_products_label::getInstance();
-        $options = $BeRocket_products_label->get_option();
-        $localized = wp_localize_script(
+        wp_localize_script(
             'berocket_image_bottom',
             'bapl_image_btm',
             array(
-                'parent'    => (empty($options['img_bottom_parent']) ? '.product' : esc_html($options['img_bottom_parent'])),
-                'find'      => (empty($options['img_bottom_find']) ? 'img' : esc_html($options['img_bottom_find'])),
+                'parent'    => esc_html($parent),
+                'find'      => esc_html($find),
             )
         );
     }

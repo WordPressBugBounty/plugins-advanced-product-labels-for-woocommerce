@@ -243,6 +243,10 @@ var page_loading = true;
 
                     br_label_ajax_demo = null;
                     $('.tippy-box').parent().remove();
+                    if( typeof(bapl_image_bottom_init) != 'undefined' ) {
+                        bapl_image_bottom_init();
+                        setTimeout(bapl_image_bottom_init, 200);
+                    }
                     if( typeof(berocket_regenerate_tooltip) != 'undefined' ) {
                         berocket_regenerate_tooltip();
                     }

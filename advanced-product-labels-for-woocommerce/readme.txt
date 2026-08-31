@@ -4,8 +4,8 @@ Contributors: dholovnia, berocket
 Donate link: https://berocket.com/woocommerce-advanced-product-labels/?utm_source=wordpress_org&utm_medium=donate&utm_campaign=products_label
 Tags: labels, badges, mark, product labels, woocommerce labels
 Requires at least: 5.0
-Tested up to: 7.0
-Stable tag: 3.3.3.7
+Tested up to: 7.1
+Stable tag: 3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,7 @@ Creating labels has come really easy and fast with the Advanced Product Labels p
 &#9989; In-title label
 &#9989; Labels can be rotated from -90deg to 90deg
 &#9989; Labels can be added to products with specific attribute values
+&#9989; Schedule condition (previously named "Date Time") for showing labels between optional From and To values
 
 
 = Plugin Links: =
@@ -127,6 +128,10 @@ If none of the previous listed actions helps you solve the problem, then, submit
 You can get more features with the premium version of Advanced Product Labels for WooCommerce, available on [BeRocket page](https://berocket.com/woocommerce-advanced-product-labels/?utm_source=wordpress_org&utm_medium=faq&utm_campaign=products_label). Here you can read more about the premium features of the plugin and make it give it its best shot!
 
 
+= Where did the Date Time condition go? =
+The Paid condition is now named Schedule. Existing Date Time rules continue to work without re-saving. Some Free upgrade prompts may still show the historical "Date Time (premium)" alias; it refers to Schedule and is not a separate condition.
+
+
 = How can I try the full-featured plugin? =
 You can try this plugin's admin side [here](https://berocket.com/woocommerce-advanced-product-labels/?utm_source=wordpress_org&utm_medium=faq&utm_campaign=products_label#try-admin). Configure plugin the way you need to check the results.
 
@@ -142,6 +147,12 @@ You can try this plugin's admin side [here](https://berocket.com/woocommerce-adv
 ---
 
 == Changelog ==
+
+= 3.4 =
+* New - User Role condition for product labels in the paid edition.
+* Enhancement - The Date Time condition is now named Schedule.
+* Enhancement - Conditions editor can check a bounded, paginated list of matching products.
+* Enhancement - Requires PHP 7.4 or later.
 
 = 3.3.3.7 =
 * Enhancement - Compatibility version: Wordpress 7.0

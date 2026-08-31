@@ -3,6 +3,19 @@ if( ! is_array($options[$key]) ) {
     return;
 }
 
+if( ! isset($brapl_import_warnings) || ! is_array($brapl_import_warnings) ) {
+    $brapl_import_warnings = array();
+}
+if( ! isset($brapl_registered_roles) || ! is_array($brapl_registered_roles) ) {
+    $brapl_registered_roles = array();
+    if( function_exists('wp_roles') ) {
+        $brapl_role_registry = wp_roles();
+        if( is_object($brapl_role_registry) && isset($brapl_role_registry->roles) && is_array($brapl_role_registry->roles) ) {
+            $brapl_registered_roles = array_keys($brapl_role_registry->roles);
+        }
+    }
+}
+
 foreach($options[$key] as $group_id => $conditions) {
     if( ! is_array($conditions) ) {
         continue;
@@ -14,6 +27,22 @@ foreach($options[$key] as $group_id => $conditions) {
         }
 
         switch($condition['type']) {
+            case 'user_role':
+                if( isset($condition['roles']) && is_array($condition['roles']) ) {
+                    foreach($condition['roles'] as $role_slug) {
+                        if( ! is_string($role_slug) || $role_slug === '' || in_array($role_slug, $brapl_registered_roles, true) ) {
+                            continue;
+                        }
+                        $brapl_import_warnings[] = array(
+                            'code'           => 'user_role_missing_role',
+                            'condition_type' => 'user_role',
+                            'group_id'       => $group_id,
+                            'condition_id'   => $condition_id,
+                            'role_slug'      => $role_slug,
+                        );
+                    }
+                }
+                break;
             case 'product':
                 foreach(array('product', 'additional_product') as $products_key) {
                     if( empty($condition[$products_key]) || ! is_array($condition[$products_key]) ) {

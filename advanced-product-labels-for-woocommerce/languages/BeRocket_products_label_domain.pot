@@ -1,0 +1,1975 @@
+# Copyright (C) 2026 BeRocket
+# This file is distributed under the same license as the WooCommerce Advanced Product Labels plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Advanced Product Labels 3.3.3.7\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/labels\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-08T11:15:00+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: BeRocket_products_label_domain\n"
+
+#. Plugin Name of the plugin
+#: woocommerce-advanced-products-labels.php
+msgid "WooCommerce Advanced Product Labels"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: woocommerce-advanced-products-labels.php
+msgid "https://berocket.com/woocommerce-advanced-product-labels/?utm_source=plugin&utm_medium=plugin_file&utm_term=labels&utm_campaign=upgrade"
+msgstr ""
+
+#. Description of the plugin
+#: woocommerce-advanced-products-labels.php
+msgid "Promote your products! Show “Free Shipping” or other special attributes with your products."
+msgstr ""
+
+#. Author of the plugin
+#: woocommerce-advanced-products-labels.php
+msgid "BeRocket"
+msgstr ""
+
+#. Author URI of the plugin
+#: woocommerce-advanced-products-labels.php
+msgid "https://berocket.com/?utm_source=plugin&utm_medium=plugins&utm_term=labels&utm_campaign=upgrade"
+msgstr ""
+
+#: addons/advanced_content/advanced_content.php:10
+msgid "This addon allows you to attach links to labels."
+msgstr ""
+
+#: addons/ajax_load/ajax_load.php:10
+msgid "Load labels via AJAX after when page is loaded."
+msgstr ""
+
+#: addons/gradients/gradients.php:10
+msgid "This addon allows you to add gradients to labels."
+msgstr ""
+
+#: addons/image_bottom/image_bottom_include.php:49
+#: includes/custom_post.php:1191
+msgid "Right Bottom"
+msgstr ""
+
+#: addons/image_bottom/image_bottom_include.php:50
+#: includes/custom_post.php:1190
+msgid "Left Bottom"
+msgstr ""
+
+#: addons/image_bottom/image_bottom_include.php:56
+msgid "Image Parent Selector"
+msgstr ""
+
+#: addons/image_bottom/image_bottom_include.php:63
+msgid "Image Main Selector"
+msgstr ""
+
+#: addons/labels_for_variations/labels_for_variations.php:11
+msgid "This addon will add possibility to use different labels for product variations"
+msgstr ""
+
+#: addons/labels_for_variations/labels_for_variations_include.php:169
+#: addons/labels_for_variations/labels_for_variations_include.php:176
+msgid "Display for variation"
+msgstr ""
+
+#: addons/selector_compat/selector_compat_include.php:61
+msgid "Product selector"
+msgstr ""
+
+#: addons/selector_compat/selector_compat_include.php:62
+msgid "%ID% will be replacced with product ID it must be specific selector for product block"
+msgstr ""
+
+#: addons/selector_compat/selector_compat_include.php:69
+msgid "Main image selector"
+msgstr ""
+
+#: addons/selector_compat/selector_compat_include.php:76
+msgid "Title selector"
+msgstr ""
+
+#: addons/timers/timers.php:10
+msgid "This addon allows you to add timers to labels."
+msgstr ""
+
+#: divi/includes/modules/brlabel/brlabel.php:14
+msgid "BeRocket Product Label"
+msgstr ""
+
+#: divi/includes/modules/brlabel/brlabel.php:54
+msgid "Label Type"
+msgstr ""
+
+#: divi/includes/modules/brlabel/brlabel.php:57
+msgid "On Image"
+msgstr ""
+
+#: divi/includes/modules/brlabel/brlabel.php:58
+#: includes/custom_post.php:781
+#: includes/custom_post.php:1195
+msgid "Label"
+msgstr ""
+
+#: divi/includes/modules/brlabel/brlabel.php:59
+msgid "All"
+msgstr ""
+
+#: divi5/includes/integration.php:66
+msgid "Security check failed."
+msgstr ""
+
+#: divi5/includes/integration.php:70
+msgid "You do not have permission to preview this module."
+msgstr ""
+
+#: divi5/includes/integration.php:78
+msgid "Invalid module attributes."
+msgstr ""
+
+#: divi5/includes/integration.php:86
+msgid "Unknown Divi module."
+msgstr ""
+
+#: includes/better_position.php:61
+#: paid/paid.php:691
+msgid "Attribute data set"
+msgstr ""
+
+#: includes/better_position.php:64
+#: includes/better_position.php:173
+msgid "Line "
+msgstr ""
+
+#: includes/better_position.php:72
+msgid "Display all labels"
+msgstr ""
+
+#: includes/better_position.php:73
+msgid "Limit height"
+msgstr ""
+
+#: includes/better_position.php:74
+msgid "Cut line at the end of image"
+msgstr ""
+
+#: includes/better_position.php:75
+msgid "Limited labels count"
+msgstr ""
+
+#: includes/better_position.php:83
+msgid "Max height"
+msgstr ""
+
+#: includes/better_position.php:88
+msgid "Label count"
+msgstr ""
+
+#: includes/better_position.php:93
+msgid "Show hidden on mouse over"
+msgstr ""
+
+#: includes/better_position.php:94
+#: includes/custom_post.php:687
+msgid "Use background color"
+msgstr ""
+
+#: includes/better_position.php:95
+#: includes/custom_post.php:696
+msgid "Background color"
+msgstr ""
+
+#: includes/better_position.php:118
+msgid "Start for Better position labels"
+msgstr ""
+
+#: includes/better_position.php:126
+#: includes/better_position.php:134
+#: includes/better_position.php:142
+#: includes/better_position.php:150
+#: paid/paid.php:931
+msgid "px"
+msgstr ""
+
+#: includes/better_position.php:127
+#: includes/better_position.php:212
+#: includes/better_position.php:250
+#: includes/custom_post.php:858
+#: paid/addons/timers/timers_include.php:266
+msgid "Top"
+msgstr ""
+
+#: includes/better_position.php:135
+#: includes/better_position.php:220
+#: includes/better_position.php:258
+#: includes/custom_post.php:820
+#: includes/custom_post.php:861
+#: includes/custom_post.php:1189
+#: paid/addons/timers/timers_include.php:274
+msgid "Right"
+msgstr ""
+
+#: includes/better_position.php:143
+#: includes/better_position.php:228
+#: includes/better_position.php:266
+#: includes/custom_post.php:859
+#: paid/addons/timers/timers_include.php:282
+msgid "Bottom"
+msgstr ""
+
+#: includes/better_position.php:151
+#: includes/better_position.php:236
+#: includes/better_position.php:274
+#: includes/custom_post.php:818
+#: includes/custom_post.php:860
+#: includes/custom_post.php:1187
+#: paid/addons/timers/timers_include.php:290
+msgid "Left"
+msgstr ""
+
+#: includes/better_position.php:170
+msgid "One By One"
+msgstr ""
+
+#: includes/better_position.php:182
+msgid "Better Position"
+msgstr ""
+
+#: includes/better_position.php:198
+msgid "Position Line"
+msgstr ""
+
+#: includes/better_position.php:204
+msgid "Paddings"
+msgstr ""
+
+#: includes/better_position.php:242
+msgid "Margin"
+msgstr ""
+
+#: includes/better_position.php:634
+msgid "Color pick"
+msgstr ""
+
+#: includes/better_position.php:636
+msgid "Image pick"
+msgstr ""
+
+#: includes/compatibility/product_preview.php:19
+msgid "Hide BeRocket Advanced Labels"
+msgstr ""
+
+#: includes/custom_post.php:9
+msgid "Single Product"
+msgstr ""
+
+#: includes/custom_post.php:15
+msgid "Schedule"
+msgstr ""
+
+#: includes/custom_post.php:31
+msgid "Single Product page on product itself"
+msgstr ""
+
+#: includes/custom_post.php:421
+#: includes/custom_post.php:424
+msgid "Advanced Label"
+msgstr ""
+
+#: includes/custom_post.php:423
+msgid "Advanced Labels"
+msgstr ""
+
+#: includes/custom_post.php:425
+msgctxt "Admin menu name"
+msgid "Advanced Labels"
+msgstr ""
+
+#: includes/custom_post.php:426
+msgid "Add Label"
+msgstr ""
+
+#: includes/custom_post.php:427
+msgid "Add New Label"
+msgstr ""
+
+#: includes/custom_post.php:428
+msgid "Edit"
+msgstr ""
+
+#: includes/custom_post.php:429
+msgid "Edit Label"
+msgstr ""
+
+#: includes/custom_post.php:430
+msgid "New Label"
+msgstr ""
+
+#: includes/custom_post.php:431
+msgid "View Labels"
+msgstr ""
+
+#: includes/custom_post.php:432
+msgid "View Label"
+msgstr ""
+
+#: includes/custom_post.php:433
+msgid "Search Advanced Labels"
+msgstr ""
+
+#: includes/custom_post.php:434
+msgid "No Advanced Labels found"
+msgstr ""
+
+#: includes/custom_post.php:435
+msgid "No Advanced Labels found in trash"
+msgstr ""
+
+#: includes/custom_post.php:437
+msgid "This is where you can add advanced labels."
+msgstr ""
+
+#: includes/custom_post.php:439
+msgid "Conditions"
+msgstr ""
+
+#: includes/custom_post.php:440
+msgid "Advanced Labels Settings"
+msgstr ""
+
+#: includes/custom_post.php:441
+msgid "Description"
+msgstr ""
+
+#: includes/custom_post.php:442
+msgid "Preview"
+msgstr ""
+
+#: includes/custom_post.php:513
+msgid "Label without any condition will be displayed on all products"
+msgstr ""
+
+#: includes/custom_post.php:514
+msgid "Connection between condition can be AND and OR"
+msgstr ""
+
+#: includes/custom_post.php:516
+msgid "AND"
+msgstr ""
+
+#: includes/custom_post.php:517
+msgid "uses between condition in one section"
+msgstr ""
+
+#: includes/custom_post.php:520
+msgid "OR"
+msgstr ""
+
+#: includes/custom_post.php:521
+msgid "uses between different sections with conditions"
+msgstr ""
+
+#: includes/custom_post.php:537
+msgid "Product title"
+msgstr ""
+
+#: includes/custom_post.php:587
+#: main.php:1590
+msgid "General"
+msgstr ""
+
+#: includes/custom_post.php:591
+#: includes/custom_post.php:851
+msgid "Style"
+msgstr ""
+
+#: includes/custom_post.php:595
+#: includes/custom_post.php:823
+#: includes/custom_post.php:863
+#: includes/custom_post.php:1164
+msgid "Position"
+msgstr ""
+
+#: includes/custom_post.php:599
+msgid "Tooltip"
+msgstr ""
+
+#: includes/custom_post.php:603
+#: main.php:1654
+msgid "Custom CSS"
+msgstr ""
+
+#: includes/custom_post.php:610
+msgid "Templates"
+msgstr ""
+
+#: includes/custom_post.php:617
+#: includes/custom_post.php:632
+#: includes/custom_post.php:643
+#: includes/custom_post.php:662
+msgid "Text"
+msgstr ""
+
+#: includes/custom_post.php:618
+#: includes/custom_post.php:1180
+#: paid/paid.php:1121
+msgid "Discount percentage"
+msgstr ""
+
+#: includes/custom_post.php:619
+msgid "Price"
+msgstr ""
+
+#: includes/custom_post.php:620
+msgid "Stock Status"
+msgstr ""
+
+#: includes/custom_post.php:623
+msgid "Content type"
+msgstr ""
+
+#: includes/custom_post.php:638
+msgid "Text Before"
+msgstr ""
+
+#: includes/custom_post.php:649
+#: includes/custom_post.php:668
+msgid "New Line"
+msgstr ""
+
+#: includes/custom_post.php:657
+msgid "Text After"
+msgstr ""
+
+#: includes/custom_post.php:677
+msgid "Use minus symbol"
+msgstr ""
+
+#: includes/custom_post.php:704
+msgid "Font color"
+msgstr ""
+
+#: includes/custom_post.php:712
+msgid "Font size"
+msgstr ""
+
+#: includes/custom_post.php:725
+msgid "Line height"
+msgstr ""
+
+#: includes/custom_post.php:738
+msgid "Height"
+msgstr ""
+
+#: includes/custom_post.php:751
+msgid "Width"
+msgstr ""
+
+#: includes/custom_post.php:764
+msgid "Border radius"
+msgstr ""
+
+#: includes/custom_post.php:782
+#: includes/custom_post.php:1194
+msgid "On image"
+msgstr ""
+
+#: includes/custom_post.php:785
+msgid "Type"
+msgstr ""
+
+#: includes/custom_post.php:790
+msgid "Padding from top"
+msgstr ""
+
+#: includes/custom_post.php:803
+msgid "Padding from left"
+msgstr ""
+
+#: includes/custom_post.php:803
+msgid "Padding from right"
+msgstr ""
+
+#: includes/custom_post.php:819
+#: includes/custom_post.php:1188
+msgid "Center"
+msgstr ""
+
+#: includes/custom_post.php:829
+msgid "Z index"
+msgstr ""
+
+#: includes/custom_post.php:838
+msgid "Content"
+msgstr ""
+
+#: includes/custom_post.php:847
+msgid "Dark"
+msgstr ""
+
+#: includes/custom_post.php:848
+msgid "Light"
+msgstr ""
+
+#: includes/custom_post.php:849
+msgid "Translucent"
+msgstr ""
+
+#: includes/custom_post.php:869
+msgid "Open delay"
+msgstr ""
+
+#: includes/custom_post.php:873
+#: includes/custom_post.php:881
+msgid "milliseconds"
+msgstr ""
+
+#: includes/custom_post.php:877
+msgid "Close delay"
+msgstr ""
+
+#: includes/custom_post.php:886
+msgid "Hover"
+msgstr ""
+
+#: includes/custom_post.php:887
+msgid "Click"
+msgstr ""
+
+#: includes/custom_post.php:889
+msgid "Open on"
+msgstr ""
+
+#: includes/custom_post.php:890
+msgid "Warning: If the label has a link, tooltip will always open on hover"
+msgstr ""
+
+#: includes/custom_post.php:896
+msgid "Close on click everywhere"
+msgstr ""
+
+#: includes/custom_post.php:902
+msgid "Use arrow"
+msgstr ""
+
+#: includes/custom_post.php:908
+msgid "Max width"
+msgstr ""
+
+#: includes/custom_post.php:921
+msgid "&lt;div&gt; block custom class"
+msgstr ""
+
+#: includes/custom_post.php:927
+msgid "&lt;div&gt; block custom CSS"
+msgstr ""
+
+#: includes/custom_post.php:933
+msgid "&lt;span&gt; block custom class"
+msgstr ""
+
+#: includes/custom_post.php:939
+msgid "&lt;span&gt; block custom CSS"
+msgstr ""
+
+#: includes/custom_post.php:945
+msgid "&lt;b&gt; block custom class"
+msgstr ""
+
+#: includes/custom_post.php:951
+msgid "&lt;b&gt; block custom CSS"
+msgstr ""
+
+#: includes/custom_post.php:957
+msgid "1) &lt;i&gt; block custom class"
+msgstr ""
+
+#: includes/custom_post.php:963
+msgid "1) &lt;i&gt; block custom CSS"
+msgstr ""
+
+#: includes/custom_post.php:969
+msgid "2) &lt;i&gt; block custom class"
+msgstr ""
+
+#: includes/custom_post.php:975
+msgid "2) &lt;i&gt; block custom CSS"
+msgstr ""
+
+#: includes/custom_post.php:981
+msgid "3) &lt;i&gt; block custom class"
+msgstr ""
+
+#: includes/custom_post.php:987
+msgid "3) &lt;i&gt; block custom CSS"
+msgstr ""
+
+#: includes/custom_post.php:993
+msgid "4) &lt;i&gt; block custom class"
+msgstr ""
+
+#: includes/custom_post.php:999
+msgid "4) &lt;i&gt; block custom CSS"
+msgstr ""
+
+#: includes/custom_post.php:1026
+msgid "CSS Templates"
+msgstr ""
+
+#: includes/custom_post.php:1027
+msgid "Image Templates"
+msgstr ""
+
+#: includes/custom_post.php:1028
+msgid "Advanced Templates"
+msgstr ""
+
+#: includes/custom_post.php:1038
+msgid "Label will be displayed only for products with discount"
+msgstr ""
+
+#: includes/custom_post.php:1054
+msgid "These are settings for advanced users. Please do not use it if you don't know how it works.<br/> These options are provided for designer and programmers.<br/>How label looks in HTML<br/>"
+msgstr ""
+
+#: includes/custom_post.php:1062
+msgid "TEXT OF LABEL"
+msgstr ""
+
+#: includes/custom_post.php:1163
+msgid "Label text"
+msgstr ""
+
+#: includes/custom_post.php:1196
+#: paid/paid.php:918
+msgid "In title"
+msgstr ""
+
+#: includes/custom_post.php:1313
+msgid "Custom<br />Image"
+msgstr ""
+
+#: includes/custom_post.php:1339
+msgid "No Templates Available Yet"
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:111
+msgid "You are not allowed to simulate product labels."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:877
+msgid "Provide a valid idempotency key."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:879
+msgid "User roles must be derived by the server."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:881
+msgid "The simulation context is invalid."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:883
+msgid "The simulation rule is invalid."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:885
+msgid "The catalog boundary is invalid."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:887
+msgid "The simulation batch size is invalid."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:889
+msgid "The simulation request is invalid."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:891
+msgid "The simulation request is too large."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:893
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:500
+msgid "The simulation job identifier is invalid."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:895
+msgid "The requested page is invalid."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:897
+msgid "The current user context is unavailable."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:899
+msgid "The simulation job was not found."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:901
+msgid "The simulation job state has changed."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:903
+msgid "Too many simulation jobs were requested."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:906
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:516
+msgid "Catalog simulation is temporarily unavailable."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:908
+msgid "Catalog simulation returned an invalid response."
+msgstr ""
+
+#: includes/growth-suite/infrastructure/rest/class-simulation-controller.php:910
+msgid "Catalog simulation failed."
+msgstr ""
+
+#: includes/libraries/googlefonts.php:7
+#: main.php:1883
+msgid "-- Default --"
+msgstr ""
+
+#: includes/libraries/googlefonts.php:21
+#: main.php:1895
+msgid "Font Family"
+msgstr ""
+
+#: main.php:1524
+msgid "Before Title 1"
+msgstr ""
+
+#: main.php:1526
+msgid "Before Title 2"
+msgstr ""
+
+#: main.php:1528
+#: main.php:1551
+msgid "After Title"
+msgstr ""
+
+#: main.php:1530
+#: main.php:1571
+msgid "Before All"
+msgstr ""
+
+#: main.php:1532
+msgid "After All"
+msgstr ""
+
+#: main.php:1534
+#: main.php:1576
+#: main.php:1578
+msgid "=DISABLED="
+msgstr ""
+
+#: main.php:1541
+msgid "Same as Shop Hook Image"
+msgstr ""
+
+#: main.php:1545
+msgid "Under thumbnails"
+msgstr ""
+
+#: main.php:1547
+msgid "After Images"
+msgstr ""
+
+#: main.php:1549
+msgid "Before Summary Data"
+msgstr ""
+
+#: main.php:1553
+msgid "After Price"
+msgstr ""
+
+#: main.php:1555
+msgid "Before Add to cart button"
+msgstr ""
+
+#: main.php:1557
+msgid "After Add to cart button"
+msgstr ""
+
+#: main.php:1559
+msgid "After Meta data"
+msgstr ""
+
+#: main.php:1561
+msgid "After Summary Data"
+msgstr ""
+
+#: main.php:1563
+msgid "Before product tabs"
+msgstr ""
+
+#: main.php:1565
+msgid "After product tabs"
+msgstr ""
+
+#: main.php:1567
+msgid "Before related products"
+msgstr ""
+
+#: main.php:1569
+msgid "After related products"
+msgstr ""
+
+#: main.php:1594
+#: templates/settings/tutorial_tab.php:24
+msgid "Advanced"
+msgstr ""
+
+#: main.php:1598
+msgid "Addons"
+msgstr ""
+
+#: main.php:1602
+msgid "Javascript/CSS"
+msgstr ""
+
+#: main.php:1606
+msgid "Tutorials"
+msgstr ""
+
+#: main.php:1611
+msgid "Labels"
+msgstr ""
+
+#: main.php:1616
+msgid "License"
+msgstr ""
+
+#: main.php:1623
+msgid "Disable global labels"
+msgstr ""
+
+#: main.php:1630
+msgid "Disable product labels"
+msgstr ""
+
+#: main.php:1637
+msgid "Disable labels on product page"
+msgstr ""
+
+#: main.php:1644
+msgid "Remove WooCommerce sale label"
+msgstr ""
+
+#: main.php:1660
+msgid "Javascript On Page Load"
+msgstr ""
+
+#: main.php:1670
+msgid "Shop Hook Image"
+msgstr ""
+
+#: main.php:1671
+msgid "On image Label's output on shop pages depends on the selected hook. Some themes might lack these hooks, or have them located differently from WooCommerce"
+msgstr ""
+
+#: main.php:1678
+msgid "Shop Hook Label"
+msgstr ""
+
+#: main.php:1679
+msgid "Default Label's output on shop pages depends on the selected hook. Some themes might lack these hooks, or have them located differently from WooCommerce"
+msgstr ""
+
+#: main.php:1686
+msgid "Product Hook Image"
+msgstr ""
+
+#: main.php:1687
+msgid "On image Label's output on a product page depends on the selected hook. Some themes might lack these hooks, or have them located differently from WooCommerce."
+msgstr ""
+
+#: main.php:1694
+msgid "Product Hook Label"
+msgstr ""
+
+#: main.php:1695
+msgid "Default Label's output on a product page depends on the selected hook. Some themes might lack these hooks, or have them located differently from WooCommerce."
+msgstr ""
+
+#: main.php:1725
+msgid "ADDITIONAL HOOKS"
+msgstr ""
+
+#: main.php:1727
+msgid "Selecting additional hooks can break shop/product pages. Use it only if the default hooks do not work."
+msgstr ""
+
+#: main.php:1739
+msgid "ADDITIONAL"
+msgstr ""
+
+#: paid/addons/advanced_content/advanced_content_include.php:26
+msgid "Link"
+msgstr ""
+
+#: paid/addons/advanced_content/advanced_content_include.php:36
+msgid "Open in new tab"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:100
+msgid "Use gradient"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:108
+msgid "Gradient orientation"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:113
+msgid "Linear"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:114
+msgid "Radial"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:115
+msgid "Elliptical"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:134
+msgid "Gradient angle"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:135
+msgid "degrees"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:142
+msgid "Gradient size"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:143
+msgid "farthest-side"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:144
+msgid "farthest-corner"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:152
+msgid "Top left"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:153
+msgid "Top center"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:154
+msgid "Top right"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:155
+msgid "Left center"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:156
+msgid "Center center"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:157
+msgid "Right center"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:158
+msgid "Bottom left"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:159
+msgid "Bottom center"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:160
+msgid "Bottom right"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:162
+msgid "Gradient position"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:168
+msgid "Gradient start color"
+msgstr ""
+
+#: paid/addons/gradients/gradients_include.php:194
+msgid "Gradient end color"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:88
+msgid "Timers"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:99
+#: paid/addons/timers/timers_include.php:115
+msgid "Before product"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:101
+#: paid/addons/timers/timers_include.php:117
+msgid "After product image"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:103
+msgid "After product title"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:105
+#: paid/addons/timers/timers_include.php:123
+msgid "Before &laquo;Add to cart&raquo; button"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:107
+#: paid/addons/timers/timers_include.php:125
+msgid "After &laquo;Add to cart&raquo; button"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:119
+msgid "Before product description"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:121
+msgid "After product description"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:127
+msgid "After product"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:137
+msgid "Timer Shop Hook"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:138
+msgid "Place for the timers (large version) on the shop page."
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:145
+msgid "Timer Product Hook"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:146
+msgid "Place for the timer (large version) on the product page."
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:152
+msgid "Load timers via AJAX"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:155
+msgid "Fix issues with caching plugins"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:242
+msgid "Use timer"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:243
+msgid "For the products with sale price dates"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:252
+msgid "Timer template"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:258
+msgid "Margins"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:297
+msgid "Show leading zeros"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:304
+msgid "Use opacity"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:311
+msgid "Use shadow"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:312
+msgid "To use shadow, check the box <b>\"Use shadow effect\"</b> for lables on the tab <b>\"Styles\"</b>"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:329
+msgid "Large"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:333
+msgid "Compact"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:827
+msgid "Days"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:828
+msgid "Hrs"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:829
+msgid "Min"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:830
+msgid "Sec"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:867
+msgid "Ends in"
+msgstr ""
+
+#: paid/addons/timers/timers_include.php:887
+msgid "Use for timer"
+msgstr ""
+
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:46
+msgid "User Role"
+msgstr ""
+
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:261
+msgid "Audience"
+msgstr ""
+
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:262
+msgid "Guest"
+msgstr ""
+
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:263
+msgid "Logged-in users"
+msgstr ""
+
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:264
+msgid "Specific roles"
+msgstr ""
+
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:265
+msgid "Select roles"
+msgstr ""
+
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:266
+msgid "Available roles"
+msgstr ""
+
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:267
+msgid "No roles found."
+msgstr ""
+
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:268
+msgid "Reset roles"
+msgstr ""
+
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:269
+msgid "Selected"
+msgstr ""
+
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:270
+msgid "Select at least one role."
+msgstr ""
+
+#. translators: %s: role display name.
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:273
+#, php-format
+msgid "Remove %s"
+msgstr ""
+
+#. translators: %s: missing role slug.
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:275
+#, php-format
+msgid "Remove missing role %s"
+msgstr ""
+
+#. translators: %s: missing role slug.
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:277
+#, php-format
+msgid "Role \"%s\" is missing or no longer available."
+msgstr ""
+
+#. translators: %d: number of available roles.
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:279
+#, php-format
+msgid "%d role available"
+msgstr ""
+
+#. translators: %d: number of available roles.
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:281
+#, php-format
+msgid "%d roles available"
+msgstr ""
+
+#. translators: %d: number of selected roles.
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:283
+#, php-format
+msgid "%d role selected"
+msgstr ""
+
+#. translators: %d: number of selected roles.
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php:285
+#, php-format
+msgid "%d roles selected"
+msgstr ""
+
+#: paid/paid.php:74
+msgid "From"
+msgstr ""
+
+#: paid/paid.php:76
+msgid "To"
+msgstr ""
+
+#: paid/paid.php:79
+msgid "Server Time"
+msgstr ""
+
+#: paid/paid.php:337
+#: paid/paid.php:882
+msgid "Product attribute"
+msgstr ""
+
+#: paid/paid.php:541
+#: paid/tripwire.php:82
+msgid "day"
+msgid_plural "days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: paid/paid.php:543
+#: paid/tripwire.php:84
+msgid "hour"
+msgid_plural "hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: paid/paid.php:545
+#: paid/tripwire.php:86
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: paid/paid.php:606
+msgid "Attribute values"
+msgstr ""
+
+#: paid/paid.php:624
+msgid "Select all"
+msgstr ""
+
+#: paid/paid.php:788
+msgid "--- Choose attribute ---"
+msgstr ""
+
+#: paid/paid.php:804
+msgid "Hide On"
+msgstr ""
+
+#: paid/paid.php:808
+msgid "Mobile"
+msgstr ""
+
+#: paid/paid.php:815
+msgid "Tablet"
+msgstr ""
+
+#: paid/paid.php:822
+msgid "Desktop"
+msgstr ""
+
+#: paid/paid.php:837
+msgid "Custom explanation"
+msgstr ""
+
+#: paid/paid.php:848
+msgid "Attribute"
+msgstr ""
+
+#: paid/paid.php:857
+msgid "Display first available value"
+msgstr ""
+
+#: paid/paid.php:865
+msgid "Term name"
+msgstr ""
+
+#: paid/paid.php:866
+msgid "Color"
+msgstr ""
+
+#: paid/paid.php:867
+msgid "Image"
+msgstr ""
+
+#: paid/paid.php:869
+msgid "Attribute data type"
+msgstr ""
+
+#: paid/paid.php:880
+#: paid/paid.php:1122
+msgid "Discount amount"
+msgstr ""
+
+#: paid/paid.php:881
+msgid "Custom discount text"
+msgstr ""
+
+#: paid/paid.php:895
+msgid "-90deg"
+msgstr ""
+
+#: paid/paid.php:896
+msgid "-75deg"
+msgstr ""
+
+#: paid/paid.php:897
+msgid "-60deg"
+msgstr ""
+
+#: paid/paid.php:898
+msgid "-45deg"
+msgstr ""
+
+#: paid/paid.php:899
+msgid "-30deg"
+msgstr ""
+
+#: paid/paid.php:900
+msgid "-15deg"
+msgstr ""
+
+#: paid/paid.php:901
+msgid "0deg"
+msgstr ""
+
+#: paid/paid.php:902
+msgid "15deg"
+msgstr ""
+
+#: paid/paid.php:903
+msgid "30deg"
+msgstr ""
+
+#: paid/paid.php:904
+msgid "45deg"
+msgstr ""
+
+#: paid/paid.php:905
+msgid "60deg"
+msgstr ""
+
+#: paid/paid.php:906
+msgid "75deg"
+msgstr ""
+
+#: paid/paid.php:907
+msgid "90deg"
+msgstr ""
+
+#: paid/paid.php:909
+msgid "Rotate"
+msgstr ""
+
+#: paid/paid.php:926
+msgid "Border width"
+msgstr ""
+
+#: paid/paid.php:935
+msgid "Border color"
+msgstr ""
+
+#: paid/paid.php:942
+msgid "Size multiplier"
+msgstr ""
+
+#: paid/paid.php:962
+msgid "Mobile device multiplier"
+msgstr ""
+
+#: paid/paid.php:982
+msgid "Opacity"
+msgstr ""
+
+#: paid/paid.php:1002
+msgid "Use shadow effect"
+msgstr ""
+
+#: paid/paid.php:1010
+msgid "Shadow shift right"
+msgstr ""
+
+#: paid/paid.php:1029
+msgid "Shadow shift down"
+msgstr ""
+
+#: paid/paid.php:1048
+msgid "Shadow blur"
+msgstr ""
+
+#: paid/paid.php:1067
+msgid "Shadow opacity"
+msgstr ""
+
+#: paid/paid.php:1087
+msgid "Shadow color"
+msgstr ""
+
+#: paid/paid.php:1106
+msgid "Tooltip image"
+msgstr ""
+
+#: paid/paid.php:1119
+msgid "Replacements"
+msgstr ""
+
+#: paid/paid.php:1123
+#: paid/tripwire.php:37
+#: paid/tripwire.php:104
+msgid "Time left for discount"
+msgstr ""
+
+#: paid/paid.php:1124
+msgid "Display ANYTEXT only if product with discount"
+msgstr ""
+
+#: paid/paid.php:1125
+msgid "Display ANYTEXT only if product without discount"
+msgstr ""
+
+#: paid/paid.php:3614
+msgid "Scale"
+msgstr ""
+
+#: paid/tripwire.php:46
+msgid "Background Image"
+msgstr ""
+
+#: paid/tripwire.php:53
+msgid "Image Title"
+msgstr ""
+
+#: templates/label.php:12
+msgid "Label to display on this product"
+msgstr ""
+
+#: templates/settings/tutorial_tab.php:4
+msgid "Beginning"
+msgstr ""
+
+#: templates/settings/tutorial_tab.php:7
+msgid "How to configure the plugin"
+msgstr ""
+
+#: templates/settings/tutorial_tab.php:12
+msgid "Installation and Activation"
+msgstr ""
+
+#: templates/settings/tutorial_tab.php:17
+msgid "How to use conditions"
+msgstr ""
+
+#: templates/settings/tutorial_tab.php:27
+msgid "Features"
+msgstr ""
+
+#: templates/settings/tutorial_tab.php:32
+msgid "How to use attributes"
+msgstr ""
+
+#: templates/settings/tutorial_tab.php:37
+msgid "How to use timers"
+msgstr ""
+
+#: templates/settings/tutorial_tab.php:42
+msgid "How to use variations"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:641
+msgid "Rule conditions"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:642
+msgid "Condition group"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:643
+msgid "Group operator"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:644
+msgid "All conditions (AND)"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:645
+msgid "Any condition (OR)"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:646
+msgid "Move up"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:647
+msgid "Move down"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:648
+msgid "Remove"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:649
+msgid "Ungroup"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:650
+msgid "Select node"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:651
+msgid "Group selected with AND"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:652
+msgid "Group selected with OR"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:653
+msgid "Unavailable condition"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:657
+msgid "This condition is preserved but cannot be edited in the current runtime."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:661
+msgid "Make this rule unconditional"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:665
+msgid "Condition moved up."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:666
+msgid "Condition moved down."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:667
+msgid "Selected conditions grouped with AND."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:671
+msgid "Selected conditions grouped with OR."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:675
+msgid "Condition group removed."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:679
+msgid "Condition removal requested."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:683
+msgid "Rule is now unconditional."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/rule-builder.js:687
+msgid "Condition updated."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:345
+msgid "Matching products"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:346
+msgid "Show matching SKUs"
+msgstr ""
+
+#: assets/src/rule-builder/conditions/user-role.js
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php
+msgid "Select audience"
+msgstr ""
+
+#: assets/src/rule-builder/conditions/user-role.js
+#: paid/growth-suite/conditions/class-user-role-condition-registration.php
+#, php-format
+msgid "Missing role: %s"
+msgstr ""
+
+#: includes/growth-suite.php
+msgid "Check matching products"
+msgstr ""
+
+#: assets/src/conditions-matching-skus.js
+#: includes/growth-suite.php
+msgid "Check next products"
+msgstr ""
+
+#: includes/growth-suite.php
+msgid "Checking matching products…"
+msgstr ""
+
+#: assets/src/conditions-matching-skus.js
+#: includes/growth-suite.php
+msgid "Matching product check failed."
+msgstr ""
+
+#: assets/src/conditions-matching-skus.js
+#: includes/growth-suite.php
+#, php-format
+msgid "Checked %1$d candidates."
+msgstr ""
+
+#: assets/src/conditions-matching-skus.js
+#: includes/growth-suite.php
+#, php-format
+msgid "Found %1$s."
+msgstr ""
+
+#: assets/src/conditions-matching-skus.js
+#: includes/growth-suite.php
+#, php-format
+msgid "Found %1$s… and 1 other."
+msgstr ""
+
+#: assets/src/conditions-matching-skus.js
+#: includes/growth-suite.php
+#, php-format
+msgid "Found %1$s… and %2$d others."
+msgstr ""
+
+#: assets/src/conditions-matching-skus.js
+#: includes/growth-suite.php
+msgid "Check the next products to continue."
+msgstr ""
+
+#: assets/src/conditions-matching-skus.js
+#: includes/growth-suite.php
+msgid "Found no matching products."
+msgstr ""
+
+#: assets/src/conditions-matching-skus.js
+#: includes/growth-suite.php
+msgid "Unnamed product"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:347
+msgid "Refresh results"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:348
+msgid "Loading simulation results…"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:379
+msgid "Simulation progress"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:380
+msgid "This count is partial and is not a final total."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:384
+msgid "These historical results are stale. Run a new simulation before treating them as current."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:388
+msgid "No matching products were found."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:392
+msgid "Product"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:393
+msgid "SKU"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:394
+msgid "Reasons"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:395
+msgid "No SKU"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:396
+msgid "No reason details"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:403
+msgid "Previous page"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:404
+msgid "Next page"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:411
+msgid "Simulation warnings"
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:418
+msgid "The simulation stopped before completion. Any displayed count is partial."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:422
+msgid "The simulation was cancelled. Any displayed count is partial."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:429
+msgid "The condition is unavailable in this runtime."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:433
+msgid "The legacy condition matched."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:437
+msgid "The condition was not evaluated because the result was already known."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:441
+msgid "The guest audience matched."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:445
+msgid "This rule requires a guest visitor."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:449
+msgid "The logged-in audience matched."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:453
+msgid "This rule requires a logged-in visitor."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:457
+msgid "The visitor has a selected role."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:461
+msgid "The visitor has none of the selected roles."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:465
+msgid "A selected role is unavailable on this site."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:469
+msgid "The catalog changed after this snapshot was created."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:473
+msgid "The rule changed after this snapshot was created."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:477
+msgid "The storefront context changed after this snapshot was created."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:481
+msgid "A catalog page could not be scanned."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:485
+msgid "The catalog returned an invalid page."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:489
+msgid "A product could not be simulated."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:496
+msgid "The simulation request key is invalid."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:504
+msgid "The requested results page is invalid."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:508
+msgid "The simulator returned an invalid response."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:512
+msgid "The result page belongs to a different catalog snapshot."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:520
+msgid "This simulation is no longer available."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:524
+msgid "The simulation request failed. Try again."
+msgstr ""
+
+#: assets/build/index.js:1
+#: assets/src/rule-builder/simulator-panel.js:528
+msgid "The simulation connection is unavailable."
+msgstr ""
+
+#. translators: 1: Condition label. 2: Position. 3: Sibling count. 4: Nesting level.
+#: assets/src/rule-builder/rule-builder.js:691
+#, js-format
+msgid "%1$s; item %2$d of %3$d; level %4$d."
+msgstr ""
+
+#: assets/src/rule-builder/rule-builder.js:707
+msgid "Removing the final condition makes this rule unconditional."
+msgstr ""
+
+#: assets/src/rule-builder/rule-builder.js:711
+msgid "A nested condition group cannot be empty."
+msgstr ""
+
+#: assets/src/rule-builder/rule-builder.js:715
+msgid "This unavailable condition is read-only."
+msgstr ""
+
+#: assets/src/rule-builder/rule-builder.js:719
+msgid "The rule cannot contain more than five nested levels."
+msgstr ""
+
+#: assets/src/rule-builder/rule-builder.js:723
+msgid "The rule cannot contain more than 100 nodes."
+msgstr ""
+
+#: assets/src/rule-builder/rule-builder.js:727
+msgid "A condition group cannot contain more than 50 direct children."
+msgstr ""
+
+#: assets/src/rule-builder/rule-builder.js:735
+msgid "The requested rule change could not be applied."
+msgstr ""
+
+#. translators: 1: Number of products scanned.
+#: assets/src/rule-builder/simulator-panel.js:355
+#, js-format
+msgid "Products scanned: %1$d"
+msgstr ""
+
+#. translators: 1: Number of matching products found so far.
+#: assets/src/rule-builder/simulator-panel.js:361
+#, js-format
+msgid "Matches found so far: %1$d"
+msgstr ""
+
+#. translators: 1: Final number of matching products.
+#: assets/src/rule-builder/simulator-panel.js:370
+#, js-format
+msgid "Matching products: %1$d"
+msgstr ""
+
+#. translators: 1: Product scan cursor.
+#: assets/src/rule-builder/simulator-panel.js:376
+#, js-format
+msgid "Next scan cursor: %1$d"
+msgstr ""
+
+#. translators: 1: Current results page number.
+#: assets/src/rule-builder/simulator-panel.js:400
+#, js-format
+msgid "Page %1$d"
+msgstr ""
+
+#. translators: 1: Support correlation reference.
+#: assets/src/rule-builder/simulator-panel.js:408
+#, js-format
+msgid "Reference: %1$s"
+msgstr ""
+
+#. translators: 1: Number of simulation warnings.
+#: assets/src/rule-builder/simulator-panel.js:415
+#, js-format
+msgid "Warnings: %1$d"
+msgstr ""
+
+#. translators: 1: Stable simulation reason code.
+#: assets/src/rule-builder/simulator-panel.js:765
+#, js-format
+msgid "Reason code: %1$s"
+msgstr ""
+
+#: assets/src/rule-builder/simulator-panel.js:777
+msgid "The simulation could not be displayed."
+msgstr ""
+
+#: includes/custom_post.php
+msgid "Rule changes were not saved. Fix the reported rule error and try again."
+msgstr ""

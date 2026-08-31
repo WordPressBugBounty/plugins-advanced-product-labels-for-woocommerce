@@ -674,6 +674,9 @@
     overflow: hidden;
     margin: 0;
 }
+.br_framework_settings .berocket_products_search li.berocket_product_selected.button:not(.not_berocket_button) {
+    line-height: 44px;
+}
 .br_framework_settings .single_product .berocket_products_search li.button:not(.not_berocket_button) {
     max-width: initial;
     width: 100%;

@@ -81,7 +81,7 @@ class LockedFeatures extends Messaging {
 
 	public function init_settings() {
 		$plugin = $this->get_plugin_sku_by_page();
-		$data   = get_option( BR_EE_OPTION );
+		$data   = DataStore::get_current();
 
 		if ( ! empty( $data['locked_features'][ $plugin ]['main'] ) ) {
 			$locked_features = $data['locked_features'][ $plugin ]['main'];
@@ -101,7 +101,7 @@ class LockedFeatures extends Messaging {
 						}
 					}
 
-					if ( ! empty( $feature['hook'] ) and
+					if ( ! empty( $feature['hook'] ) and ! empty( $feature['function'] ) and
 					     ( empty( $added_hooks[ $feature['hook'] ] ) or
 					       ! is_array( $added_hooks[ $feature['hook'] ] ) or
 					       ! in_array( $feature['function'], $added_hooks[ $feature['hook'] ] )
@@ -123,15 +123,21 @@ class LockedFeatures extends Messaging {
 	}
 
 	public function init_post( $plugin, $post_name ) {
-		$data = get_option( BR_EE_OPTION );
+		$data = DataStore::get_current();
+
 		if ( ! empty( $data['locked_features'] ) ) {
 			foreach ( $this->plugin_posts as $plugin_name => $plugin_posts ) {
 				if ( $plugin == $plugin_name ) {
 					foreach ( $plugin_posts as $post_page => $plugin_post ) {
 						if ( $post_name == $post_page ) {
 							$class_name = "BeRocket\\EngagementEngine\\{$plugin_post}";
-							new $class_name( $this );
-							$this->init_hide_locked_features( $plugin, $plugin_post );
+
+							if ( class_exists( $class_name ) ) {
+								new $class_name( $this );
+								$this->init_hide_locked_features( $plugin, $plugin_post );
+								return true;
+							}
+
 							break;
 						}
 					}
@@ -139,14 +145,24 @@ class LockedFeatures extends Messaging {
 				}
 			}
 		}
+
+		return false;
 	}
 
 	public function output_locked_features( $page_content, $item, $tab_name, $tab_content ): string {
-		$data   = get_option( BR_EE_OPTION );
+		if ( empty( $item ) or empty( $tab_name ) )
+			return $page_content;
+
+		$data   = DataStore::get_current();
 		$plugin = $this->get_plugin_sku_by_page();
 		$plugin_name = $this->get_plugin_name_by_page();
-		$item_name = ( is_array( $item['name'] ) ? implode( '_', $item['name'] ) : $item['name'] );
-		$item_name = $item_name ?? $item['section'];
+
+		if ( empty( $item['name'] ) ) {
+			$item_name = $item['section'];
+		} else {
+			$item_name = ( is_array( $item['name'] ) ? implode( '_', $item['name'] ) : $item['name'] );
+		}
+
 		$plugin_version_capability = apply_filters( 'brfr_get_plugin_version_capability_' . $plugin_name, 0 );
 
 		if ( ! empty( $data['locked_features'][ $plugin ]['main'] ) ) {
@@ -154,9 +170,12 @@ class LockedFeatures extends Messaging {
 
 			if ( is_array( $locked_features ) ) {
 				foreach ( $locked_features as $feature ) {
-					if ( $tab_name == $feature['section'] and
+					if ( ! empty( $feature['section'] ) and
+					     $tab_name == $feature['section'] and
+					     ! empty( $feature['location'] ) and
 					     'main' == $feature['location'] and
-					     in_array( $item_name, [ $feature['before'], $feature['after'] ] ) and
+					     ( ! empty( $feature['before'] ) or ! empty( $feature['after'] ) ) and
+					     in_array( $item_name, [ $feature['before'] ?? '-1', $feature['after'] ?? '-1' ] ) and
 					     (
 					      ( empty( $plugin_version_capability ) or $plugin_version_capability < 10 )
 					      or
@@ -176,7 +195,10 @@ class LockedFeatures extends Messaging {
 	}
 
 	public function output_locked_features_inline( $page_content, $item, $tab_name, $tab_content ): string {
-		$data   = get_option( BR_EE_OPTION );
+		if ( empty( $item ) or empty( $tab_name ) )
+			return $page_content;
+
+		$data   = DataStore::get_current();
 		$plugin = $this->get_plugin_sku_by_page();
 		$plugin_name = $this->get_plugin_name_by_page();
 		if ( $plugin == 'loadmore' ) {
@@ -192,9 +214,11 @@ class LockedFeatures extends Messaging {
 			$locked_features = $data['locked_features'][ $plugin ]['main'];
 			if ( is_array( $locked_features ) ) {
 				foreach ( $locked_features as $feature ) {
-					if ( $tab_name == $feature['section'] and
-					     'inline' == $feature['location'] and
-					     in_array( $item_name, [ $feature['before'], $feature['after'] ] ) and
+					if ( ! empty( $feature['section'] ) and
+						 $tab_name == $feature['section'] and
+						 ! empty( $feature['location'] ) and
+						 'inline' == $feature['location'] and
+					     in_array( $item_name, [ $feature['before'] ?? '-1', $feature['after'] ?? '-1' ] ) and
 					     (
 						     ( empty( $plugin_version_capability ) or $plugin_version_capability < 10 )
 						     or
@@ -214,7 +238,7 @@ class LockedFeatures extends Messaging {
 	}
 
 	public function output_locked_features_selected_filters_template( $templates ): array {
-		$data   = get_option( BR_EE_OPTION );
+		$data   = DataStore::get_current();
 		$plugin = $this->get_plugin_sku_by_page();
 		$plugin_name = $this->get_plugin_name_by_page();
 		$plugin_version_capability = apply_filters( 'brfr_get_plugin_version_capability_' . $plugin_name, 0 );
@@ -224,7 +248,7 @@ class LockedFeatures extends Messaging {
 
 			if ( is_array( $locked_features ) ) {
 				foreach ( $locked_features as $feature ) {
-					if ( in_array( 'selected_filters_template_custom', [ $feature['before'], $feature['after'] ] ) and
+					if ( in_array( 'selected_filters_template_custom', [ $feature['before'] ?? '-1', $feature['after'] ?? '-1' ] ) and
 					     (
 						     ( empty( $plugin_version_capability ) or $plugin_version_capability < 10 )
 						     or
@@ -244,9 +268,237 @@ class LockedFeatures extends Messaging {
 	}
 
 	public function validate_data( $locked_features = [] ): array {
-		// do something, need to know what data looks like
+		if ( ! is_array( $locked_features ) ) {
+			return [];
+		}
 
-		return $locked_features;
+		$validated = [];
+		foreach ( $this->get_allowed_plugin_skus() as $plugin ) {
+			if ( empty( $locked_features[ $plugin ] ) || ! is_array( $locked_features[ $plugin ] ) ) {
+				continue;
+			}
+
+			$plugin_data = [];
+			if ( ! empty( $locked_features[ $plugin ]['main'] ) && is_array( $locked_features[ $plugin ]['main'] ) ) {
+				$plugin_data['main'] = $this->validate_feature_list( $locked_features[ $plugin ]['main'] );
+			}
+
+			if ( ! empty( $locked_features[ $plugin ]['posts'] ) && is_array( $locked_features[ $plugin ]['posts'] ) ) {
+				foreach ( $this->get_allowed_post_names_for_plugin( $plugin ) as $post_name ) {
+					if ( ! empty( $locked_features[ $plugin ]['posts'][ $post_name ] ) && is_array( $locked_features[ $plugin ]['posts'][ $post_name ] ) ) {
+						$plugin_data['posts'][ $post_name ] = $this->validate_feature_list( $locked_features[ $plugin ]['posts'][ $post_name ] );
+					}
+				}
+			}
+
+			if ( ! empty( $plugin_data ) ) {
+				$validated[ $plugin ] = $plugin_data;
+			}
+		}
+
+		return $validated;
+	}
+
+	private function validate_feature_list( array $features ): array {
+		$validated = [];
+
+		foreach ( $features as $feature ) {
+			$feature = $this->validate_feature( $feature );
+			if ( ! empty( $feature ) ) {
+				$validated[] = $feature;
+			}
+		}
+
+		return $validated;
+	}
+
+	private function validate_feature( $feature ): array {
+		if ( ! is_array( $feature ) ) {
+			return [];
+		}
+
+		$validated = [];
+		foreach ( [ 'label', 'text', 'tooltip_text', 'section', 'before', 'after', 'after_tab', 'template', 'condition', 'icon' ] as $field ) {
+			if ( isset( $feature[ $field ] ) && is_scalar( $feature[ $field ] ) ) {
+				$validated[ $field ] = sanitize_text_field( (string) $feature[ $field ] );
+			}
+		}
+
+		foreach ( [ 'name', 'badge', 'hide_input', 'hide_lock' ] as $field ) {
+			if ( isset( $feature[ $field ] ) && is_scalar( $feature[ $field ] ) ) {
+				$validated[ $field ] = $this->sanitize_feature_identifier( (string) $feature[ $field ] );
+			}
+		}
+
+		if ( ! empty( $feature['type'] ) && is_scalar( $feature['type'] ) ) {
+			$type = sanitize_text_field( (string) $feature['type'] );
+			if ( in_array( $type, $this->get_allowed_feature_types(), true ) ) {
+				$validated['type'] = $type;
+			}
+		}
+
+		if ( ! empty( $feature['license'] ) && is_scalar( $feature['license'] ) ) {
+			$license = sanitize_key( (string) $feature['license'] );
+			if ( in_array( $license, $this->get_allowed_feature_licenses(), true ) ) {
+				$validated['license'] = $license;
+			}
+		}
+
+		if ( ! empty( $feature['location'] ) && is_scalar( $feature['location'] ) ) {
+			$location = sanitize_key( (string) $feature['location'] );
+			if ( in_array( $location, $this->get_allowed_feature_locations(), true ) ) {
+				$validated['location'] = $location;
+			}
+		}
+
+		if ( ! empty( $feature['function'] ) && is_scalar( $feature['function'] ) ) {
+			$function = sanitize_key( (string) $feature['function'] );
+			if ( ! in_array( $function, $this->get_allowed_feature_functions(), true ) ) {
+				return [];
+			}
+			$validated['function'] = $function;
+		}
+
+		if ( ! empty( $feature['hook'] ) && is_scalar( $feature['hook'] ) ) {
+			$hook = $this->sanitize_feature_identifier( (string) $feature['hook'] );
+			if ( ! in_array( $hook, $this->get_allowed_feature_hooks(), true ) ) {
+				return [];
+			}
+			$validated['hook'] = $hook;
+		}
+
+		if ( ! empty( $feature['function'] ) && empty( $validated['function'] ) ) {
+			return [];
+		}
+
+		if ( ! empty( $feature['hook'] ) && empty( $validated['hook'] ) ) {
+			return [];
+		}
+
+		foreach ( [ 'link', 'demo' ] as $field ) {
+			if ( ! empty( $feature[ $field ] ) && is_scalar( $feature[ $field ] ) ) {
+				$url = $this->sanitize_feature_url( (string) $feature[ $field ], [ 'berocket.com' ] );
+				if ( $url ) {
+					$validated[ $field ] = $url;
+				}
+			}
+		}
+
+		if ( ! empty( $feature['image'] ) && is_scalar( $feature['image'] ) ) {
+			$image = $this->sanitize_feature_url( (string) $feature['image'], [ 'apicdn.berocket.com' ] );
+			if ( $image ) {
+				$validated['image'] = $image;
+			}
+		}
+
+		foreach ( [ 'hook_order', 'hook_vars' ] as $field ) {
+			if ( isset( $feature[ $field ] ) ) {
+				$value = absint( $feature[ $field ] );
+				if ( $value > 0 ) {
+					$validated[ $field ] = min( $value, 'hook_vars' === $field ? 10 : 10000 );
+				}
+			}
+		}
+
+		return $validated;
+	}
+
+	private function sanitize_feature_identifier( string $value ): string {
+		return preg_replace( '/[^A-Za-z0-9_\-+]/', '', sanitize_text_field( $value ) );
+	}
+
+	private function sanitize_feature_url( string $url, array $allowed_hosts ): string {
+		$url = esc_url_raw( $url );
+		if ( ! $url || ! $this->is_allowed_feature_url( $url, $allowed_hosts ) ) {
+			return '';
+		}
+
+		return $url;
+	}
+
+	private function is_allowed_feature_url( string $url, array $allowed_hosts ): bool {
+		$host = strtolower( (string) parse_url( $url, PHP_URL_HOST ) );
+		if ( ! $host ) {
+			return false;
+		}
+
+		foreach ( $allowed_hosts as $allowed_host ) {
+			$allowed_host = strtolower( $allowed_host );
+			if ( $host === $allowed_host || substr( $host, -1 * ( strlen( $allowed_host ) + 1 ) ) === '.' . $allowed_host ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function get_allowed_plugin_skus(): array {
+		return [ 'filters', 'labels', 'loadmore', 'minmax', 'tabs', 'watermarks', 'gridlist' ];
+	}
+
+	private function get_allowed_post_names_for_plugin( string $plugin ): array {
+		return $this->plugin_posts[ $plugin ] ?? [];
+	}
+
+	private function get_allowed_feature_types(): array {
+		return [ 'checkbox', 'elements design box', 'tab', 'checkbox+', 'checkbox+color', 'checkbox+image', 'slider+' ];
+	}
+
+	private function get_allowed_feature_licenses(): array {
+		return [ 'premium', 'business' ];
+	}
+
+	private function get_allowed_feature_locations(): array {
+		return [ 'main', 'inline' ];
+	}
+
+	private function get_allowed_feature_functions(): array {
+		return [
+			'add_settings_tab',
+			'br_filter_settings_style_template_after',
+			'conditions_select_after',
+			'data_add_option',
+			'filter_settings_style_templates',
+			'general_feature',
+			'minmax_limitation_inputs_after',
+			'output_locked_feature_by_hook',
+			'output_locked_features_filter_by_field',
+			'output_locked_features_selected_filters_template',
+			'output_locked_features_widget_type_search_field',
+			'premium_select_option',
+			'turn_on_filter_customization',
+		];
+	}
+
+	private function get_allowed_feature_hooks(): array {
+		return [
+			'berocket_aapf_filters_group_settings',
+			'berocket_aapf_group_filters_conditions_select_after',
+			'berocket_aapf_single_filter_conditions_select_after',
+			'berocket_advanced_label_editor_conditions_select_after',
+			'berocket_filter_option_filter_by_after',
+			'berocket_minmax_custom_post_conditions_select_after',
+			'berocket_minmax_limitation_inputs_after',
+			'berocket_tab_manager_location_editor_conditions_select_after',
+			'braapf_advanced_single_filter_additional',
+			'braapf_advanced_single_filter_attribute_setup',
+			'braapf_new_widget_edit_page_all_steps',
+			'braapf_new_widget_edit_page_widget_types',
+			'braapf_single_filter_additional',
+			'br_filter_settings_style_template_after',
+			'br_filter_settings_style_templates',
+			'brfr_data_BeRocket_LMP',
+			'brfr_data_berocket_advanced_label_editor',
+			'brfr_data_berocket_minmax_custom_post',
+			'brfr_data_list_grid',
+			'brfr_data_tab_manager',
+			'brfr_filters_settings_item_selected_filters_template_custom',
+			'brfr_MM_Quantity_settings_item_cart_max_price_after',
+			'brfr_tabs_info_BeRocket_LMP',
+			'brfr_tabs_info_berocket_minmax_custom_post',
+			'brfr_tabs_info_list_grid',
+			'brfr_tabs_info_tab_manager',
+		];
 	}
 
 	public function get_plugin_sku_by_page( $page = '' ): string {
@@ -387,14 +639,14 @@ class LockedFeatures extends Messaging {
 			#settings .berocket_sbs_step .braapf_style > div .premium-only:hover::after {color: gold;}
 			.title #ee_hide_premium + .spinner{margin-top: 15px;margin-right: 20px;}
 			.berocket_sbs_advanced .style_customization_buttons {padding: 20px 0 10px;}
-			@media (hover:none), (hover:on-demand) { 
+			@media (hover:none), (hover:on-demand) {
 				/* custom css for "touch targets" */
 				#settings .berocket_sbs_step .braapf_widget_type_premium_1:after,#settings .berocket_sbs_step .braapf_widget_type_premium_2:after{content: ""; display: block;position: absolute; top:0;right:0;bottom:-14px;left:0;background-color: #2c3b48;opacity:0.8;border-radius: 5px; z-index:200;}
 				#settings .berocket_sbs_step .braapf_widget_type_premium_1:before,#settings .berocket_sbs_step .braapf_widget_type_premium_2:before{content: "⭐ PREMIUM ⭐";color:gold;font-size: 1.8em;display:block;position: absolute;text-align:center;top:40%;right:0;bottom:0;left:0; z-index:201;}
 				#settings .berocket_sbs_step .braapf_widget_type_business_1:after,#settings .berocket_sbs_step .braapf_widget_type_business_2:after{content: ""; display: block;position: absolute; top:0;right:0;bottom:-14px;left:0;background-color: #2c3b48;opacity:0.9;border-radius: 5px; z-index:200;}
 				#settings .berocket_sbs_step .braapf_widget_type_business_1:before,#settings .berocket_sbs_step .braapf_widget_type_business_2:before{content: "⭐ BUSINESS ⭐";color:gold;font-size: 2em;display:block;position: absolute;text-align:center;top:40%;right:0;bottom:0;left:0; z-index:201;}
 			}
-			@media (max-width: 1500px) { 
+			@media (max-width: 1500px) {
 				#settings .berocket_sbs_step .braapf_widget_type_premium_0:before,#settings .berocket_sbs_step .braapf_widget_type_premium_1:before{font-size: 1.4em;}
 			}
 			</style>';
@@ -402,27 +654,30 @@ class LockedFeatures extends Messaging {
 	}
 
 	private function add_tooltip( $feature, $options = [] ): void {
-		$lic_icon    = ( ( 'business' == $feature['license'] ) ? 's-crown' : 's-diamond' );
-		$lic_up      = strtoupper( $feature['license'] );
-		$demo_class  = ( $feature['demo'] ? 'license_buttons_with_demo' : '' );
-		$demo_button = ( $feature['demo'] ? '<a href="' . $feature['demo'] . '" target="_blank" class="demo_button">DEMO</a>' : '' );
+		$license     = sanitize_key( $feature['license'] ?? '' );
+		$feature_name = $this->sanitize_feature_identifier( $feature['name'] ?? '' );
+		$lic_icon    = ( ( 'business' == $license ) ? 's-crown' : 's-diamond' );
+		$lic_up      = esc_html( strtoupper( $license ) );
+		$demo_class  = ( ! empty( $feature['demo'] ) ? 'license_buttons_with_demo' : '' );
+		$demo_button = ( ! empty( $feature['demo'] ) ? '<a href="' . esc_url( $feature['demo'] ) . '" target="_blank" class="demo_button" rel="noopener noreferrer">DEMO</a>' : '' );
+		$link        = esc_url( utm( $feature['link'] ?? '', [
+			'medium'   => 'settings',
+			'campaign' => 'locked_feature',
+			'content'  => $feature_name,
+			'term'     => $options['plugin_name'] ?? '-1',
+		] ) );
 
 		$tooltip_text = "
 			<div class='locked_features_tooltip'>
-				<div class='locked_features_tooltip_type type_{$feature['license']}'>
-					<img class='license_icon' src='https://apicdn.berocket.com/{$lic_icon}.png' 
-						 alt='{$feature['license']}' /> 
+				<div class='locked_features_tooltip_type type_" . esc_attr( $license ) . "'>
+					<img class='license_icon' src='https://apicdn.berocket.com/" . esc_attr( $lic_icon ) . ".png'
+						 alt='" . esc_attr( $license ) . "' />
 					{$lic_up} FEATURE
 				</div>
-				<div class='license_text'>{$feature['tooltip_text']}</div>
-				<div class='license_buttons {$demo_class}'>
+				<div class='license_text'>" . esc_html( $feature['tooltip_text'] ?? '' ) . "</div>
+				<div class='license_buttons " . esc_attr( $demo_class ) . "'>
 					{$demo_button}
-					<a href='" . utm( $feature['link'], [
-									'medium'   => 'settings',
-									'campaign' => 'locked_feature',
-									'content'  => $feature['name'],
-									'term'     => $options['plugin_name'],
-								] ) . "' target='_blank' class='upgrade_button'>UPGRADE</a>
+					<a href='{$link}' target='_blank' class='upgrade_button' rel='noopener noreferrer'>UPGRADE</a>
 				</div>
 			</div>
 			";
@@ -434,13 +689,13 @@ class LockedFeatures extends Messaging {
 			'placement'   => 'bottom-start',
 			'theme'       => "light",
 			'allowHTML'   => true,
-		), $tooltip_text, '#locked_feature_' . $feature['name'] );
+		), $tooltip_text, '#locked_feature_' . $feature_name );
 	}
 
 	public function output( $feature, $item, $options = [] ): string {
 		switch ( $feature['type'] ) {
 			case 'checkbox':
-				if ( $feature['location'] == 'inline' )
+				if ( ! empty( $feature['location'] ) and $feature['location'] == 'inline' )
 					return $this->output_inline_checkbox( $feature );
 				else
 					return $this->output_checkbox( $feature, $item );
@@ -452,48 +707,56 @@ class LockedFeatures extends Messaging {
 	}
 
 	private function output_checkbox( $feature, $item ): string {
+		$feature_name = esc_attr( $feature['name'] ?? '' );
+		$license      = esc_attr( $feature['license'] ?? '' );
+
 		return '
 			<tr class="locked_feature_tr">
-				<th scope="row">' . __( $feature['label'], 'BeRocket_domain' ) . '</th>
+				<th scope="row">' . esc_html__( $feature['label'] ?? '', 'BeRocket_domain' ) . '</th>
 			    <td' . ( $item['td_class'] ?? '' ) . '>
-			        <a id="locked_feature_' . $feature['name'] . '" class="locked_feature_value">
-			            ' . ( $feature['hide_input'] ? '' : '<input type="checkbox" disabled value="" />' )
-		                . ( $feature['hide_lock'] ? '' : '<span class="dashicons dashicons-lock di_badge_' .
-		                                                   $feature['license'] . '"></span>' ) . '
-			            ' . ( $feature['badge'] ? '<img alt="' . $feature['license'] .
+			        <a id="locked_feature_' . $feature_name . '" class="locked_feature_value">
+			            ' . ( ! empty( $feature['hide_input'] ) ? '' : '<input type="checkbox" disabled value="" />' )
+		                . ( ! empty( $feature['hide_lock'] ) ? '' : '<span class="dashicons dashicons-lock di_badge_' .
+		                                                   $license . '"></span>' ) . '
+			            ' . ( ! empty( $feature['badge'] ) ? '<img alt="' . $license .
 		                                          ' feature" src="https://apicdn.berocket.com/' .
-		                                          $feature['license'] . '-label.png"/>' : '' ) . '
-			            ' . ( $feature['text'] ?? '' ) . '
+		                                          $license . '-label.png"/>' : '' ) . '
+			            ' . esc_html( $feature['text'] ?? '' ) . '
 			        </a>
 				</td>
 			</tr>';
 	}
 
 	private function output_inline_checkbox( $feature ): string {
-		$custom_css = ( $feature['name'] == 'hide_value_button' ) ? 'margin-top: 10px;' : '';
+		$feature_name = esc_attr( $feature['name'] ?? '' );
+		$license      = esc_attr( $feature['license'] ?? '' );
+		$custom_css   = ( ( $feature['name'] ?? '' ) == 'hide_value_button' ) ? 'margin-top: 10px;' : '';
 		return '
 		<label class="br_field_settlabel_checkbox locked_feature_tr">
-			<a id="locked_feature_' . $feature['name'] . '" class="locked_feature_value" style="' . $custom_css . '">' .
-		       ( $feature['hide_input'] ? '' : '<input type="checkbox" disabled value="" />' ) .
-		       ( $feature['hide_lock'] ? '' : '<span class="dashicons dashicons-lock di_badge_' .
-                                                   $feature['license'] . '"></span>' ) .
-		       ( $feature['badge'] ? '<img alt="' . $feature['license'] .
+			<a id="locked_feature_' . $feature_name . '" class="locked_feature_value" style="' . esc_attr( $custom_css ) . '">' .
+		       ( ! empty( $feature['hide_input'] ) ? '' : '<input type="checkbox" disabled value="" />' ) .
+		       ( ! empty( $feature['hide_lock'] ) ? '' : '<span class="dashicons dashicons-lock di_badge_' .
+                                                   $license . '"></span>' ) .
+		       ( ! empty( $feature['badge'] ) ? '<img alt="' . $license .
                                           ' feature" src="https://apicdn.berocket.com/' .
-                                          $feature['license'] . '-label.png"/>' : '' ) .
-		       '<span class="br_label_for">' . __( $feature['label'], 'BeRocket_domain' ) . '</span>
+                                          $license . '-label.png"/>' : '' ) .
+		       '<span class="br_label_for">' . esc_html__( $feature['label'] ?? '', 'BeRocket_domain' ) . '</span>
 	        </a>
 		</label>';
 	}
 
 	private function output_elements_design_box( $feature, $options = [] ): string {
+		$feature_name = $this->sanitize_feature_identifier( $feature['name'] ?? '' );
+		$link = esc_url( utm( $feature['link'] ?? '', [
+			'medium'   => 'settings',
+			'campaign' => 'locked_feature',
+			'content'  => $feature_name,
+			'term'     => $options['plugin_name'] ?? '',
+		] ) );
+
 		return '<div class="braapf_style_sfa_inline locked_feature_tr" style="position: relative;">
 			<section class="premium-only">
-				<a target="_blank" href="' . utm( $feature['link'], [
-												'medium'   => 'settings',
-												'campaign' => 'locked_feature',
-												'content'  => $feature['name'],
-												'term'     => $options['plugin_name'] ?? '',
-											] ) . '">
+				<a target="_blank" rel="noopener noreferrer" href="' . $link . '">
 					<span>
 						<i class="fa fa-star" aria-hidden="true"></i>
 						Go Premium
@@ -501,23 +764,26 @@ class LockedFeatures extends Messaging {
 					</span>
 				</a>
 			</section>
-	        <label>
-	        	<img alt="' . $feature['label'] . '" src="' . $feature['image'] . '">
-	        	<h3>' . $feature['label'] . '</h3>
-	        </label>
+			<label>
+				<img alt="' . esc_attr( $feature['label'] ?? '' ) . '" src="' . esc_url( $feature['image'] ?? '' ) . '">
+				<h3>' . esc_html( $feature['label'] ?? '' ) . '</h3>
+			</label>
 		</div>
 		';
 	}
 
 	private function output_selected_filters_template( $feature, $options = [] ): array {
-		return [ $feature['name'], '<div class="braapf_style_sfa_inline locked_feature_tr" style="position: relative;">
+		$feature_name = $this->sanitize_feature_identifier( $feature['name'] ?? '' );
+		$link = esc_url( utm( $feature['link'] ?? '', [
+			'medium'   => 'settings',
+			'campaign' => 'locked_feature',
+			'content'  => $feature_name,
+			'term'     => $options['plugin_name'] ?? '',
+		] ) );
+
+		return [ $feature_name, '<div class="braapf_style_sfa_inline locked_feature_tr" style="position: relative;">
 			<section class="premium-only">
-				<a target="_blank" href="' . utm( $feature['link'], [
-												'medium'   => 'settings',
-												'campaign' => 'locked_feature',
-												'content'  => $feature['name'],
-												'term'     => $options['plugin_name'] ?? '',
-											] ) . '">
+				<a target="_blank" rel="noopener noreferrer" href="' . $link . '">
 					<span>
 						<i class="fa fa-star" aria-hidden="true"></i>
 						Go Premium
@@ -525,15 +791,15 @@ class LockedFeatures extends Messaging {
 					</span>
 				</a>
 			</section>
-	        <label>
-	        	<img alt="' . $feature['label'] . '" src="' . $feature['image'] . '">
-	        	<h3>' . $feature['label'] . '</h3>
-	        </label>
+			<label>
+				<img alt="' . esc_attr( $feature['label'] ?? '' ) . '" src="' . esc_url( $feature['image'] ?? '' ) . '">
+				<h3>' . esc_html( $feature['label'] ?? '' ) . '</h3>
+			</label>
 		</div>' ];
 	}
 
 	public function add_settings_tab( $tabs_info ) {
-		$data   = get_option( BR_EE_OPTION );
+		$data   = DataStore::get_current();
 		$plugin = $this->get_plugin_sku_by_page();
 		$plugin_name = $this->get_plugin_name_by_page();
 		$plugin_version_capability = apply_filters( 'brfr_get_plugin_version_capability_' . $plugin_name, 0 );
@@ -543,7 +809,9 @@ class LockedFeatures extends Messaging {
 
 			if ( is_array( $locked_features ) ) {
 				foreach ( $locked_features as $feature ) {
-					if ( $feature['function'] == 'add_settings_tab' and
+					if ( ! empty( $feature['function'] ) and
+					     'add_settings_tab' == $feature['function'] and
+					     ! empty( $feature['hook'] ) and
 					     current_filter() == $feature['hook'] and
 					     (
 						     ( empty( $plugin_version_capability ) or $plugin_version_capability < 10 )
@@ -553,15 +821,17 @@ class LockedFeatures extends Messaging {
 						     )
 					     )
 					) {
+						$label = sanitize_text_field( $feature['label'] ?? '' );
+						$license = sanitize_key( $feature['license'] ?? '' );
 						$new_item = [
-							$feature['label'] => array(
-								'icon'     => $feature['icon'],
-								'name'     => __( $feature['label'], 'BeRocket_domain' ),
-								'priority' => $feature['license'] . "-preview",
+							$label => array(
+								'icon'     => sanitize_key( $feature['icon'] ?? '' ),
+								'name'     => __( $label, 'BeRocket_domain' ),
+								'priority' => $license . "-preview",
 							)
 						];
 
-						if ( $feature['after_tab'] and
+						if ( ! empty( $feature['after_tab'] ) and
 						     false !== ( $position = array_search( $feature['after_tab'], array_keys( $tabs_info ), true ) )
 						) {
 							$tabs_info = array_slice( $tabs_info, 0, $position + 1, true )
@@ -579,7 +849,7 @@ class LockedFeatures extends Messaging {
 	}
 
 	public function data_add_option( $settings_data ) {
-		$data   = get_option( BR_EE_OPTION );
+		$data   = DataStore::get_current();
 		$plugin = $this->get_plugin_sku_by_page();
 		$plugin_name = $this->get_plugin_name_by_page();
 		$plugin_version_capability = apply_filters( 'brfr_get_plugin_version_capability_' . $plugin_name, 0 );
@@ -589,7 +859,10 @@ class LockedFeatures extends Messaging {
 
 			if ( is_array( $locked_features ) ) {
 				foreach ( $locked_features as $feature ) {
-					if ( $feature['function'] == 'data_add_option' and
+					if ( ! empty( $feature['function'] ) and
+					     ! empty( $feature['section'] ) and
+					     'data_add_option' == $feature['function'] and
+					     ! empty( $feature['hook'] ) and
 					     current_filter() == $feature['hook'] and
 					     (
 						     ( empty( $plugin_version_capability ) or $plugin_version_capability < 10 )
@@ -621,7 +894,7 @@ class LockedFeatures extends Messaging {
 	}
 
 	public function output_locked_feature_by_hook( $page_content, $item, $tab_name, $tab_content ): string {
-		$data   = get_option( BR_EE_OPTION );
+		$data   = DataStore::get_current();
 		$plugin = $this->get_plugin_sku_by_page();
 		$plugin_name = $this->get_plugin_name_by_page();
 		$plugin_version_capability = apply_filters( 'brfr_get_plugin_version_capability_' . $plugin_name, 0 );
@@ -631,7 +904,7 @@ class LockedFeatures extends Messaging {
 
 			if ( is_array( $locked_features ) ) {
 				foreach ( $locked_features as $feature ) {
-					if ( $feature['hook'] == current_filter() and
+					if ( ! empty( $feature['hook'] ) and $feature['hook'] == current_filter() and
 					     (
 						     ( empty( $plugin_version_capability ) or $plugin_version_capability < 10 )
 						     or
@@ -659,7 +932,7 @@ class LockedFeatures extends Messaging {
 			add_action('brfr_settings_tab_title', function ( $title ) use ($plugin, $element) {
 				return $title .
 					'<div id="brfr_ee_hide_locked_features" style="position: absolute;top: 0;right: 0;font-size: 15px;color: rgb(89, 89, 89);">
-						' . __( 'Hide premium feature previews for 2 weeks', 'BeRocket_domain' ) . ' 
+						' . __( 'Hide premium feature previews for 2 weeks', 'BeRocket_domain' ) . '
 						<input id="ee_hide_premium" class="button tiny-button" type="button" value="' .
 				       __( 'Hide', 'BeRocket_domain' ) . '" style="margin: 10px 12px 10px 4px;">
 					</div>';
@@ -691,7 +964,7 @@ class LockedFeatures extends Messaging {
 	}
 
 	public function add_sidebar_metabox() {
-		$data = get_option( BR_EE_OPTION );
+		$data = DataStore::get_current();
 		if ( ! empty( $data['locked_features'] ) ) {
 			foreach ( $this->post_name_to_plugin as $post_name => $plugin ) {
 				if ( $this->is_post_page( $post_name ) ) {

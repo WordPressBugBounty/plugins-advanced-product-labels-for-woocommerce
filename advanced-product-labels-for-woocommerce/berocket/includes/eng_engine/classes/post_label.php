@@ -9,7 +9,7 @@ class PostLabel extends PostBase {
 	public function __construct( $o_locked_features ) {
 		parent::__construct( $o_locked_features );
 
-		$data = get_option( BR_EE_OPTION );
+		$data = DataStore::get_current();
 		if ( ! empty( $data['locked_features'][ $this->plugin_sku ]['posts'][ $this->post_name ] ) ) {
 			$locked_features = $data['locked_features'][ $this->plugin_sku ]['posts'][ $this->post_name ];
 			foreach ( $locked_features as $feature ) {
@@ -29,7 +29,10 @@ class PostLabel extends PostBase {
 	}
 
 	public function output_locked_features_inline( $page_content, $item, $tab_name, $tab_content ): string {
-		$data   = get_option( BR_EE_OPTION );
+		if ( empty( $item ) or empty( $tab_name ) )
+			return $page_content;
+
+		$data   = DataStore::get_current();
 		$plugin = 'labels';
 		$plugin_name = 'products_label';
 		$item_name = ( is_array( $item['name'] ) ? implode( '_', $item['name'] ) : $item['name'] );
@@ -41,7 +44,10 @@ class PostLabel extends PostBase {
 
 			if ( is_array( $locked_features ) ) {
 				foreach ( $locked_features as $feature ) {
-					if ( $tab_name == $feature['section'] and
+					if ( ! empty( $feature['section'] ) and
+					     ! empty( $feature['location'] ) and
+					     ! empty( $feature[ $hook ] ) and
+						 $tab_name == $feature['section'] and
 					     'inline' == $feature['location'] and
 					     $item_name == $feature[ $hook ] and
 					     $this->is_locked( $feature )
@@ -57,7 +63,7 @@ class PostLabel extends PostBase {
 	}
 
 	public function premium_select_option( $tabs_data ): array {
-		$data   = get_option( BR_EE_OPTION );
+		$data   = DataStore::get_current();
 		$plugin = 'labels';
 
 		if ( ! empty( $data['locked_features'][ $plugin ]['posts'][ $this->post_name ] ) ) {
@@ -65,13 +71,16 @@ class PostLabel extends PostBase {
 
 			if ( is_array( $locked_features ) ) {
 				foreach ( $locked_features as $feature ) {
-					if ( $feature['function'] == 'premium_select_option' and
-					     current_filter() == $feature['hook'] and
+					if ( ! empty( $feature['function'] ) and
+					     ! empty( $feature['hook'] ) and
+						 $feature['function'] == 'premium_select_option' and
+				     current_filter() == $feature['hook'] and
 					     $this->is_locked( $feature )
 					) {
-						$tabs_data[ $feature['section'] ][ $feature['name'] ]['options'][] = array(
+						$label = sanitize_text_field( $feature['label'] ?? '' );
+						$tabs_data[ $feature['section'] ?? 'General' ][ $feature['name'] ]['options'][] = array(
 							'value' => '',
-							'text'  => __($feature['label'], 'BeRocket_products_label_domain'),
+							'text'  => __( $label, 'BeRocket_products_label_domain' ),
 							'extra' => ' disabled="disabled" ',
 						);
 					}

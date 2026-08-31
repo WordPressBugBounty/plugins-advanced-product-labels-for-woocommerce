@@ -9,7 +9,7 @@ class PostTab extends PostBase {
 	public function __construct( $o_locked_features ) {
 		parent::__construct( $o_locked_features );
 
-		$data = get_option( BR_EE_OPTION );
+		$data = DataStore::get_current();
 		if ( ! empty( $data['locked_features'][ $this->plugin_sku ]['posts'][ $this->post_name ] ) ) {
 			$locked_features = $data['locked_features'][ $this->plugin_sku ]['posts'][ $this->post_name ];
 			foreach ( $locked_features as $feature ) {

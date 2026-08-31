@@ -1,4 +1,8 @@
 function bapl_image_bottom_init() {
+    if( typeof bapl_image_btm === 'undefined' ) {
+        return;
+    }
+
     jQuery('.berocket_better_labels_image').each(function() {
         var product = jQuery(this).parents(bapl_image_btm.parent).first().find('.baplIMGsize').first();
         if( product.length == 0 ) {

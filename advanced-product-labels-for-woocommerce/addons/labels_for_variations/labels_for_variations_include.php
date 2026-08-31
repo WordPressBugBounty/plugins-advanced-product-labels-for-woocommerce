@@ -21,8 +21,8 @@ class BeRocket_products_label_labels_for_variations_class {
         if ( !is_product() ) return;
 
         global $product;
-        if ( !is_object( $product) ) $product = wc_get_product( get_the_ID() );
-        if ( !$product->is_type( 'variable' ) ) return;
+        if ( ! is_a( $product, 'WC_Product' ) ) $product = wc_get_product( get_queried_object_id() );
+        if ( ! is_a( $product, 'WC_Product' ) || ! $product->is_type( 'variable' ) ) return;
 
         wp_enqueue_script( 'berocket_label_variation_scripts', plugins_url( 'js/frontend.js', __FILE__ ), array( 'jquery', 'berocket_tippy' ), BeRocket_products_label_version );
 
@@ -47,8 +47,18 @@ class BeRocket_products_label_labels_for_variations_class {
     }
 
     public function variation_label() {
-        $variation = intVal( sanitize_text_field( $_REQUEST['variation_id'] ) );
-        do_action( 'berocket_apl_set_label', true, $variation );
+        if ( ! isset( $_REQUEST['variation_id'] ) || ! is_scalar( $_REQUEST['variation_id'] ) ) {
+            wp_die( '', '', array( 'response' => 400 ) );
+        }
+
+        $variation = BeRocket_products_label::get_public_product(
+            absint( wp_unslash( $_REQUEST['variation_id'] ) )
+        );
+        if ( ! $variation ) {
+            wp_die( '', '', array( 'response' => 404 ) );
+        }
+
+        do_action( 'berocket_apl_set_label', true, $variation->get_id() );
         wp_die();
     }
 
@@ -168,11 +178,18 @@ class BeRocket_products_label_labels_for_variations_class {
     }
 
     public function better_labels_html($html, $html_type, $html_positions, $product, $type = true, $product_id = '') {
-        if( ! empty($product) && is_a($product, 'WC_Product') && $html_type === $type ) {
+        if( ! empty($product) && is_a($product, 'WC_Product') && ( $type === true || $html_type === $type ) ) {
             global $wp_query;
             $current_page = get_queried_object_id();
             if( empty($current_page) && ! empty($wp_query->queried_object_id) ) {
                 $current_page = $wp_query->queried_object_id;
+            }
+            if( empty($current_page) ) {
+                $current_page = get_the_ID();
+            }
+            if( empty($current_page) ) {
+                global $post;
+                $current_page = ( ! empty($post->ID) ? $post->ID : 0 );
             }
             $current_product_id = ( is_a($product, 'WC_Product_Variation') ? $product->get_parent_id() : $product->get_id() );
             if( $current_product_id == $current_page ) {

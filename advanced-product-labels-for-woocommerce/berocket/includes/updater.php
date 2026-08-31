@@ -125,10 +125,16 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                 self::$error_log[ 'plugins' ]             = $plugins_list;
                 self::$error_log[ 'memory_limit' ]        = ini_get( 'memory_limit' );
                 self::$error_log[ 'WP_DEBUG' ]            = 'WP_DEBUG:' . ( defined( 'WP_DEBUG' ) ? ( WP_DEBUG ? 'true' : 'false' ) : 'false' ) . '; WP_DEBUG_DISPLAY:' . ( defined( 'WP_DEBUG_DISPLAY' ) ? ( WP_DEBUG_DISPLAY ? 'true' : 'false' ) : 'false' );
-                $error_log = unserialize(preg_replace('/R:\d+/', 's:18:"RECURSION DETECTED"', serialize(self::$error_log)));
+                $error_log_json = wp_json_encode(
+                    self::$error_log,
+                    JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_PARTIAL_OUTPUT_ON_ERROR
+                );
+                if ( ! is_string( $error_log_json ) ) {
+                    $error_log_json = 'null';
+                }
                 ?>
                 <script>
-                    console.log(<?php echo json_encode( $error_log ); ?>);
+                    console.log(<?php echo $error_log_json; ?>);
                 </script>
                 <?php
             }
@@ -137,9 +143,16 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                 foreach(self::$plugin_info as $plugin_i) {
                     $plugin_versions[$plugin_i['plugin_name']] = array('name' => $plugin_i['name'], 'version' => $plugin_i['version']);
                 }
+                $plugin_versions_json = wp_json_encode(
+                    $plugin_versions,
+                    JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_PARTIAL_OUTPUT_ON_ERROR
+                );
+                if ( ! is_string( $plugin_versions_json ) ) {
+                    $plugin_versions_json = 'null';
+                }
                 ?>
                 <script>
-                    console.log(<?php echo json_encode( $plugin_versions ); ?>);
+                    console.log(<?php echo $plugin_versions_json; ?>);
                 </script>
                 <?php
             }
@@ -303,7 +316,11 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
         }
 
         public static function allow_berocket_host( $allow, $host, $url ) {
-            if ( $host == 'berocket.com' ) {
+            // Preserve the existing BeRocket exception during WordPress URL
+            // safety validation. This hook does not override
+            // WP_HTTP_BLOCK_EXTERNAL; site owners control those exceptions
+            // through WP_ACCESSIBLE_HOSTS.
+            if ( strtolower((string)$host) === 'berocket.com' ) {
                 $allow = true;
             }
 
@@ -600,6 +617,19 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
             <div class="wrap">
                 <form method="post" action="options.php" class="account_key_send br_framework_settings">
                     <?php
+                    if ( ! empty( $_POST[ 'BeRocket_account_option' ] ) and
+                         ( is_super_admin() or ! is_network_admin() and current_user_can( 'manage_options' ) ) and
+                         ! empty( $_POST['_wpnonce'] ) and
+                         wp_verify_nonce( $_POST['_wpnonce'], 'BeRocket_account_option_settings-options' )
+                    ) {
+	                    $previous_options = BeRocket_Framework::get_global_option();
+	                    $option = berocket_sanitize_array( $_POST[ 'BeRocket_account_option' ], array('BeRocket_account_option'), $previous_options );
+	                    BeRocket_Framework::save_global_option($option);
+	                    self::update_check_set('');
+	                    delete_site_transient( 'update_plugins' );
+	                    delete_transient('berocket_plugin_paid_info');
+                    }
+
                     $options = BeRocket_Framework::get_global_option();
                     self::inside_form( $options );
                     ?>
@@ -614,7 +644,11 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
             <div class="wrap">
                 <form method="post" action="edit.php?page=berocket_account" class="account_key_send br_framework_settings">
                     <?php
-                    if ( isset( $_POST[ 'BeRocket_account_option' ] ) ) {
+                    if ( ! empty( $_POST[ 'BeRocket_account_option' ] ) and
+                         ( is_super_admin() or ! is_network_admin() and current_user_can( 'manage_options' ) ) and
+                         ! empty( $_POST['_wpnonce'] ) and
+                         wp_verify_nonce( $_POST['_wpnonce'], 'BeRocket_account_option_settings-options' )
+                    ) {
                         $previous_options = BeRocket_Framework::get_global_option(true);
                         $option = berocket_sanitize_array( $_POST[ 'BeRocket_account_option' ], array('BeRocket_account_option'), $previous_options );
                         BeRocket_Framework::save_global_option($option, true);
@@ -967,12 +1001,15 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                 }
 
                 $responsed = false;
-                if ( $is_active && ! empty($plugin_data) && is_array($plugin_data) && is_array($plugin) && isset($plugin_data['version'])
-                && ( version_compare( (string)$plugin[ 'version' ], (string)$plugin_data['version'], '<' ) || ! in_array($license_key_name, $plugin_licenses) ) && ! empty($value) ) {
-                    $value->checked[ $plugin[ 'plugin' ] ]  = $plugin_data['version'];
+                $remote_version = ( ! empty($plugin_data['version']) && is_scalar($plugin_data['version']) )
+                    ? sanitize_text_field((string)$plugin_data['version'])
+                    : '';
+                if ( $is_active && ! empty($plugin_data) && is_array($plugin_data) && is_array($plugin) && ! empty($remote_version)
+                && ( version_compare( (string)$plugin[ 'version' ], $remote_version, '<' ) || ! in_array($license_key_name, $plugin_licenses) ) && ! empty($value) ) {
+                    $value->checked[ $plugin[ 'plugin' ] ]  = $remote_version;
                     $val                                    = array(
                         'id'          => 'br_' . $plugin[ 'id' ],
-                        'new_version' => $plugin_data['version'] . '(' . $license_key_name . ')',
+                        'new_version' => $remote_version . '(' . sanitize_text_field((string)$license_key_name) . ')',
                         'package'     => BeRocket_update_path . 'v1/update_product/' . $plugin[ 'id' ] . '/' . $key,
                         'url'         => BeRocket_cdn_path . 'product/' . $plugin[ 'slug' ],
                         'plugin'      => $plugin[ 'plugin' ],
@@ -1139,7 +1176,7 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
             <ul class="berocket_section_wc_addons" style="display: none;">
             <?php foreach ( $addons as $addon ) : ?>
                 <li class="product">
-                    <a href="<?php echo esc_attr( $addon->link ); ?>">
+                    <a href="<?php echo esc_url( $addon->link ); ?>">
                         <?php if ( ! empty( $addon->image ) ) : ?>
                             <span class="product-img-wrap"><img src="<?php echo esc_url( $addon->image ); ?>"/></span>
                         <?php else : ?>
@@ -1312,13 +1349,19 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                 $is_active = ( ! empty($check_plugin_activation) && is_array($check_plugin_activation) && ! empty($check_plugin_activation['status']) );
                 if( ! $is_active ) {
                     $plugin_data = BeRocket_Framework::get_product_data_berocket($plugin[ 'id' ]);
-                    if ( ! empty($plugin_data) && is_array($plugin_data) && version_compare($plugin_data['version'], $plugin[ 'version' ], '>') ) {
+                    $remote_version = ( ! empty($plugin_data['version']) && is_scalar($plugin_data['version']) )
+                        ? sanitize_text_field((string)$plugin_data['version'])
+                        : '';
+                    $remote_name = ( ! empty($plugin_data['name']) && is_scalar($plugin_data['name']) )
+                        ? sanitize_text_field((string)$plugin_data['name'])
+                        : '';
+                    if ( ! empty($plugin_data) && is_array($plugin_data) && ! empty($remote_version) && version_compare($remote_version, $plugin[ 'version' ], '>') ) {
                         echo '<tr class="active plugin-update-tr"><td colspan="' . esc_attr( $wp_list_table->get_column_count() ) . '" class="plugin-update colspanchange"><div class="update-message notice inline notice-warning notice-alt"><p>';
                         printf(
                             __( 'There is a new version %1$s of %2$s available. But <a href="%3$s">Activation required to update</a>.' ),
-                            $plugin_data['version'],
-                            $plugin_data['name'],
-                            ( is_network_admin() ? admin_url( 'network/admin.php?page=berocket_account' ) : admin_url( 'admin.php?page=berocket_account' ) )
+                            esc_html($remote_version),
+                            esc_html($remote_name),
+                            esc_url( is_network_admin() ? admin_url( 'network/admin.php?page=berocket_account' ) : admin_url( 'admin.php?page=berocket_account' ) )
                         );
                         echo '</p></div></td></tr>';
                     }
@@ -1336,6 +1379,16 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
 				         $plugin['version_capability'] >= 10
 				    ) {
 					    $live_plugin_data = BeRocket_Framework::get_product_data_berocket( $plugin['id'] );
+					    $remote_version = ( ! empty($live_plugin_data['version']) && is_scalar($live_plugin_data['version']) )
+					        ? sanitize_text_field((string)$live_plugin_data['version'])
+					        : '';
+					    $plugin_url = ( ! empty($live_plugin_data['plugin_url']) && is_scalar($live_plugin_data['plugin_url']) )
+					        ? esc_url_raw((string)$live_plugin_data['plugin_url'])
+					        : '';
+
+					    if ( empty($remote_version) || empty($plugin_url) ) {
+					        return $res;
+					    }
 
 					    if ( ! empty( self::$key ) && strlen( self::$key ) == 40 ) {
 						    $key = self::$key;
@@ -1346,7 +1399,7 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
 
 					    $res->name                     = $plugin['full_name'];
 					    $res->slug                     = $plugin['slug'];
-					    $res->version                  = $live_plugin_data['version'];
+					    $res->version                  = $remote_version;
 					    $res->author                   = '<a href="https://berocket.com/">BeRocket</a>';
 					    $res->author_profile           = 'https://berocket.com/';
 					    $res->support_url              = 'https://berocket.com/support/';
@@ -1360,7 +1413,7 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
 					    $res->donate_link              = '';
 					    $res->sections['changelog']    = '';
 
-					    $url = $live_plugin_data['plugin_url'] . '?preview=in_plugin_info';
+					    $url = add_query_arg( 'preview', 'in_plugin_info', $plugin_url );
 
 					    if ( $plugin_contents_raw = file_get_contents( $url ) and
 					         $plugin_contents = json_decode( $plugin_contents_raw ) and
@@ -1369,31 +1422,33 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
 						    $k = 1;
 						    $plugin_contents->changelog->version = array_reverse( $plugin_contents->changelog->version, true );
 						    foreach ( $plugin_contents->changelog->version as $version_key => $version ) {
-							    $res->sections['changelog'] .= '<h4>' . $version . '</h4>';
+							    $res->sections['changelog'] .= '<h4>' . esc_html( is_scalar($version) ? (string)$version : '' ) . '</h4>';
 							    $res->sections['changelog'] .= '<ul>';
 							    if ( ! empty( $plugin_contents->changelog->enhancements[ $version_key ] ) ) {
 								    $enhancements = preg_split( "/\r\n|\n|\r/", $plugin_contents->changelog->enhancements[ $version_key ] );
 								    foreach ( $enhancements as $enhancement ) {
-									    $res->sections['changelog'] .= '<li><strong>Enhancement:</strong> ' . $enhancement . '</li>';
+									    $res->sections['changelog'] .= '<li><strong>Enhancement:</strong> ' . esc_html( $enhancement ) . '</li>';
 								    }
 							    }
 
 							    if ( ! empty( $plugin_contents->changelog->fixes[ $version_key ] ) ) {
 								    $fixes = preg_split( "/\r\n|\n|\r/", $plugin_contents->changelog->fixes[ $version_key ] );
 								    foreach ( $fixes as $fix ) {
-									    $res->sections['changelog'] .= '<li><strong>Bugfix:</strong> ' . $fix . '</li>';
+									    $res->sections['changelog'] .= '<li><strong>Bugfix:</strong> ' . esc_html( $fix ) . '</li>';
 								    }
 							    }
 							    $res->sections['changelog'] .= '</ul>';
 							    if ( ++ $k > 2 ) {
 								    $res->sections['changelog'] .= '<p></p>';
-								    $res->sections['changelog'] .= '<a target="_blank" href="' . $live_plugin_data['plugin_url'] . '">For a complete list of updates and changes, please visit the plugin’s page.</a>';
+								    $res->sections['changelog'] .= '<a target="_blank" rel="noopener noreferrer" href="' . esc_url( $plugin_url ) . '">For a complete list of updates and changes, please visit the plugin’s page.</a>';
 								    $res->sections['changelog'] .= '<p></p>';
 								    break;
 							    }
 						    }
 
-						    $res->version      = $plugin_contents->tech_detail->plugin_version;
+						    $res->version      = ( ! empty($plugin_contents->tech_detail->plugin_version) && is_scalar($plugin_contents->tech_detail->plugin_version) )
+						        ? sanitize_text_field((string)$plugin_contents->tech_detail->plugin_version)
+						        : $remote_version;
 						    $res->last_updated = date( 'Y-m-d g:ia e', strtotime( $plugin_contents->tech_detail->last_update ) );
 					    }
 

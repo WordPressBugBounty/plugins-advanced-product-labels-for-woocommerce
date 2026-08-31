@@ -37,8 +37,8 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
     include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
     load_plugin_textdomain('BeRocket_domain', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
     class BeRocket_Framework {
-        public static $framework_version = '3.0.5.2';
-        public $plugin_framework_version = '3.0.5.2';
+        public static $framework_version = '3.0.6';
+        public $plugin_framework_version = '3.0.6';
         public $licenses_current = array('free');
         public static $settings_name = '';
         public $addons;
@@ -118,10 +118,6 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
                 add_action( 'admin_enqueue_scripts', array( $this->cc, 'admin_enqueue_scripts' ) );
                 add_action( 'berocket_enqueue_media', array( $this, 'wp_enqueue_media' ) );
 
-                add_action( 'wp_ajax_br_' . $this->cc->info[ 'plugin_name' ] . '_settings_save', array(
-                    $this->cc,
-                    'save_settings'
-                ) );
                 add_filter( 'plugin_row_meta', array( $this->cc, 'plugin_row_meta' ), 10, 2 );
                 add_filter( 'is_berocket_settings_page', array( $this->cc, 'is_settings_page' ) );
 
@@ -640,7 +636,7 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
         public function display_admin_settings( $tabs_info = array(), $data = array(), $setup_style = array() ) {
 			$plugin_info = get_plugin_data( $this->cc->info[ 'plugin_file' ] );
             global $wp;
-            $settings_url = add_query_arg( NULL, NULL );
+            $settings_url = add_query_arg( array() );
             $settings_url = esc_url_raw($settings_url);
             $def_setup_style = array(
                 'settings_url'    => $settings_url,
@@ -1197,7 +1193,7 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
             if( ! is_array($new_option) ) {
                 $new_option = array();
             }
-            if( empty($new_option['fontawesome_frontend_version']) ) {
+            if( ! isset($new_option['fontawesome_frontend_version']) ) {
                 $option = $option_func('berocket_framework_option_global');
                 if( is_array($option) ) {
                     $new_option = array_merge($new_option, $option);

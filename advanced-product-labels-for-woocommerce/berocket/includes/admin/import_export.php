@@ -1,6 +1,7 @@
 <?php
 class BeRocket_import_export {
     const PLUGIN_URL_TOKEN = '__BRFR_PLUGIN_URL__';
+    protected static $import_warnings = array();
     public function __construct() {
         add_action('BeRocket_framework_updater_account_form_after', array($this, 'account_form'), 10, 1);
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
@@ -156,10 +157,12 @@ class BeRocket_import_export {
         if( empty($result['success']) ) {
             wp_send_json_error(array(
                 'message' => $result['message'],
+                'warnings' => ( ! empty($result['warnings']) ? $result['warnings'] : array() ),
             ));
         }
         wp_send_json_success(array(
             'message' => $result['message'],
+            'warnings' => ( ! empty($result['warnings']) ? $result['warnings'] : array() ),
         ));
         wp_die();
     }
@@ -375,6 +378,7 @@ class BeRocket_import_export {
         );
     }
     public static function process_import_package($plugin_slug, $package, $link_actions = array(), $import_options = array()) {
+        self::$import_warnings = array();
         $plugin_slug = sanitize_text_field($plugin_slug);
         $plugin_instance = apply_filters('brfr_plugin_get_instance_' . $plugin_slug, FALSE);
         if( $plugin_instance === FALSE || $plugin_instance->import_export === FALSE ) {
@@ -417,10 +421,49 @@ class BeRocket_import_export {
             }
         }
 
+        $warnings = self::get_import_warnings();
+        $message = __('Imported', 'BeRocket_domain');
+        if( ! empty($warnings) ) {
+            $message .= "\n" . implode("\n", self::get_import_warning_messages($warnings));
+        }
+
         return array(
             'success' => true,
-            'message' => __('Imported', 'BeRocket_domain'),
+            'message' => $message,
+            'warnings' => $warnings,
         );
+    }
+
+    public static function get_import_warnings() {
+        return array_values(self::$import_warnings);
+    }
+
+    protected static function add_import_warnings($warnings) {
+        if( ! is_array($warnings) ) {
+            return;
+        }
+        foreach($warnings as $warning) {
+            if( ! is_array($warning) || empty($warning['code']) ) {
+                continue;
+            }
+            $warning_key = md5(wp_json_encode($warning));
+            self::$import_warnings[$warning_key] = $warning;
+        }
+    }
+
+    protected static function get_import_warning_messages($warnings) {
+        $messages = array();
+        foreach($warnings as $warning) {
+            if( ! is_array($warning) || $warning['code'] !== 'user_role_missing_role' || empty($warning['role_slug']) ) {
+                continue;
+            }
+            $messages[] = sprintf(
+                /* translators: %s: WordPress role slug that does not exist on the target site. */
+                __('Role "%s" is not available on this site. The saved reference was preserved.', 'BeRocket_domain'),
+                $warning['role_slug']
+            );
+        }
+        return $messages;
     }
     public static function get_custom_post_slug_strategy($post_slug, $post_id, $import_settings = array()) {
         $map_key = self::get_custom_post_map_key($post_slug, $post_id);
@@ -849,7 +892,9 @@ class BeRocket_import_export {
                             $options[$key] = self::slug_to_id($options[$key], $type['export_type'], $type);
                             break;
                         case 'conditions':
+                            $brapl_import_warnings = array();
                             include(__DIR__ . '/import_export_conditions_import.php');
+                            self::add_import_warnings($brapl_import_warnings);
                             break;
                     }
                 } else {

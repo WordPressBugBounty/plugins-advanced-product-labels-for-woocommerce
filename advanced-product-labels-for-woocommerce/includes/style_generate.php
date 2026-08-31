@@ -5,7 +5,9 @@ class BeRocket_products_label_style_generate {
         add_action('BeRocket_products_label_style_generate_each', array($this, 'javascript_include'), 10, 2);
     }
     function label_style() {
-        echo '<style>', $this->get_styles(), '</style>';
+        $styles = preg_replace( '#</?style\b[^>]*>#i', '', $this->get_styles() );
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Full stylesheets cannot be HTML-escaped; label data is sanitized before CSS generation and style tags are removed above.
+        echo '<style>', $styles, '</style>';
     }
     public function get_labels_ids() {
         $custom_posts_class = BeRocket_products_label::getInstance();
@@ -25,7 +27,8 @@ class BeRocket_products_label_style_generate {
         foreach($posts_array as $label_id) {
             $br_label = $custom_posts_class->get_option($label_id);
             $br_label = apply_filters( 'berocket_label_adjust_options', $br_label );
-            $style_id = 'berocket_alabel_id_' . $label_id;
+            $br_label = apply_filters( 'berocket_apl_label_sanitize_data', $br_label, false );
+            $style_id = 'berocket_alabel_id_' . absint( $label_id );
             $custom_css = apply_filters('berocket_apl_label_show_custom_css', '', $br_label, $style_id);
             $css_all   .= str_replace(array('<style>', '</style>'), '', $custom_css);
             $styles_to_class = array(
